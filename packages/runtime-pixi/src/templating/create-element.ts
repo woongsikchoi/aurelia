@@ -61,9 +61,9 @@ function createElementForTag(tagName: string, props?: IIndexable, children?: Arr
       .forEach(to => {
         const value = props[to];
 
-        if (isTargetedInstruction(value)) {
+        if (isTargetedInstruction(value as any)) {
           hasInstructions = true;
-          instructions.push(value);
+          instructions.push(value as any);
         } else {
           DOM.setAttribute(element, to, value);
         }
@@ -108,7 +108,7 @@ function createElementForType(Type: ICustomElementType, props?: IIndexable, chil
       .forEach(to => {
         const value = props[to];
 
-        if (isTargetedInstruction(value)) {
+        if (isTargetedInstruction(value as any)) {
           childInstructions.push(value);
         } else {
           const bindable = bindables[to];

@@ -165,7 +165,7 @@ export class ObserverLocator implements IObserverLocator {
   // TODO: Reduce complexity (currently at 37)
   private createPropertyObserver(obj: IObservable, propertyName: string): AccessorOrObserver {
     if (!(obj instanceof Object)) {
-      return new PrimitiveObserver(obj, propertyName) as IBindingTargetAccessor;
+      return new PrimitiveObserver(obj as any, propertyName) as IBindingTargetAccessor;
     }
 
     let isNode: boolean;

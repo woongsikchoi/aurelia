@@ -74,7 +74,7 @@ export class DirtyCheckProperty implements DirtyCheckProperty {
   }
 
   public getValue(): IIndexable | Primitive {
-    return this.obj[this.propertyKey];
+    return this.obj[this.propertyKey] as any;
   }
 
   public setValue(newValue: IIndexable | Primitive): void {

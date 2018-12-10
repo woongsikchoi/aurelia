@@ -82,7 +82,7 @@ export class CustomSetterObserver implements CustomSetterObserver {
   ) { }
 
   public getValue(): IIndexable | Primitive {
-    return this.obj[this.propertyKey];
+    return this.obj[this.propertyKey] as any;
   }
 
   public setValue(newValue: IIndexable | Primitive): void {
@@ -112,7 +112,7 @@ export class CustomSetterObserver implements CustomSetterObserver {
     const that = this;
 
     this.observing = true;
-    this.currentValue = this.obj[this.propertyKey];
+    this.currentValue = this.obj[this.propertyKey] as any;
 
     Reflect.defineProperty(this.obj, this.propertyKey, {
       set: function(newValue: IIndexable | Primitive): void {
@@ -249,7 +249,7 @@ export class GetterController {
       this.isCollecting = true;
     }
 
-    this.value = this.instance[this.propertyName]; // triggers observer collection
+    this.value = this.instance[this.propertyName] as any; // triggers observer collection
 
     if (dynamicDependencies) {
       this.isCollecting = false;
@@ -283,7 +283,7 @@ function createGetterTraps(observerLocator: IObserverLocator, controller: Getter
       const value = instance[key];
 
       if (key === '$observers' || typeof value === 'function' || !controller.isCollecting) {
-        return value;
+        return value as any;
       }
 
       // TODO: fix this
@@ -309,7 +309,7 @@ function createGetterTraps(observerLocator: IObserverLocator, controller: Getter
         controller.addDependency(observerLocator.getObserver(instance, key) as IBindingTargetObserver);
       }
 
-      return proxyOrValue(observerLocator, controller, value);
+      return proxyOrValue(observerLocator, controller, value as any);
     }
   };
 }

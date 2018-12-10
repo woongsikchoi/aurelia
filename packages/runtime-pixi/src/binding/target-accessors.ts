@@ -107,7 +107,7 @@ export class StyleAttributeAccessor implements StyleAttributeAccessor {
     this.obj.style.setProperty(style, value, priority);
   }
 
-  public setValueCore(newValue: string | IIndexable): void {
+  public setValueCore(newValue: any): void {
     const styles = this.styles || {};
     let style;
     let version = this.version;
@@ -235,7 +235,7 @@ export class ElementPropertyAccessor implements ElementPropertyAccessor {
     public propertyKey: string) { }
 
   public getValue(): Primitive | IIndexable {
-    return this.obj[this.propertyKey];
+    return this.obj[this.propertyKey] as any;
   }
 
   public setValueCore(value: Primitive | IIndexable): void {
@@ -249,7 +249,7 @@ export class PropertyAccessor implements PropertyAccessor {
   constructor(public obj: IIndexable, public propertyKey: string) { }
 
   public getValue(): Primitive | IIndexable {
-    return this.obj[this.propertyKey];
+    return this.obj[this.propertyKey] as any;
   }
 
   public setValue(value: Primitive | IIndexable): void {

@@ -154,12 +154,20 @@ const defaultCompilerName = 'default';
 @inject(IContainer, ILifecycle, all(ITemplateCompiler))
 /*@internal*/
 export class RenderingEngine implements IRenderingEngine {
-  private templateLookup: Map<TemplateDefinition, ITemplate> = new Map();
-  private factoryLookup: Map<Immutable<ITemplateDefinition>, IViewFactory> = new Map();
-  private behaviorLookup: Map<ICustomElementType | ICustomAttributeType, RuntimeBehavior> = new Map();
+  private behaviorLookup: Map<ICustomElementType | ICustomAttributeType, RuntimeBehavior>;
   private compilers: Record<string, ITemplateCompiler>;
+  private container: IContainer;
+  private factoryLookup: Map<Immutable<ITemplateDefinition>, IViewFactory>;
+  private lifecycle: ILifecycle;
+  private templateLookup: Map<TemplateDefinition, ITemplate>;
 
-  constructor(private container: IContainer, private lifecycle: ILifecycle, templateCompilers: ITemplateCompiler[]) {
+  constructor(container: IContainer, lifecycle: ILifecycle, templateCompilers: ITemplateCompiler[]) {
+    this.behaviorLookup = new Map();
+    this.container = container;
+    this.factoryLookup = new Map();
+    this.lifecycle = lifecycle;
+    this.templateLookup = new Map();
+
     this.compilers = templateCompilers.reduce(
       (acc, item) => {
         acc[item.name] = item;
@@ -181,7 +189,7 @@ export class RenderingEngine implements IRenderingEngine {
 
       //If the element has a view, support Recursive Components by adding self to own view template container.
       if (found.renderContext !== null && componentType) {
-        componentType.register(<ExposedContext>found.renderContext);
+        componentType.register(found.renderContext as ExposedContext);
       }
 
       this.templateLookup.set(definition, found);
@@ -220,7 +228,7 @@ export class RenderingEngine implements IRenderingEngine {
   }
 
   private templateFromSource(definition: TemplateDefinition, parentContext?: IRenderContext): ITemplate {
-    parentContext = parentContext || <ExposedContext>this.container;
+    parentContext = parentContext || this.container as ExposedContext;
 
     if (definition && definition.template) {
       if (definition.build.required) {
@@ -231,7 +239,7 @@ export class RenderingEngine implements IRenderingEngine {
           throw Reporter.error(20, compilerName);
         }
 
-        definition = compiler.compile(<ITemplateDefinition>definition, new RuntimeCompilationResources(<ExposedContext>parentContext), ViewCompileFlags.surrogate);
+        definition = compiler.compile(definition as ITemplateDefinition, new RuntimeCompilationResources(parentContext as ExposedContext), ViewCompileFlags.surrogate);
       }
 
       return new CompiledTemplate(this, parentContext, definition);
@@ -244,15 +252,14 @@ const childObserverOptions = { childList: true };
 
 /*@internal*/
 export class ShadowDOMProjector implements IElementProjector {
+  public host: ICustomElementHost;
   public shadowRoot: ICustomElementHost;
 
-  constructor(
-    $customElement: ICustomElement,
-    public host: ICustomElementHost,
-    definition: TemplateDefinition
-  ) {
-    this.shadowRoot = DOM.attachShadow(host, definition.shadowOptions || defaultShadowOptions);
-    host.$customElement = $customElement;
+  constructor($customElement: ICustomElement, host: ICustomElementHost, definition: TemplateDefinition) {
+    this.host = host;
+
+    this.shadowRoot = DOM.attachShadow(this.host, definition.shadowOptions || defaultShadowOptions);
+    this.host.$customElement = $customElement;
     this.shadowRoot.$customElement = $customElement;
   }
 
@@ -270,22 +277,20 @@ export class ShadowDOMProjector implements IElementProjector {
 
   public project(nodes: INodeSequence): void {
     nodes.appendTo(this.host);
-    this.project = PLATFORM.noop;
   }
 
   public take(nodes: INodeSequence): void {
-    // No special behavior is required because the host element removal
-    // will result in the projected nodes being removed, since they are in
-    // the ShadowDOM.
+    nodes.remove();
   }
 }
 
 /*@internal*/
 export class ContainerlessProjector implements IElementProjector {
   public host: ICustomElementHost;
+
   private childNodes: ArrayLike<INode>;
 
-  constructor(private $customElement: ICustomElement, host: ICustomElementHost) {
+  constructor($customElement: ICustomElement, host: ICustomElementHost) {
     if (host.childNodes.length) {
       this.childNodes = PLATFORM.toArray(host.childNodes);
     } else {
@@ -313,24 +318,22 @@ export class ContainerlessProjector implements IElementProjector {
   }
 
   public project(nodes: INodeSequence): void {
-    if (this.$customElement.$state & State.needsMount) {
-      this.$customElement.$state &= ~State.needsMount;
-      nodes.insertBefore(this.host);
-    }
+    nodes.insertBefore(this.host);
   }
 
   public take(nodes: INodeSequence): void {
-    this.$customElement.$state |= State.needsMount;
     nodes.remove();
   }
 }
 
 /*@internal*/
 export class HostProjector implements IElementProjector {
-  private readonly isAppHost: boolean;
-  constructor($customElement: ICustomElement, public host: ICustomElementHost) {
-    host.$customElement = $customElement;
-    this.isAppHost = host.hasOwnProperty('$au');
+  public host: ICustomElementHost;
+
+  constructor($customElement: ICustomElement, host: ICustomElementHost) {
+    this.host = host;
+
+    this.host.$customElement = $customElement;
   }
 
   get children(): ArrayLike<INode> {
@@ -347,18 +350,10 @@ export class HostProjector implements IElementProjector {
 
   public project(nodes: INodeSequence): void {
     nodes.appendTo(this.host);
-    if (!this.isAppHost) {
-      this.project = PLATFORM.noop;
-    }
   }
 
   public take(nodes: INodeSequence): void {
-    // No special behavior is required because the host element removal
-    // will result in the projected nodes being removed, since they are children.
-    if (this.isAppHost) {
-      // The only exception to that is the app host, which is not part of a removable node sequence
-      nodes.remove();
-    }
+    nodes.remove();
   }
 }
 
@@ -440,15 +435,21 @@ export interface IChildrenObserver extends
 /*@internal*/
 @subscriberCollection(MutationKind.instance)
 export class ChildrenObserver implements Partial<IChildrenObserver> {
-  public hasChanges: boolean = false;
+  public hasChanges: boolean;
 
-  private children: ICustomElement[] = null;
-  private observing: boolean = false;
+  private children: ICustomElement[];
+  private customElement: ICustomElement & { $childrenChanged?(): void };
+  private lifecycle: ILifecycle;
+  private observing: boolean;
 
-  constructor(
-    private lifecycle: ILifecycle,
-    private customElement: ICustomElement & { $childrenChanged?(): void }
-  ) { }
+  constructor(lifecycle: ILifecycle, customElement: ICustomElement & { $childrenChanged?(): void }) {
+    this.hasChanges = false;
+
+    this.children = null;
+    this.customElement = customElement;
+    this.lifecycle = lifecycle;
+    this.observing = false;
+  }
 
   public getValue(): ICustomElement[] {
     if (!this.observing) {
@@ -482,7 +483,7 @@ export class ChildrenObserver implements Partial<IChildrenObserver> {
       this.customElement.$childrenChanged();
     }
 
-    this.lifecycle.enqueueFlush(this);
+    this.lifecycle.enqueueFlush(this).catch(error => { throw error; });
     this.hasChanges = true;
   }
 }
@@ -524,14 +525,18 @@ export class CompiledTemplate implements ITemplate {
   public readonly factory: INodeSequenceFactory;
   public readonly renderContext: IRenderContext;
 
-  constructor(renderingEngine: IRenderingEngine, parentRenderContext: IRenderContext, private templateDefinition: TemplateDefinition) {
-    this.factory = NodeSequenceFactory.createFor(templateDefinition.template);
-    this.renderContext = createRenderContext(renderingEngine, parentRenderContext, templateDefinition.dependencies);
+  private templateDefinition: TemplateDefinition;
+
+  constructor(renderingEngine: IRenderingEngine, parentRenderContext: IRenderContext, templateDefinition: TemplateDefinition) {
+    this.templateDefinition = templateDefinition;
+
+    this.factory = NodeSequenceFactory.createFor(this.templateDefinition.template);
+    this.renderContext = createRenderContext(renderingEngine, parentRenderContext, this.templateDefinition.dependencies);
   }
 
   public render(renderable: IRenderable, host?: INode, parts?: TemplatePartDefinitions): void {
-    const nodes = (<Writable<IRenderable>>renderable).$nodes = this.factory.createNodeSequence();
-    (<Writable<IRenderable>>renderable).$context = this.renderContext;
+    const nodes = (renderable as Writable<IRenderable>).$nodes = this.factory.createNodeSequence();
+    (renderable as Writable<IRenderable>).$context = this.renderContext;
     this.renderContext.render(renderable, nodes.findTargets(), this.templateDefinition, host, parts);
   }
 }
@@ -541,8 +546,8 @@ export class CompiledTemplate implements ITemplate {
 export const noViewTemplate: ITemplate = {
   renderContext: null,
   render(renderable: IRenderable): void {
-    (<Writable<IRenderable>>renderable).$nodes = NodeSequence.empty;
-    (<Writable<IRenderable>>renderable).$context = null;
+    (renderable as Writable<IRenderable>).$nodes = NodeSequence.empty;
+    (renderable as Writable<IRenderable>).$context = null;
   }
 };
 
@@ -550,7 +555,7 @@ export const noViewTemplate: ITemplate = {
 export type ExposedContext = IRenderContext & IDisposable & IContainer;
 
 export function createRenderContext(renderingEngine: IRenderingEngine, parentRenderContext: IRenderContext, dependencies: ImmutableArray<IRegistry>): IRenderContext {
-  const context = <ExposedContext>parentRenderContext.createChild();
+  const context = parentRenderContext.createChild() as ExposedContext;
   const renderableProvider = new InstanceProvider();
   const elementProvider = new InstanceProvider();
   const instructionProvider = new InstanceProvider<ITargetedInstruction>();
@@ -602,7 +607,11 @@ export function createRenderContext(renderingEngine: IRenderingEngine, parentRen
 
 /*@internal*/
 export class InstanceProvider<T> implements IResolver {
-  private instance: T = null;
+  private instance: T;
+
+  constructor() {
+    this.instance = null;
+  }
 
   public prepare(instance: T): void {
     this.instance = instance;
@@ -623,9 +632,12 @@ export class InstanceProvider<T> implements IResolver {
 /*@internal*/
 export class ViewFactoryProvider implements IResolver {
   private factory: IViewFactory;
+  private renderingEngine: IRenderingEngine;
   private replacements: TemplatePartDefinitions;
 
-  constructor(private renderingEngine: IRenderingEngine) {}
+  constructor(renderingEngine: IRenderingEngine) {
+    this.renderingEngine = renderingEngine;
+  }
 
   public prepare(factory: IViewFactory, parts: TemplatePartDefinitions): void {
     this.factory = factory;

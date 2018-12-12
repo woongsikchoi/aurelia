@@ -5,6 +5,5 @@
     "declarationDir": "dist",
     "outDir": "dist/build"
   },
-  "include": ["src"],
-  "exclude": ["src-1"]
+  "include": ["src"]
 }

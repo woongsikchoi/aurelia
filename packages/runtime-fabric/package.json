@@ -1,5 +1,5 @@
 {
-  "name": "@aurelia/runtime",
+  "name": "@aurelia/runtime-fabric",
   "version": "0.3.0",
   "main": "dist/index.umd.js",
   "module": "dist/index.es6.js",
@@ -18,7 +18,7 @@
   },
   "keywords": [
     "aurelia",
-    "runtime"
+    "runtime-fabric"
   ],
   "files": [
     "dist",
@@ -29,12 +29,12 @@
   ],
   "scripts": {
     "lint": "cross-env tslint --project tsconfig-test.json -e \"test/**\" -t stylish",
-    "test": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime --browsers=ChromeHeadlessOpt --single-run --coverage",
-    "test-firefox": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime --browsers=FirefoxHeadless --single-run --coverage",
-    "test:watch": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime --browsers=ChromeHeadlessOpt --coverage",
-    "test:watch:verbose": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime --browsers=ChromeHeadlessOpt --coverage --reporter=mocha",
-    "test:debugger": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime --browsers=ChromeDebugging",
-    "test:debugger:verbose": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime --browsers=ChromeDebugging --reporter=mocha",
+    "test": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime-fabric --browsers=ChromeHeadlessOpt --single-run --coverage",
+    "test-firefox": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime-fabric --browsers=FirefoxHeadless --single-run --coverage",
+    "test:watch": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime-fabric --browsers=ChromeHeadlessOpt --coverage",
+    "test:watch:verbose": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime-fabric --browsers=ChromeHeadlessOpt --coverage --reporter=mocha",
+    "test:debugger": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime-fabric --browsers=ChromeDebugging",
+    "test:debugger:verbose": "cross-env TS_NODE_PROJECT=\"../../scripts/tsconfig.json\" karma start ../../scripts/karma.conf.ts --package=runtime-fabric --browsers=ChromeDebugging --reporter=mocha",
     "build": "tsc -b",
     "dev": "tsc -b -w",
     "publish:local": "npm pack"

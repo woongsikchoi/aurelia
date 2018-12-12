@@ -18,7 +18,14 @@ async function createBundle(): Promise<void> {
         return 0;
       case 'runtime':
         return 10;
-      case 'runtime-html':
+      case "runtime-blessed":
+      case "runtime-fabric":
+      case "runtime-html":
+      case "runtime-jsdom":
+      case "runtime-konva":
+      case "runtime-libui":
+      case "runtime-ns":
+      case "runtime-pixi":
         return 11;
       case 'debug':
         return 20;

@@ -1,0 +1,26 @@
+{
+  "name": "easysax",
+  "description": "pure javascript xml parser",
+  "keywords": [
+    "xml",
+    "sax",
+    "parser",
+    "pure"
+  ],
+  "version": "0.1.14",
+  "main": "easysax",
+  "types": "easysax.d.ts",
+  "bugs": {
+    "url": "https://github.com/vflash/easysax/issues"
+  },
+  "author": {
+    "name": "Vopilovskiy Konstantin",
+    "email": "flash.vkv@gmail.com",
+    "url": "http://vflash.ru"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vflash/easysax"
+  },
+  "homepage": "https://github.com/vflash/easysax"
+}

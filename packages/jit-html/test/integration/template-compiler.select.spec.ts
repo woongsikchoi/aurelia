@@ -1,10 +1,10 @@
 import { Primitive } from "@aurelia/kernel";
-import { SelectValueObserver, Lifecycle } from '../../../runtime/src/index';;
+import { SelectValueObserver, Lifecycle } from '../../../runtime-html/src/index';;
 import { tearDown, cleanup } from "./prepare";
 import { expect } from "chai";
 import { h } from "./util";
 import { setupAndStart, setup } from "./prepare";
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 // TemplateCompiler - <select/> Integration
 describe('template-compiler.select', () => {

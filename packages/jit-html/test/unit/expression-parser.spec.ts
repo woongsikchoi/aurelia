@@ -1,9 +1,9 @@
-import { BindingIdentifier, ArrayBindingPattern, ObjectBindingPattern } from './../../../runtime/src/binding/ast';
+import { BindingIdentifier, ArrayBindingPattern, ObjectBindingPattern } from './../../../runtime-html/src/binding/ast';
 import { AccessKeyed, AccessMember, AccessScope, AccessThis,
   Assign, Binary, BindingBehavior, CallFunction,
   CallMember, CallScope, Conditional,
   ArrayLiteral, ObjectLiteral, PrimitiveLiteral, Template,
-  Unary, ValueConverter, TaggedTemplate, IsUnary, IsPrimary, BinaryOperator, UnaryOperator, BindingType, Interpolation, ForOfStatement, ExpressionKind } from '../../../runtime/src';
+  Unary, ValueConverter, TaggedTemplate, IsUnary, IsPrimary, BinaryOperator, UnaryOperator, BindingType, Interpolation, ForOfStatement, ExpressionKind } from '../../../runtime-html/src';
 import { latin1IdentifierStartChars, latin1IdentifierPartChars, otherBMPIdentifierPartChars } from './unicode';
 import { expect } from 'chai';
 import { parseCore, parse,  ParserState, Access, Precedence } from '../../../jit-html/src'
@@ -1253,7 +1253,7 @@ describe('ExpressionParser', () => {
 
   // #endregion
 
-  // https://tc39.github.io/ecma262/#sec-runtime-semantics-iteratordestructuringassignmentevaluation
+  // https://tc39.github.io/ecma262/#sec-runtime-html-semantics-iteratordestructuringassignmentevaluation
   describe('parse ForOfStatement', () => {
     const SimpleForDeclarations: [string, any][] = [
       [`a`,           new BindingIdentifier('a')],

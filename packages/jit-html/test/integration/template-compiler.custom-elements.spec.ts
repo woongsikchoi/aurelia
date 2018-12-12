@@ -1,12 +1,12 @@
 import { expect } from "chai";
 import { tearDown, createCustomElement, setupAndStart, TestConfiguration, cleanup } from "./prepare";
-import { customElement, bindable, Aurelia, Binding, SetterObserver, PropertyAccessor, ElementPropertyAccessor, Observer } from '../../../runtime/src/index';;
+import { customElement, bindable, Aurelia, Binding, SetterObserver, PropertyAccessor, ElementPropertyAccessor, Observer } from '../../../runtime-html/src/index';;
 import { DI } from "@aurelia/kernel";
 import { BasicConfiguration } from "../../src";
 import { h } from "./util";
-import { InterpolationBinding } from "../../../runtime/src/binding/interpolation-binding";
-import { ILifecycle } from '../../../runtime/src/index';
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { InterpolationBinding } from "../../../runtime-html/src/binding/interpolation-binding";
+import { ILifecycle } from '../../../runtime-html/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 // TemplateCompiler - custom element integration
 describe('template-compiler.custom-elements', () => {

@@ -2,8 +2,8 @@ import { expect } from 'chai';
 import { tearDown, setupAndStart, cleanup, defineCustomElement } from './prepare';
 import { baseSuite } from './template-compiler.base';
 import { IContainer, Constructable } from '../../../kernel/src/index';;
-import { Aurelia, ICustomElementType, ILifecycle } from '../../../runtime/src/index';
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { Aurelia, ICustomElementType, ILifecycle } from '../../../runtime-html/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 const spec = 'template-compiler.if-else';
 

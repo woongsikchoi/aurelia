@@ -1,7 +1,7 @@
 
 import { BasicConfiguration } from "../../src";
 import { expect } from "chai";
-import { valueConverter, customElement, bindable, CustomElementResource, IObserverLocator, Aurelia, Lifecycle, ILifecycle, INode, IElement } from "../../../runtime/src/index";
+import { valueConverter, customElement, bindable, CustomElementResource, IObserverLocator, Aurelia, Lifecycle, ILifecycle, INode, IElement } from "../../../runtime-html/src/index";
 import { IContainer, DI, Constructable, PLATFORM } from "../../../kernel/src/index";
 
 export function cleanup(): void {

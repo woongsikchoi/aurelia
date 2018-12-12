@@ -1,8 +1,8 @@
-import { customElement, bindable, CustomElementResource, DOM, Aurelia, Lifecycle } from '../../../runtime/src/index';;
+import { customElement, bindable, CustomElementResource, DOM, Aurelia, Lifecycle } from '../../../runtime-html/src/index';;
 import { setupAndStart, tearDown, setup } from "./prepare";
 import { expect } from "chai";
 import { BasicConfiguration } from '../../src';
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 
 const spec = 'template-compiler.repeater-custom-element';

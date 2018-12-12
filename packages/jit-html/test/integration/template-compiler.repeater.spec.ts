@@ -2,8 +2,8 @@ import { PLATFORM, IContainer } from "@aurelia/kernel";
 import { expect } from "chai";
 import { tearDown, defineCustomElement } from "./prepare";
 import { baseSuite } from "./template-compiler.base";
-import { Aurelia, ILifecycle } from '../../../runtime/src/index';
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { Aurelia, ILifecycle } from '../../../runtime-html/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 const spec = 'template-compiler.repeater';
 

@@ -1,7 +1,7 @@
 import { setupAndStart, tearDown, cleanup } from './prepare';
 import { expect } from 'chai';
-import { Lifecycle } from '../../../runtime/src/index';
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { Lifecycle } from '../../../runtime-html/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 // TemplateCompiler - Binding Resources integration
 describe('template-compiler.binding-resources', () => {

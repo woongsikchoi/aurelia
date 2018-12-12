@@ -3,12 +3,12 @@ import { defineCustomElement } from "./prepare";
 import {
   bindable, Aurelia, ViewFactory, View, IView,
   RenderPlan, IViewFactory, CompiledTemplate, IRenderingEngine, DOM, ILifecycle
-} from "../../../runtime/src/index";
+} from "../../../runtime-html/src/index";
 import { baseSuite } from "./template-compiler.base";
 import { IContainer } from "@aurelia/kernel";
 import { trimFull, createElement } from "./util";
-import { Lifecycle } from '../../../runtime/src/index';
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { Lifecycle } from '../../../runtime-html/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 const spec = 'template-compiler.compose';
 

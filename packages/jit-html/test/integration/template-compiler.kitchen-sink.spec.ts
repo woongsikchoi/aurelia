@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import { tearDown, setupAndStart, cleanup, defineCustomElement } from './prepare';
 import { baseSuite } from './template-compiler.base';
 import { IContainer, Constructable, DI, IRegistry, Tracer } from '../../../kernel/src/index';;
-import { Aurelia, ICustomElementType, ILifecycle, CustomElementResource, DOM, ISignaler, Lifecycle, TextNodeSequence } from '../../../runtime/src/index';
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { Aurelia, ICustomElementType, ILifecycle, CustomElementResource, DOM, ISignaler, Lifecycle, TextNodeSequence } from '../../../runtime-html/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 import { BasicConfiguration } from '../../src/index';
-import { INodeSequence, NodeSequenceFactory } from '@aurelia/runtime';
+import { INodeSequence, NodeSequenceFactory } from '@aurelia/runtime-html';
 import { enableTracing, SymbolTraceWriter, disableTracing } from '../unit/util';
 import { stringifyTemplateDefinition } from '../../src/debugging';
 

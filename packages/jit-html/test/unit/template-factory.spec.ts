@@ -1,6 +1,6 @@
 import {
   DOM
-} from '../../../runtime/src/index';
+} from '../../../runtime-html/src/index';
 import {
   TemplateFactory
 } from '../../src/index';

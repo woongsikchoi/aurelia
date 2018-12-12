@@ -1,6 +1,6 @@
 import { expect } from "chai";
 import { DI } from "../../../kernel/src/index";
-import { CustomElementResource, DOM, Aurelia, BindingMode } from "../../../runtime/src/index";
+import { CustomElementResource, DOM, Aurelia, BindingMode } from "../../../runtime-html/src/index";
 import { BasicConfiguration } from "../../src/index";
 
 describe("generated.template-compiler.static.if-else.repeat", function () {

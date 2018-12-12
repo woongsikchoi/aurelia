@@ -17,7 +17,7 @@ import {
   ToViewBindingInstruction,
   TriggerBindingInstruction,
   TwoWayBindingInstruction
-} from '@aurelia/runtime';
+} from '@aurelia/runtime-html';
 import { BindingSymbol, PlainAttributeSymbol, SymbolFlags } from './template-binder';
 
 export interface IBindingCommand {

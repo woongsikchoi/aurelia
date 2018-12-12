@@ -1,5 +1,5 @@
 import { TestSuite } from "../../../../scripts/test-suite";
-import { IObserverLocator, DOM, Aurelia, ILifecycle } from '../../../runtime/src/index';;
+import { IObserverLocator, DOM, Aurelia, ILifecycle } from '../../../runtime-html/src/index';;
 import { DI } from "@aurelia/kernel";
 import { BasicConfiguration } from "../../src";
 import { TestConfiguration } from "./prepare";

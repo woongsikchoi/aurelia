@@ -10,7 +10,7 @@ import {
 } from '../../../kernel/src/index';
 import {
   stringifyLifecycleFlags, IHTMLElement, isTargetedInstruction, TargetedInstructionType
-} from '../../../runtime/src/index';
+} from '../../../runtime-html/src/index';
 import { NodeSymbol, AttributeSymbol, ISymbol } from '../../src/index';
 
 

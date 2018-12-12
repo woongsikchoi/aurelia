@@ -1,11 +1,11 @@
 import { expect } from "chai";
 import { defineCustomElement, createCustomElement, TestConfiguration } from "./prepare";
-import { ILifecycle, bindable, Aurelia, ICustomElementType, DOM, IObserverLocator, IHTMLElement, IHTMLTemplateElement } from '../../../runtime/src/index';
+import { ILifecycle, bindable, Aurelia, ICustomElementType, DOM, IObserverLocator, IHTMLElement, IHTMLTemplateElement } from '../../../runtime-html/src/index';
 import { baseSuite } from "./template-compiler.base";
 import { IContainer, Constructable, DI } from "@aurelia/kernel";
 import { trimFull } from "./util";
 import { BasicConfiguration } from "../../src";
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 const spec = 'template-compiler.deep-bindables';
 

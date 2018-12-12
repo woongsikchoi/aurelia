@@ -19,7 +19,7 @@ import {
   TwoWayBindingBehavior,
   UpdateTriggerBindingBehavior,
   With
-} from '@aurelia/runtime';
+} from '@aurelia/runtime-html';
 import {
   DotSeparatedAttributePattern,
   RefAttributePattern

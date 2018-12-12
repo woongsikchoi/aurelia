@@ -9,7 +9,7 @@ import {
   IsBinary, IsBindingBehavior, IsConditional,
   IsExpressionOrStatement, IsLeftHandSide, IsPrimary, IsUnary,
   IsValueConverter, ObjectBindingPattern, ObjectLiteral, PrimitiveLiteral, TaggedTemplate, Template, Unary, UnaryOperator, ValueConverter
-} from '@aurelia/runtime';
+} from '@aurelia/runtime-html';
 import { Access, Char, Precedence, Token, unescapeCode } from './common';
 
 export const ParserRegistration: IRegistry = {

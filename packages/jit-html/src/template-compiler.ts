@@ -22,7 +22,7 @@ import {
   TargetedInstruction,
   TemplateDefinition,
   TextBindingInstruction
-} from '@aurelia/runtime';
+} from '@aurelia/runtime-html';
 import { IAttributeParser } from './attribute-parser';
 import { ResourceModel } from './resource-model';
 import {
@@ -51,7 +51,7 @@ const buildNotRequired: IBuildInstruction = Object.freeze({
 });
 
 /**
- * Default (runtime-agnostic) implementation for `ITemplateCompiler`.
+ * Default (runtime-html-agnostic) implementation for `ITemplateCompiler`.
  *
  * @internal
  */

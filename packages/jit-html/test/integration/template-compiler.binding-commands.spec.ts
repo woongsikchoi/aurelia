@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { tearDown, setupAndStart, cleanup } from "./prepare";
 import { spy } from "sinon";
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 // TemplateCompiler - Binding Commands integration
 describe('template-compiler.binding-commands', () => {

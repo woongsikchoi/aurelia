@@ -1,10 +1,10 @@
 import { expect } from "chai";
 import { defineCustomElement } from "./prepare";
-import { ILifecycle, bindable, Aurelia } from '../../../runtime/src/index';;
+import { ILifecycle, bindable, Aurelia } from '../../../runtime-html/src/index';;
 import { baseSuite } from "./template-compiler.base";
 import { IContainer } from "@aurelia/kernel";
 import { trimFull } from "./util";
-import { LifecycleFlags } from '../../../runtime/src/index';
+import { LifecycleFlags } from '../../../runtime-html/src/index';
 
 const spec = 'template-compiler.repeater-if-else';
 

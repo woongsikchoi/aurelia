@@ -1,5 +1,5 @@
 import { DI } from '@aurelia/kernel';
-import { DOM, IElement, IHTMLTemplateElement, INode } from '@aurelia/runtime';
+import { DOM, IElement, IHTMLTemplateElement, INode } from '@aurelia/runtime-html';
 
 /**
  * Utility that creates a `HTMLTemplateElement` out of string markup or an existing DOM node.
@@ -34,7 +34,7 @@ export const ITemplateFactory = DI.createInterface<ITemplateFactory>()
   .withDefault(x => x.singleton(TemplateFactory));
 
 /**
- * Default implementation for `ITemplateFactory` for use in an HTML based runtime.
+ * Default implementation for `ITemplateFactory` for use in an HTML based runtime-html.
  *
  * @internal
  */

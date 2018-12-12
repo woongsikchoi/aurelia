@@ -1,4 +1,4 @@
-import { IHTMLElement, IHTMLTemplateElement, INode, ITemplateDefinition, NodeType, TargetedInstruction, TargetedInstructionType } from '@aurelia/runtime';
+import { IHTMLElement, IHTMLTemplateElement, INode, ITemplateDefinition, NodeType, TargetedInstruction, TargetedInstructionType } from '@aurelia/runtime-html';
 
 export function stringifyDOM(node: INode, depth: number): string {
   const indent = ' '.repeat(depth);

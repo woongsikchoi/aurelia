@@ -24,7 +24,7 @@ import {
   BindingIdentifier,
   IExpression,
   PrimitiveLiteral
-} from '../../../runtime/src/index';
+} from '../../../runtime-html/src/index';
 import {
   TemplateCompiler,
   BasicConfiguration,

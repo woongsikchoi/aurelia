@@ -1,6 +1,6 @@
 import { TestBuilder as Test, DefinitionBuilder as D, InstructionBuilder as I } from './test-builder';
 
-describe('runtime', () => {
+describe('runtime-html', () => {
   it('1', () => {
     const appState = { show: true };
     const definition =

@@ -82,7 +82,7 @@ import {
   ICustomElement,
   BindingType
 
-} from '../../../runtime/src/index';
+} from '../../../runtime-html/src/index';
 import { IIndexable, DI, Container, IContainer, Constructable, Class } from '../../../kernel/src/index';
 import { BasicConfiguration, parseCore } from '../../../jit/src/index';
 import { eachCartesianJoin } from '../unit/util';

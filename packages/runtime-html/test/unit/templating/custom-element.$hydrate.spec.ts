@@ -30,7 +30,7 @@ describe('@customElement', () => {
     eachCartesianJoin([hooksSpecs],
       (hooksSpec) => {
 
-      it(`sets properties, applies runtime behavior and ${hooksSpec.expectation} if ${hooksSpec.description}`, () => {
+      it(`sets properties, applies runtime-html behavior and ${hooksSpec.expectation} if ${hooksSpec.description}`, () => {
         // Arrange
         const { Type, sut } = createCustomElement('foo');
 

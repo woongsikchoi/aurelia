@@ -17,15 +17,25 @@ async function createBundle(): Promise<void> {
       case 'kernel':
         return 0;
       case 'runtime':
-        return 1;
+        return 10;
+      case 'runtime-html':
+        return 11;
       case 'debug':
+        return 20;
       case 'jit':
-      case 'plugin-requirejs':
+        return 30;
+      case 'jit-html':
+        return 31;
       case 'plugin-svg':
+        return 40;
       case 'router':
-        return 2;
+        return 70;
+      case 'plugin-parcel':
+      case 'plugin-requirejs':
+      case 'plugin-webpack':
+        return 80;
       case 'aot':
-        return 3;
+        return 90;
     }
   });
   const count = packages.length;

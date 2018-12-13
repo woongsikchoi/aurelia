@@ -1,7 +1,6 @@
 import {
   RenderingEngine,
   CompiledTemplate,
-  RuntimeCompilationResources,
   View,
   ViewFactory,
   IRenderContext,
@@ -12,7 +11,7 @@ import {
   ValueConverterResource
 } from '../../../src/index';
 import { expect } from 'chai';
-import { Container } from '../../../../kernel/src';
+import { Container, RuntimeCompilationResources } from '../../../../kernel/src';
 import { BindingCommandResource } from '../../../../jit/src';
 
 
@@ -28,7 +27,7 @@ describe('RuntimeCompilationResources', () => {
 
   it('does not register while finding resource', () => {
     const container = new Container();
-    const resources = new RuntimeCompilationResources((container as any) as ExposedContext);
+    const resources = new RuntimeCompilationResources(container as any);
 
     [
       CustomElementResource,

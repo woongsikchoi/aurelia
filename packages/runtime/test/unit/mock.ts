@@ -1,4 +1,4 @@
-import { PLATFORM, IContainer, IDisposable, ImmutableArray, Immutable, Writable } from '../../../kernel/src/index';
+import { PLATFORM, IContainer, IDisposable, ImmutableArray, Immutable, Writable } from'@aurelia/kernel';
 import {
   INodeSequence,
   ITemplate,

@@ -1,12 +1,23 @@
-import { DI, inject, Reporter } from '@aurelia/kernel';
+import { inject, Reporter } from '@aurelia/kernel';
 import { DOM } from '../dom';
 import { IElement, IHTMLElement } from '../dom.interfaces';
-import { ILifecycle } from '../lifecycle';
 import {
-  AccessorOrObserver, CollectionKind, CollectionObserver, IBindingContext,
-  IBindingTargetAccessor, IBindingTargetObserver, ICollectionObserver,
-  IObservable,  IObservedArray, IObservedMap, IObservedSet, IOverrideContext
-} from '../observation';
+  AccessorOrObserver,
+  CollectionKind,
+  CollectionObserver,
+  IBindingContext,
+  IBindingTargetAccessor,
+  IBindingTargetObserver,
+  ICollectionObserver,
+  ILifecycle,
+  IObjectObservationAdapter,
+  IObservable,
+  IObservedArray,
+  IObservedMap,
+  IObservedSet,
+  IObserverLocator,
+  IOverrideContext
+} from '../interfaces';
 import { getArrayObserver } from './array-observer';
 import { createComputedObserver } from './computed-observer';
 import { IDirtyChecker } from './dirty-checker';
@@ -16,25 +27,17 @@ import { getMapObserver } from './map-observer';
 import { PrimitiveObserver, SetterObserver } from './property-observation';
 import { getSetObserver } from './set-observer';
 import { ISVGAnalyzer } from './svg-analyzer';
-import { ClassAttributeAccessor, DataAttributeAccessor, ElementPropertyAccessor, PropertyAccessor, StyleAttributeAccessor, XLinkAttributeAccessor } from './target-accessors';
+import {
+  ClassAttributeAccessor,
+  DataAttributeAccessor,
+  ElementPropertyAccessor,
+  PropertyAccessor,
+  StyleAttributeAccessor,
+  XLinkAttributeAccessor
+} from './target-accessors';
 
 const toStringTag = Object.prototype.toString;
 
-export interface IObjectObservationAdapter {
-  getObserver(object: IObservable, propertyName: string, descriptor: PropertyDescriptor): IBindingTargetObserver;
-}
-
-export interface IObserverLocator {
-  getObserver(obj: IObservable, propertyName: string): AccessorOrObserver;
-  getAccessor(obj: IObservable, propertyName: string): IBindingTargetAccessor;
-  addAdapter(adapter: IObjectObservationAdapter): void;
-  getArrayObserver(observedArray: unknown[]): ICollectionObserver<CollectionKind.array>;
-  getMapObserver(observedMap: Map<unknown, unknown>): ICollectionObserver<CollectionKind.map>;
-  getSetObserver(observedSet: Set<unknown>): ICollectionObserver<CollectionKind.set>;
-}
-
-export const IObserverLocator = DI.createInterface<IObserverLocator>()
-  .withDefault(x => x.singleton(ObserverLocator));
 
 function getPropertyDescriptor(subject: object, name: string): PropertyDescriptor {
   let pd = Object.getOwnPropertyDescriptor(subject, name);

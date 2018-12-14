@@ -1,11 +1,8 @@
 import { IDisposable, IIndexable, IServiceLocator, Tracer } from '@aurelia/kernel';
 import { IEvent, INode } from '../dom.interfaces';
-import { IBindScope, State } from '../lifecycle';
-import { IScope, LifecycleFlags } from '../observation';
+import { DelegationStrategy, IBinding, IBindScope, IConnectableBinding, IScope, LifecycleFlags, State } from '../interfaces';
 import { hasBind, hasUnbind, IsBindingBehavior } from './ast';
-import { IBinding } from './binding';
-import { IConnectableBinding } from './connectable';
-import { DelegationStrategy, IEventManager } from './event-manager';
+import { IEventManager } from './event-manager';
 
 const slice = Array.prototype.slice;
 

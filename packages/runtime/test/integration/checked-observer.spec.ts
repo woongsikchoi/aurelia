@@ -7,12 +7,13 @@ import {
   IBindingTargetObserver,
   IPropertySubscriber,
   enableArrayObservation,
-  Lifecycle
+  Lifecycle,
+  BasicConfiguration
 } from '../../src/index';
 import { createElement, _ } from '../unit/util';
 import { expect } from 'chai';
 import { spy, SinonSpy } from 'sinon';
-import { DI } from '../../../kernel/src/index';
+import { DI } from'@aurelia/kernel';
 
 type ObservedInputElement = HTMLInputElement & {
   $observers: Record<string, IBindingTargetObserver>;
@@ -31,7 +32,7 @@ describe('CheckedObserver', () => {
 
   describe('setValue() - primitive - type="checkbox"', () => {
     function setup(hasSubscriber: boolean) {
-      const container = DI.createContainer();
+      const container = BasicConfiguration.createContainer();
       const lifecycle = container.get(ILifecycle) as Lifecycle;
       const observerLocator = <IObserverLocator>container.get(IObserverLocator);
 
@@ -100,7 +101,7 @@ describe('CheckedObserver', () => {
 
   describe('handleEvent() - primitive - type="checkbox"', () => {
     function setup() {
-      const container = DI.createContainer();
+      const container = BasicConfiguration.createContainer();
       const observerLocator = <IObserverLocator>container.get(IObserverLocator);
 
       const el = <ObservedInputElement>createElement(`<input type="checkbox"/>`);
@@ -152,7 +153,7 @@ describe('CheckedObserver', () => {
 
   describe('setValue() - primitive - type="radio"', () => {
     function setup(hasSubscriber: boolean) {
-      const container = DI.createContainer();
+      const container = BasicConfiguration.createContainer();
       const lifecycle = container.get(ILifecycle) as Lifecycle;
       const observerLocator = <IObserverLocator>container.get(IObserverLocator);
       const elA = <ObservedInputElement>createElement(`<input name="foo" type="radio" value="A"/>`);
@@ -247,7 +248,7 @@ describe('CheckedObserver', () => {
 
   describe('handleEvent() - primitive - type="radio"', () => {
     function setup() {
-      const container = DI.createContainer();
+      const container = BasicConfiguration.createContainer();
       const lifecycle = container.get(ILifecycle) as Lifecycle;
       const observerLocator = <IObserverLocator>container.get(IObserverLocator);
       const elA = <ObservedInputElement>createElement(`<input name="foo" type="radio" value="A"/>`);
@@ -324,7 +325,7 @@ describe('CheckedObserver', () => {
 
   describe('setValue() - array - type="checkbox"', () => {
     function setup(hasSubscriber: boolean, value: any, prop: string) {
-      const container = DI.createContainer();
+      const container = BasicConfiguration.createContainer();
       const lifecycle = container.get(ILifecycle) as Lifecycle;
       const observerLocator = <IObserverLocator>container.get(IObserverLocator);
 
@@ -398,7 +399,7 @@ describe('CheckedObserver', () => {
 
   describe('mutate collection - array - type="checkbox"', () => {
     function setup(hasSubscriber: boolean, value: any, prop: string) {
-      const container = DI.createContainer();
+      const container = BasicConfiguration.createContainer();
       const lifecycle = container.get(ILifecycle) as Lifecycle;
       const observerLocator = <IObserverLocator>container.get(IObserverLocator);
 
@@ -463,7 +464,7 @@ describe('CheckedObserver', () => {
 
   describe('handleEvent() - array - type="checkbox"', () => {
     function setup(value: any, prop: string) {
-      const container = DI.createContainer();
+      const container = BasicConfiguration.createContainer();
       const observerLocator = <IObserverLocator>container.get(IObserverLocator);
 
       const el = <ObservedInputElement>createElement(`<input type="checkbox"/>`);
@@ -527,7 +528,7 @@ describe('CheckedObserver', () => {
 
   describe('SelectValueObserver.setValue() - array - type="checkbox"', () => {
     function setup(hasSubscriber: boolean, value: any, prop: string) {
-      const container = DI.createContainer();
+      const container = BasicConfiguration.createContainer();
       const lifecycle = container.get(ILifecycle) as Lifecycle;
       const observerLocator = <IObserverLocator>container.get(IObserverLocator);
 

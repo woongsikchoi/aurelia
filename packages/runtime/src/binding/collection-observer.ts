@@ -1,8 +1,16 @@
 import { Tracer } from '@aurelia/kernel';
 import {
-  Collection, CollectionKind, CollectionObserver, IBindingTargetObserver,
-  ICollectionObserver, IndexMap, IPatch, IPropertySubscriber, LifecycleFlags, MutationKind
-} from '../observation';
+  Collection,
+  CollectionKind,
+  CollectionObserver,
+  IBindingTargetObserver,
+  ICollectionObserver,
+  IndexMap,
+  IPatch,
+  IPropertySubscriber,
+  LifecycleFlags,
+  MutationKind
+} from '../interfaces';
 import { batchedSubscriberCollection, subscriberCollection } from './subscriber-collection';
 import { targetObserver } from './target-observer';
 

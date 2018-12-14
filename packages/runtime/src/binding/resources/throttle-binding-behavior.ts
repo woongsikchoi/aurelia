@@ -1,8 +1,7 @@
 import { IRegistry, IWindow } from '@aurelia/kernel';
-import { IScope, LifecycleFlags } from '../../observation';
-import { Binding, IBinding } from '../binding';
+import { BindingMode, IBinding, IScope, LifecycleFlags } from '../../interfaces';
+import { Binding } from '../binding';
 import { bindingBehavior } from '../binding-behavior';
-import { BindingMode } from '../binding-mode';
 
 // defaults to nodejs setTimeout/clearTimeout type otherwise
 declare var setTimeout: IWindow['setTimeout'];

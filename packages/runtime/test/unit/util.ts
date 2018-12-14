@@ -1,5 +1,5 @@
 import { spy } from 'sinon';
-import { IContainer } from '../../../kernel/src/index';
+import { IContainer } from'@aurelia/kernel';
 import {
   IView, BindingMode, DOM, ForOfStatement, BindingIdentifier, CustomElementResource,
   ICustomElement, ITemplateDefinition, TargetedInstructionType, IExpressionParser,

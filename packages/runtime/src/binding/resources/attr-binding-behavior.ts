@@ -1,7 +1,6 @@
 import { IRegistry } from '@aurelia/kernel';
 import { IElement } from '../../dom.interfaces';
-import { ILifecycle } from '../../lifecycle';
-import { IScope, LifecycleFlags } from '../../observation';
+import { ILifecycle, IScope, LifecycleFlags } from '../../interfaces';
 import { Binding } from '../binding';
 import { bindingBehavior } from '../binding-behavior';
 import { DataAttributeAccessor } from '../target-accessors';

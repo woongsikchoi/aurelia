@@ -1,6 +1,18 @@
-import { DataAttributeAccessor, AttrBindingBehavior, IExpression, IObserverLocator, Binding, LifecycleFlags, IScope, BindingMode, DOM, IsBindingBehavior } from '../../src/index';
+import {
+  DataAttributeAccessor,
+  AttrBindingBehavior,
+  IExpression,
+  IObserverLocator,
+  Binding,
+  LifecycleFlags,
+  IScope,
+  BindingMode,
+  DOM,
+  IsBindingBehavior,
+  BasicConfiguration
+} from '../../src/index';
 import { expect } from 'chai';
-import { IContainer, DI } from '../../../kernel/src/index';
+import { IContainer } from '@aurelia/kernel';
 
 describe('AttrBindingBehavior', () => {
   let sourceExpression: IsBindingBehavior;
@@ -18,7 +30,7 @@ describe('AttrBindingBehavior', () => {
     target = DOM.createElement('div');
     targetProperty = 'foo';
     sut = new AttrBindingBehavior();
-    container = DI.createContainer();
+    container = BasicConfiguration.createContainer();
     binding = new Binding(sourceExpression, target, targetProperty, mode, observerLocator, <any>container);
     sut.bind(flags, scope, binding);
   });

@@ -7,11 +7,12 @@ import {
   IBindingTargetObserver,
   IPropertySubscriber,
   Lifecycle,
+  BasicConfiguration,
 } from '../../src/index';
 import { createElement, _ } from '../unit/util';
 import { expect } from 'chai';
 import { spy, SinonSpy } from 'sinon';
-import { DI } from '../../../kernel/src/index';
+import { DI } from'@aurelia/kernel';
 
 describe('ValueAttributeObserver', () => {
   const eventDefaults = { bubbles: true };
@@ -34,7 +35,7 @@ describe('ValueAttributeObserver', () => {
     ]) {
     describe(`setValue() - type="${inputType}"`, () => {
       function setup(hasSubscriber: boolean) {
-        const container = DI.createContainer();
+        const container = BasicConfiguration.createContainer();
         const lifecycle = container.get(ILifecycle) as Lifecycle;
         const observerLocator = container.get(IObserverLocator);
 
@@ -103,7 +104,7 @@ describe('ValueAttributeObserver', () => {
 
     describe(`handleEvent() - type="${inputType}"`, () => {
       function setup() {
-        const container = DI.createContainer();
+        const container = BasicConfiguration.createContainer();
         const observerLocator = <IObserverLocator>container.get(IObserverLocator);
 
         const el = <HTMLInputElement>createElement(`<input type="${inputType}"/>`);

@@ -1,7 +1,7 @@
-import { IExpression, IObserverLocator, Binding, LifecycleFlags, IScope, BindingMode, SignalBindingBehavior, ISignaler, IsBindingBehavior } from '../../src/index';
+import { IExpression, IObserverLocator, Binding, LifecycleFlags, IScope, BindingMode, SignalBindingBehavior, ISignaler, IsBindingBehavior, BasicConfiguration } from '../../src/index';
 import { spy } from 'sinon';
 import { expect } from 'chai';
-import { IContainer, DI } from '../../../kernel/src/index';
+import { IContainer } from '@aurelia/kernel';
 
 describe('SignalBindingBehavior', () => {
   let sourceExpression: IsBindingBehavior;
@@ -9,7 +9,7 @@ describe('SignalBindingBehavior', () => {
   let targetProperty: string;
   let mode: BindingMode;
   let observerLocator: IObserverLocator;
-  let container: IContainer = DI.createContainer();
+  let container: IContainer = BasicConfiguration.createContainer();
   let sut: SignalBindingBehavior;
   let binding: Binding;
   let flags: LifecycleFlags;

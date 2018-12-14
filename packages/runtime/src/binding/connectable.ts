@@ -1,7 +1,5 @@
 import { Class, IIndexable, Tracer } from '@aurelia/kernel';
-import { IBindingTargetObserver, IPropertySubscriber, LifecycleFlags } from '../observation';
-import { IBinding } from './binding';
-import { IObserverLocator } from './observer-locator';
+import { IBindingTargetObserver, IConnectableBinding, IPartialConnectableBinding } from '../interfaces';
 
 // TODO: add connect-queue (or something similar) back in when everything else is working, to improve startup time
 
@@ -21,22 +19,6 @@ function ensureEnoughSlotNames(currentSlot: number): void {
   }
 }
 ensureEnoughSlotNames(-1);
-
-export interface IPartialConnectableBinding extends IBinding, IPropertySubscriber {
-  observerLocator: IObserverLocator;
-}
-
-export interface IConnectableBinding extends IPartialConnectableBinding {
-  $nextConnect?: IConnectableBinding;
-  $nextPatch?: IConnectableBinding;
-  observerSlots: number;
-  version: number;
-  observeProperty(obj: IIndexable, propertyName: string): void;
-  addObserver(observer: IBindingTargetObserver): void;
-  unobserve(all?: boolean): void;
-  connect(flags: LifecycleFlags): void;
-  patch(flags: LifecycleFlags): void;
-}
 
 /** @internal */
 export function addObserver(this: IConnectableBinding, observer: IBindingTargetObserver): void {

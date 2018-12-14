@@ -1,7 +1,6 @@
 import { Tracer } from '@aurelia/kernel';
 import { DOM } from '../dom';
-import { ILifecycle } from '../lifecycle';
-import { IBindingTargetAccessor, LifecycleFlags, MutationKind } from '../observation';
+import { IBindingTargetAccessor, ILifecycle, LifecycleFlags, MutationKind } from '../interfaces';
 import { subscriberCollection } from './subscriber-collection';
 
 const slice = Array.prototype.slice;

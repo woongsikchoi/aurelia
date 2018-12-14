@@ -1,6 +1,16 @@
-import { IExpression, IObserverLocator, Binding, LifecycleFlags, IScope, BindingMode, ThrottleBindingBehavior, IsBindingBehavior } from '../../src/index';
+import {
+  IExpression,
+  IObserverLocator,
+  Binding,
+  LifecycleFlags,
+  IScope,
+  BindingMode,
+  ThrottleBindingBehavior,
+  IsBindingBehavior,
+  BasicConfiguration
+} from '../../src/index';
 import { expect } from 'chai';
-import { IContainer, DI } from '../../../kernel/src/index';
+import { IContainer } from '@aurelia/kernel';
 
 describe('ThrottleBindingBehavior', () => {
   let sourceExpression: IsBindingBehavior;
@@ -8,7 +18,7 @@ describe('ThrottleBindingBehavior', () => {
   let targetProperty: string;
   let mode: BindingMode;
   let observerLocator: IObserverLocator;
-  let container: IContainer = DI.createContainer();
+  let container: IContainer = BasicConfiguration.createContainer();
   let sut: ThrottleBindingBehavior;
   let binding: Binding;
   let flags: LifecycleFlags;

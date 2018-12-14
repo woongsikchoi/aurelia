@@ -11,10 +11,17 @@ import {
   ResourceDescription,
   Writable
 } from '@aurelia/kernel';
-import { BindingMode } from '../binding/binding-mode';
 import { customAttributeKey, customAttributeName, IAttributeDefinition } from '../definitions';
-import { Hooks, IAttach, IBindScope, ILifecycleHooks, ILifecycleUnbindAfterDetach, IRenderable } from '../lifecycle';
-import { IChangeTracker } from '../observation';
+import {
+  BindingMode,
+  Hooks,
+  IAttach,
+  IBindScope,
+  IChangeTracker,
+  ILifecycleHooks,
+  ILifecycleUnbindAfterDetach
+} from '../interfaces';
+import { IRenderable } from '../lifecycle';
 import { $attachAttribute, $cacheAttribute, $detachAttribute } from './lifecycle-attach';
 import { $bindAttribute, $unbindAttribute } from './lifecycle-bind';
 import { $hydrateAttribute, IRenderingEngine } from './lifecycle-render';

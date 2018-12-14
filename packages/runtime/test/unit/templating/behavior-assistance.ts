@@ -19,7 +19,8 @@ import {
   View,
   ILifecycle,
   Lifecycle,
-  HtmlRenderer
+  HtmlRenderer,
+  BasicConfiguration
 } from "../../../src/index";
 import { DI, Registration, IContainer, Constructable, IRegistry } from '../../../../kernel/src/index';
 import { ViewFactoryFake } from "./fakes/view-factory-fake";
@@ -48,9 +49,12 @@ export function hydrateCustomAttribute<T extends Constructable>(
   options: IAttributeTestOptions = {}
 ) : ICustomAttributeCreation<T> {
   const AttributeType: ICustomAttributeType = Type as any;
-  const container = options.container || DI.createContainer();
+  const container = options.container || BasicConfiguration.createContainer();
   if (options.lifecycle) {
     Registration.instance(ILifecycle, options.lifecycle).register(container, ILifecycle);
+  }
+  if (options.container) {
+    container.register(BasicConfiguration);
   }
   const lifecycle = container.get(ILifecycle) as Lifecycle;
 
@@ -91,8 +95,13 @@ export function hydrateCustomElement<T>(
   options: IAttributeTestOptions = {}
 ) {
   const ElementType: ICustomElementType = Type as any;
-  const container = options.container || DI.createContainer();
-  container.register(HtmlRenderer);
+  let container: IContainer;
+  if (options.container) {
+    container = options.container;
+    container.register(<any>BasicConfiguration);
+  } else {
+    container = <any>BasicConfiguration.createContainer();
+  }
   if (options.lifecycle) {
     Registration.instance(ILifecycle, options.lifecycle).register(container, ILifecycle);
   }

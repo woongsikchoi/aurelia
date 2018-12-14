@@ -1,5 +1,5 @@
 import { inject, IRegistry, Reporter } from '@aurelia/kernel';
-import { IScope, LifecycleFlags } from '../../observation';
+import { IScope, LifecycleFlags } from '../../interfaces';
 import { Binding } from '../binding';
 import { bindingBehavior } from '../binding-behavior';
 import { ISignaler } from '../signaler';

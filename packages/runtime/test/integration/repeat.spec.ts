@@ -14,13 +14,13 @@ import {
   Lifecycle,
   IView,
   State,
-  ILifecycle
+  ILifecycle,
+  BasicConfiguration
 } from '../../src/index';
 import { expect } from 'chai';
 import { MockTextNodeTemplate } from '../unit/mock';
 import { eachCartesianJoinFactory } from '../../../../scripts/test-lib';
 import { createScopeForTest } from '../unit/binding/shared';
-import { DI } from '../../../kernel/src/index';
 
 
 const expressions = {
@@ -45,7 +45,7 @@ function verifyViewBindingContexts(views: IView[], items: any[]): void {
 
 
 function setup<T extends ObservedCollection>() {
-  const container = DI.createContainer();
+  const container = BasicConfiguration.createContainer();
   const lifecycle = container.get(ILifecycle) as Lifecycle;
   const host = document.createElement('div');
   const location = document.createComment('au-loc');

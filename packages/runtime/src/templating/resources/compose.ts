@@ -6,8 +6,8 @@ import {
   TargetedInstruction,
   TemplateDefinition
 } from '../../definitions';
+import { LifecycleFlags } from '../../interfaces';
 import { CompositionCoordinator, IRenderable, IView, IViewFactory } from '../../lifecycle';
-import { LifecycleFlags } from '../../observation';
 import { bindable } from '../bindable';
 import { createElement, RenderPlan } from '../create-element';
 import { customElement, ICustomElement } from '../custom-element';

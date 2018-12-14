@@ -42,7 +42,8 @@ import {
   LetBindingInstruction,
   LetElementInstruction,
   HtmlRenderer,
-  IRenderer
+  IRenderer,
+  BasicConfiguration
 } from '../../../src/index';
 import { expect } from 'chai';
 import { _, createElement } from '../util';
@@ -54,8 +55,7 @@ import { spy, SinonSpy } from 'sinon';
 
 describe('Renderer', () => {
   function setup() {
-    const container = DI.createContainer();
-    container.register(<any>HtmlRenderer)
+    const container = BasicConfiguration.createContainer();
     ParserRegistration.register(<any>container);
     const renderable = <IRenderable>{ $bindablesHead: null, $bindableTail: null, $attachableHead: null, $attachableTail: null };
     container.register(Registration.instance(IRenderable, renderable));

@@ -1,4 +1,4 @@
-import { Aurelia, State } from '../../src/index';
+import { Aurelia, State, BasicConfiguration } from '../../src/index';
 import { expect } from 'chai';
 import { spy } from 'sinon';
 
@@ -6,7 +6,7 @@ describe('Aurelia', () => {
   let sut: Aurelia;
 
   beforeEach(() => {
-    sut = new Aurelia();
+    sut = new Aurelia(BasicConfiguration.createContainer());
   });
 
   it('should initialize container directly', () => {

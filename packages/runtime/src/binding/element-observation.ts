@@ -1,12 +1,18 @@
 import { DOM } from '../dom';
 import { IHTMLInputElement, IHTMLOptionElement, IHTMLSelectElement, IMutationObserver, INode } from '../dom.interfaces';
-import { ILifecycle } from '../lifecycle';
 import {
-  CollectionKind, IBatchedCollectionSubscriber, IBindingTargetObserver, ICollectionObserver,
-  IndexMap, IPropertySubscriber, LifecycleFlags, ObserversLookup
-} from '../observation';
+  CollectionKind,
+  IBatchedCollectionSubscriber,
+  IBindingTargetObserver,
+  ICollectionObserver,
+  ILifecycle,
+  IndexMap,
+  IObserverLocator,
+  IPropertySubscriber,
+  LifecycleFlags,
+  ObserversLookup
+} from '../interfaces';
 import { IEventSubscriber } from './event-manager';
-import { IObserverLocator } from './observer-locator';
 import { SetterObserver } from './property-observation';
 import { targetObserver } from './target-observer';
 

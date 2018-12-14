@@ -1,5 +1,5 @@
 import { spy } from 'sinon';
-import { PLATFORM, Writable, DI } from '../../../kernel/src/index';
+import { PLATFORM, Writable, DI } from'@aurelia/kernel';
 import {
   noViewTemplate,
   ITemplate,
@@ -23,7 +23,8 @@ import {
   State,
   ObserverLocator,
   NodeSequence,
-  INodeSequenceFactory
+  INodeSequenceFactory,
+  BasicConfiguration
 } from '../../src';
 import { expect } from 'chai';
 import { eachCartesianJoin, eachCartesianJoinFactory } from '../../../../scripts/test-lib';
@@ -164,20 +165,20 @@ describe(`View`, () => {
     [
       [
         () => {
-          const container = DI.createContainer();
+          const container = BasicConfiguration.createContainer();
           const lifecycle = container.get(ILifecycle) as Lifecycle;
           const factory = new ViewFactory('foo', noViewTemplate, lifecycle);
           factory.setCacheSize('*', true);
           return [` noViewTemplate, viewFactory(cache=true )`, lifecycle, <View>factory.create(), noViewTemplate, factory, true];
         },
         () => {
-          const container = DI.createContainer();
+          const container = BasicConfiguration.createContainer();
           const lifecycle = container.get(ILifecycle) as Lifecycle;
           const factory = new ViewFactory('foo', noViewTemplate, lifecycle);
           return [` noViewTemplate, viewFactory(cache=false)`, lifecycle, <View>factory.create(), noViewTemplate, factory, false];
         },
         () => {
-          const container = DI.createContainer();
+          const container = BasicConfiguration.createContainer();
           const lifecycle = container.get(ILifecycle) as Lifecycle;
           const template = new MockTextNodeTemplate(expressions.text, new ObserverLocator(lifecycle, null, null, null), container) as any;
           const factory = new ViewFactory('foo', <any>template, lifecycle);
@@ -185,14 +186,14 @@ describe(`View`, () => {
           return [`textNodeTemplate, viewFactory(cache=true )`, lifecycle, <View>factory.create(), template, factory, true];
         },
         () => {
-          const container = DI.createContainer();
+          const container = BasicConfiguration.createContainer();
           const lifecycle = container.get(ILifecycle) as Lifecycle;
           const template = new MockTextNodeTemplate(expressions.text, new ObserverLocator(lifecycle, null, null, null), container) as any;
           const factory = new ViewFactory('foo', <any>template, lifecycle);
           return [`textNodeTemplate, viewFactory(cache=false)`, lifecycle, <View>factory.create(), template, factory, false];
         },
         () => {
-          const container = DI.createContainer();
+          const container = BasicConfiguration.createContainer();
           const lifecycle = container.get(ILifecycle) as Lifecycle;
           const template = new MockTextNodeTemplate(expressions.text, new ObserverLocator(lifecycle, null, null, null), container) as any;
           const factory = new ViewFactory('foo', <any>template, lifecycle);
@@ -204,7 +205,7 @@ describe(`View`, () => {
           return [`textNodeTemplate, viewFactory(cache=true )`, lifecycle, sut, template, factory, true];
         },
         () => {
-          const container = DI.createContainer();
+          const container = BasicConfiguration.createContainer();
           const lifecycle = container.get(ILifecycle) as Lifecycle;
           const template = new MockTextNodeTemplate(expressions.text, new ObserverLocator(lifecycle, null, null, null), container) as any;
           const factory = new ViewFactory('foo', <any>template, lifecycle);

@@ -1,4 +1,4 @@
-import { ObserverLocator, ILifecycle, IEventManager, IDirtyChecker, ISVGAnalyzer, DataAttributeAccessor, PrimitiveObserver, ClassAttributeAccessor, StyleAttributeAccessor, SelectValueObserver, ValueAttributeObserver, CheckedObserver, XLinkAttributeAccessor, DirtyCheckProperty, CustomSetterObserver, SetterObserver, CollectionLengthObserver, PropertyAccessor, ElementPropertyAccessor } from '../../../src/index';
+import { ObserverLocator, ILifecycle, IEventManager, IDirtyChecker, ISVGAnalyzer, DataAttributeAccessor, PrimitiveObserver, ClassAttributeAccessor, StyleAttributeAccessor, SelectValueObserver, ValueAttributeObserver, CheckedObserver, XLinkAttributeAccessor, DirtyCheckProperty, CustomSetterObserver, SetterObserver, CollectionLengthObserver, PropertyAccessor, ElementPropertyAccessor, BasicConfiguration } from '../../../src/index';
 import { expect } from 'chai';
 import { DI } from '@aurelia/kernel';
 import { _, createElement } from '../util';
@@ -7,7 +7,7 @@ import { Reporter } from '@aurelia/kernel';
 
 describe('ObserverLocator', () => {
   function setup() {
-    const container = DI.createContainer();
+    const container = BasicConfiguration.createContainer();
     const lifecycle = container.get(ILifecycle);
     const em = container.get(IEventManager);
     const dc = container.get(IDirtyChecker);

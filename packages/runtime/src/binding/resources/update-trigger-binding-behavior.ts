@@ -1,11 +1,9 @@
 import { inject, IRegistry, Reporter } from '@aurelia/kernel';
-import { IScope, LifecycleFlags } from '../../observation';
+import { BindingMode, IObserverLocator, IScope, LifecycleFlags } from '../../interfaces';
 import { Binding } from '../binding';
 import { bindingBehavior } from '../binding-behavior';
-import { BindingMode } from '../binding-mode';
 import { CheckedObserver, SelectValueObserver, ValueAttributeObserver } from '../element-observation';
 import { EventSubscriber, IEventSubscriber } from '../event-manager';
-import { IObserverLocator } from '../observer-locator';
 
 export type UpdateTriggerableObserver = ((ValueAttributeObserver & Required<ValueAttributeObserver>) | (CheckedObserver & Required<CheckedObserver>) | (SelectValueObserver & Required<SelectValueObserver>)) & {
   originalHandler?: IEventSubscriber;

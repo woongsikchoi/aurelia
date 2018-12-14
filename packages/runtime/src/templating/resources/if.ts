@@ -1,7 +1,7 @@
 import { inject, IRegistry } from '@aurelia/kernel';
 import { IRenderLocation } from '../../dom.interfaces';
+import { LifecycleFlags } from '../../interfaces';
 import { CompositionCoordinator, IView, IViewFactory } from '../../lifecycle';
-import { LifecycleFlags } from '../../observation';
 import { bindable } from '../bindable';
 import { ICustomAttribute, templateController } from '../custom-attribute';
 

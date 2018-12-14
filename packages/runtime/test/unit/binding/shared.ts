@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import { spy } from 'sinon';
-import { BindingContext, IScope, IObserverLocator, Scope, OverrideContext } from '../../../src/index';
+import { BindingContext, IScope, IObserverLocator, Scope, OverrideContext, BasicConfiguration } from '../../../src/index';
 import { DI, IContainer } from '../../../../kernel/src/index';
 
 export const checkDelay = 20;
 
-export function createObserverLocator(container: IContainer = DI.createContainer()): IObserverLocator {
+export function createObserverLocator(container: IContainer = BasicConfiguration.createContainer()): IObserverLocator {
   return container.get(IObserverLocator);
 }
 

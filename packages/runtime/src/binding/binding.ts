@@ -1,20 +1,22 @@
 import { IServiceLocator, Reporter, Tracer } from '@aurelia/kernel';
-import { INode } from '../dom.interfaces';
-import { IBindScope, ILifecycle, State } from '../lifecycle';
-import { AccessorOrObserver, IBindingTargetObserver, IObservable, IScope, LifecycleFlags } from '../observation';
+import {
+  AccessorOrObserver,
+  BindingMode,
+  IBindingTarget,
+  IBindingTargetObserver,
+  IBindScope,
+  IConnectableBinding,
+  ILifecycle,
+  IObserverLocator,
+  IPartialConnectableBinding,
+  IScope,
+  LifecycleFlags,
+  State
+} from '../interfaces';
 import { ExpressionKind, ForOfStatement, hasBind, hasUnbind, IsBindingBehavior } from './ast';
-import { BindingMode } from './binding-mode';
-import { connectable, IConnectableBinding, IPartialConnectableBinding } from './connectable';
-import { IObserverLocator } from './observer-locator';
+import { connectable } from './connectable';
 
 const slice = Array.prototype.slice;
-
-export interface IBinding extends IBindScope {
-  readonly locator: IServiceLocator;
-  readonly $scope: IScope;
-}
-
-export type IBindingTarget = INode | IObservable; // Can be: Node | CSSStyleDeclaration | IObservable;
 
 // BindingMode is not a const enum (and therefore not inlined), so assigning them to a variable to save a member accessor is a minor perf tweak
 const { oneTime, toView, fromView } = BindingMode;

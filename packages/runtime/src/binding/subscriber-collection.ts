@@ -1,8 +1,15 @@
 import {
-  IBatchedCollectionSubscriber, IBatchedSubscriberCollection, IndexMap, IPropertySubscriber,
-  ISubscriberCollection, LifecycleFlags, MutationKind, MutationKindToBatchedSubscriber,
-  MutationKindToSubscriber, SubscriberFlags
-} from '../observation';
+  IBatchedCollectionSubscriber,
+  IBatchedSubscriberCollection,
+  IndexMap,
+  IPropertySubscriber,
+  ISubscriberCollection,
+  LifecycleFlags,
+  MutationKind,
+  MutationKindToBatchedSubscriber,
+  MutationKindToSubscriber,
+  SubscriberFlags
+} from '../interfaces';
 
 export function subscriberCollection<T extends MutationKind>(mutationKind: T): ClassDecorator {
   return function(target: Function): void {

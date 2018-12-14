@@ -1,6 +1,19 @@
-import { ToViewBindingBehavior, FromViewBindingBehavior, TwoWayBindingBehavior, IObserverLocator, OneTimeBindingBehavior, Binding, LifecycleFlags, IExpression, BindingMode, IScope, IsBindingBehavior } from '../../src/index';
+import {
+  ToViewBindingBehavior,
+  FromViewBindingBehavior,
+  TwoWayBindingBehavior,
+  IObserverLocator,
+  OneTimeBindingBehavior,
+  Binding,
+  LifecycleFlags,
+  IExpression,
+  BindingMode,
+  IScope,
+  IsBindingBehavior,
+  BasicConfiguration
+} from '../../src/index';
 import { expect } from 'chai';
-import { IContainer, DI } from '../../../kernel/src/index';
+import { IContainer } from '@aurelia/kernel';
 
 const tests = [
   { Behavior: OneTimeBindingBehavior, mode: BindingMode.oneTime },
@@ -14,7 +27,7 @@ describe('BindingModeBehavior', () => {
   let target: any;
   let targetProperty: string;
   let observerLocator: IObserverLocator;
-  let container: IContainer = DI.createContainer();
+  let container: IContainer = BasicConfiguration.createContainer();
   let sut: OneTimeBindingBehavior;
   let binding: Binding;
   let flags: LifecycleFlags;

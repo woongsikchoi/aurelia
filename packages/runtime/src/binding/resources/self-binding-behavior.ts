@@ -1,6 +1,6 @@
 import { IRegistry, Reporter } from '@aurelia/kernel';
 import { IEvent, INode } from '../../dom.interfaces';
-import { IScope, LifecycleFlags } from '../../observation';
+import { IScope, LifecycleFlags } from '../../interfaces';
 import { bindingBehavior } from '../binding-behavior';
 import { findOriginalEventTarget } from '../event-manager';
 import { Listener } from '../listener';

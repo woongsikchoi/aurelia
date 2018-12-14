@@ -25,9 +25,10 @@ import {
   IView,
   Interpolation,
   State,
-  HtmlRenderer
+  HtmlRenderer,
+  BasicConfiguration
 } from '../../src/index';
-import { IContainer, DI } from '../../../kernel/src/index';
+import { IContainer } from '@aurelia/kernel';
 import { createAureliaRepeaterConfig, createRepeater } from '../unit/util';
 import { expect } from 'chai';
 import { eachCartesianJoinFactory } from '../../../../scripts/test-lib';
@@ -59,7 +60,7 @@ function setup<T extends ObservedCollection>() {
   const host = document.createElement('div');
   const location = document.createComment('au-loc');
   host.appendChild(location);
-  const container = DI.createContainer();
+  const container = BasicConfiguration.createContainer();
   const lifecycle = container.get(ILifecycle) as Lifecycle;
 
   const observerLocator = new ObserverLocator(lifecycle, null, null, null);
@@ -241,7 +242,7 @@ describe('ArrayRepeater - render html', () => {
   let component: ICustomElement;
 
   beforeEach(() => {
-    container = DI.createContainer();
+    container = BasicConfiguration.createContainer();
     lifecycle = container.get(ILifecycle);
     au = new Aurelia(<any>container);
     host = DOM.createElement('app');

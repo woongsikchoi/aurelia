@@ -1,8 +1,7 @@
 import { IIndexable } from '@aurelia/kernel';
 import { DOM } from '../dom';
 import { IElement, IHTMLElement, INode } from '../dom.interfaces';
-import { ILifecycle } from '../lifecycle';
-import { IBindingTargetAccessor } from '../observation';
+import { IBindingTargetAccessor, ILifecycle } from '../interfaces';
 import { targetObserver } from './target-observer';
 
 const xlinkAttributeNS = 'http://www.w3.org/1999/xlink';

@@ -1,4 +1,4 @@
-import { valueConverter, ValueConverterResource } from '../../../src/index';
+import { valueConverter, ValueConverterResource, BasicConfiguration } from '../../../src/index';
 import { IContainer, DI } from '../../../../kernel/src/index';
 import { expect } from 'chai';
 
@@ -6,7 +6,7 @@ describe(`@valueConverter('foo')`, () => {
   let container: IContainer;
 
   beforeEach(() => {
-    container = DI.createContainer();
+    container = BasicConfiguration.createContainer();
   });
 
   @valueConverter('foo')

@@ -5,8 +5,17 @@ import { BindingContext, Scope } from '../../binding/binding-context';
 import { getCollectionObserver } from '../../binding/observer-locator';
 import { SetterObserver } from '../../binding/property-observation';
 import { IRenderLocation } from '../../dom.interfaces';
-import { IBindScope, IRenderable, IView, IViewFactory, State } from '../../lifecycle';
-import { CollectionObserver, IBatchedCollectionSubscriber, IObservedArray, IScope, LifecycleFlags, ObservedCollection } from '../../observation';
+import {
+  CollectionObserver,
+  IBatchedCollectionSubscriber,
+  IBindScope,
+  IObservedArray,
+  IScope,
+  LifecycleFlags,
+  ObservedCollection,
+  State
+} from '../../interfaces';
+import { IRenderable, IView, IViewFactory } from '../../lifecycle';
 import { bindable } from '../bindable';
 import { ICustomAttribute, templateController } from '../custom-attribute';
 

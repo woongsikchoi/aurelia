@@ -18,7 +18,8 @@ import {
   Lifecycle,
   ILifecycle,
   State,
-  CompositionCoordinator
+  CompositionCoordinator,
+  BasicConfiguration
 } from '../../../../src/index';
 import { MockTextNodeTemplate } from '../../mock';
 import { eachCartesianJoinFactory } from '../../../../../../scripts/test-lib';
@@ -82,7 +83,7 @@ describe('The "if" template controller', () => {
   });
 
   it("queues the rendering of an else view when one is linked and its value is false", () => {
-    const container = DI.createContainer();
+    const container = BasicConfiguration.createContainer();
     const { attribute: ifAttr, location } = hydrateCustomAttribute(If, { container });
     const { attribute: elseAttr, lifecycle } = hydrateCustomAttribute(Else, { container });
 
@@ -178,7 +179,7 @@ export class MockIfTextNodeTemplate {
 
 
 function setup() {
-  const container = DI.createContainer();
+  const container = BasicConfiguration.createContainer();
   const lifecycle = container.get(ILifecycle) as Lifecycle;
   const host = document.createElement('div');
   const ifLoc = document.createComment('au-loc');

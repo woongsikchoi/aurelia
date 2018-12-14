@@ -1,6 +1,7 @@
 import { DI, IDisposable } from '@aurelia/kernel';
 import { DOM } from '../dom';
 import { IEventListenerOrEventListenerObject, IEventTarget, IManagedEvent, INode } from '../dom.interfaces';
+import { DelegationStrategy } from '../interfaces';
 
 //Note: path and deepPath are designed to handle v0 and v1 shadow dom specs respectively
 /** @internal */
@@ -133,12 +134,6 @@ export class TriggerSubscription {
 export interface  IEventTargetWithLookups extends INode {
   delegatedCallbacks?: Record<string, IEventListenerOrEventListenerObject>;
   capturedCallbacks?: Record<string, IEventListenerOrEventListenerObject>;
-}
-
-export enum DelegationStrategy {
-  none = 0,
-  capturing = 1,
-  bubbling = 2
 }
 
 export interface IElementConfiguration {

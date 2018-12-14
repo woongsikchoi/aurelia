@@ -8,8 +8,7 @@ import {
   Registration,
   Writable
 } from '@aurelia/kernel';
-import { IScope, LifecycleFlags } from '../observation';
-import { IBinding } from './binding';
+import { IBinding, IScope, LifecycleFlags } from '../interfaces';
 
 export interface IBindingBehavior {
   bind(flags: LifecycleFlags, scope: IScope, binding: IBinding): void;

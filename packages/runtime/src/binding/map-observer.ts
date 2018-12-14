@@ -1,5 +1,4 @@
-import { ILifecycle } from '../lifecycle';
-import { CollectionKind, ICollectionObserver, IObservedMap, LifecycleFlags } from '../observation';
+import { CollectionKind, ICollectionObserver, ILifecycle, IObservedMap, LifecycleFlags } from '../interfaces';
 import { nativePush, nativeSplice } from './array-observer';
 import { collectionObserver } from './collection-observer';
 

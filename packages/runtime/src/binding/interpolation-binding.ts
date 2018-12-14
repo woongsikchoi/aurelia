@@ -1,11 +1,20 @@
+
 import { IServiceLocator } from '@aurelia/kernel';
-import { IBindScope, State } from '../lifecycle';
-import { IBindingTargetAccessor, IScope, LifecycleFlags } from '../observation';
+import {
+  BindingMode,
+  IBinding,
+  IBindingTarget,
+  IBindingTargetAccessor,
+  IBindScope,
+  IConnectableBinding,
+  IObserverLocator,
+  IPartialConnectableBinding,
+  IScope,
+  LifecycleFlags,
+  State
+} from '../interfaces';
 import { IExpression, Interpolation } from './ast';
-import { IBinding, IBindingTarget } from './binding';
-import { BindingMode } from './binding-mode';
-import { connectable, IConnectableBinding, IPartialConnectableBinding } from './connectable';
-import { IObserverLocator } from './observer-locator';
+import { connectable } from './connectable';
 
 const { toView, oneTime } = BindingMode;
 

@@ -1,7 +1,7 @@
 import { BindingContext, Scope } from '../../src/binding/binding-context';
 import { spy, SinonSpy } from 'sinon';
-import { AccessMember, PrimitiveLiteral, IExpression, ExpressionKind, IBindingTargetObserver, Binding, IBindingTarget, IObserverLocator, AccessScope, BindingMode, LifecycleFlags, IScope, ILifecycle, SubscriberFlags, IPropertySubscriber, IPropertyChangeNotifier, SetterObserver, ObjectLiteral, PropertyAccessor, BindingType, State, Lifecycle } from '../../src/index';
-import { DI } from '../../../kernel/src/index';
+import { AccessMember, PrimitiveLiteral, IExpression, ExpressionKind, IBindingTargetObserver, Binding, IBindingTarget, IObserverLocator, AccessScope, BindingMode, LifecycleFlags, IScope, ILifecycle, SubscriberFlags, IPropertySubscriber, IPropertyChangeNotifier, SetterObserver, ObjectLiteral, PropertyAccessor, BindingType, State, Lifecycle, BasicConfiguration } from '../../src/index';
+import { DI } from'@aurelia/kernel';
 import { createScopeForTest } from '../unit/binding/shared';
 import { expect } from 'chai';
 import { _, massSpy, massReset, massRestore, ensureNotCalled, eachCartesianJoinFactory, verifyEqual } from '../unit/util';
@@ -30,7 +30,7 @@ describe('Binding', () => {
   let dummyMode: BindingMode;
 
   function setup(sourceExpression: any = dummySourceExpression, target: any = dummyTarget, targetProperty: string = dummyTargetProperty, mode: BindingMode = dummyMode) {
-    const container = DI.createContainer();
+    const container = BasicConfiguration.createContainer();
     const lifecycle = container.get(ILifecycle) as Lifecycle;
     const observerLocator = container.get(IObserverLocator);
     const sut = new Binding(sourceExpression, target, targetProperty, mode, observerLocator, <any>container);
@@ -79,7 +79,7 @@ describe('Binding', () => {
     }
     rawExpr += args.join('+');
     const expr = parseCore(rawExpr, 0);
-    const container = DI.createContainer();
+    const container = BasicConfiguration.createContainer();
     const observerLocator = container.get(IObserverLocator);
     const lifecycle = container.get(ILifecycle) as Lifecycle;
     const target = {val: 0};

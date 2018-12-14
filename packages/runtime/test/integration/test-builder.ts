@@ -18,7 +18,6 @@ import {
   IHydrateElementInstruction,
   IHydrateAttributeInstruction,
   IHydrateTemplateController,
-  ILetElementInstruction,
   ILetBindingInstruction,
 
   ITemplateDefinition,
@@ -80,11 +79,19 @@ import {
   IRenderingEngine,
   ILifecycle,
   ICustomElement,
-  BindingType
+  BindingType,
 
+  BasicConfiguration,
+  IHTMLTemplateElement
 } from '../../../runtime/src/index';
-import { IIndexable, DI, Container, IContainer, Constructable, Class } from '../../../kernel/src/index';
-import { BasicConfiguration, parseCore } from '../../../jit/src/index';
+import {
+  IIndexable,
+  DI,
+  IContainer,
+  Constructable,
+  Class
+} from'@aurelia/kernel';
+import {parseCore } from '../../../jit/src/index';
 import { eachCartesianJoin } from '../unit/util';
 import { expect } from 'chai';
 
@@ -93,7 +100,7 @@ export type InstructionCb = (builder: InstructionBuilder) => InstructionBuilder;
 export type DefinitionCb = (builder: DefinitionBuilder) => DefinitionBuilder;
 
 export class TemplateBuilder {
-  private template: IElement;
+  private template: IHTMLTemplateElement;
 
   constructor() {
     this.template = DOM.createElement('template');
@@ -372,7 +379,7 @@ export class TestBuilder<T extends Constructable> {
   private Type: T;
 
   constructor(Type: T) {
-    this.container = DI.createContainer();
+    this.container = BasicConfiguration.createContainer();
     this.container.register(<any>BasicConfiguration, <any>Type);
     this.Type = Type;
   }

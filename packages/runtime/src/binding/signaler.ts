@@ -1,5 +1,5 @@
 import { DI, Immutable } from '@aurelia/kernel';
-import { IPropertySubscriber, LifecycleFlags } from '../observation';
+import { IPropertySubscriber, LifecycleFlags } from '../interfaces';
 
 type Signal = string;
 

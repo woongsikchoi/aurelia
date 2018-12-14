@@ -21,11 +21,29 @@ import {
 import { Scope } from '../binding/binding-context';
 import { Observer } from '../binding/property-observation';
 import { subscriberCollection } from '../binding/subscriber-collection';
-import { BindableDefinitions, buildTemplateDefinition, customElementBehavior, IHydrateElementInstruction, ITargetedInstruction, ITemplateDefinition, TemplateDefinition, TemplatePartDefinitions } from '../definitions';
+import {
+  BindableDefinitions,
+  buildTemplateDefinition,
+  customElementBehavior,
+  IHydrateElementInstruction,
+  ITargetedInstruction,
+  ITemplateDefinition,
+  TemplateDefinition,
+  TemplatePartDefinitions
+} from '../definitions';
 import { DOM, INodeSequenceFactory, NodeSequence, NodeSequenceFactory } from '../dom';
 import { IElement, INode, INodeSequence, IRenderLocation } from '../dom.interfaces';
-import { Hooks, ILifecycle, IRenderable, IRenderContext, IViewFactory } from '../lifecycle';
-import { IAccessor, IPropertySubscriber, ISubscribable, ISubscriberCollection, LifecycleFlags, MutationKind } from '../observation';
+import {
+  Hooks,
+  IAccessor,
+  ILifecycle,
+  IPropertySubscriber,
+  ISubscribable,
+  ISubscriberCollection,
+  LifecycleFlags,
+  MutationKind
+} from '../interfaces';
+import { IRenderable, IRenderContext, IViewFactory } from '../lifecycle';
 import { ICustomAttribute, ICustomAttributeType } from './custom-attribute';
 import { ICustomElement, ICustomElementType } from './custom-element';
 import { ViewFactory } from './view';

@@ -11,7 +11,6 @@ export { ArrayObserver, enableArrayObservation, disableArrayObservation, nativeP
 export * from './binding/ast';
 export * from './binding/binding-behavior';
 export * from './binding/binding-context';
-export * from './binding/binding-mode';
 export * from './binding/binding';
 export * from './binding/call';
 export * from './binding/collection-observer';
@@ -51,10 +50,11 @@ export * from './templating/lifecycle-render';
 export * from './templating/view';
 
 export * from './aurelia';
+export * from './configuration';
 export * from './definitions';
 export * from './dom.interfaces';
 export * from './dom';
 export * from './html-renderer';
 export * from './instructions';
+export * from './interfaces';
 export * from './lifecycle';
-export * from './observation';

@@ -1,5 +1,5 @@
-import { IExpression, IObserverLocator, Binding, LifecycleFlags, IScope, BindingMode, SelfBindingBehavior, IsBindingBehavior } from '../../src/index';
-import { IContainer, DI } from '../../../kernel/src/index';
+import { IExpression, IObserverLocator, Binding, LifecycleFlags, IScope, BindingMode, SelfBindingBehavior, IsBindingBehavior, BasicConfiguration } from '../../src/index';
+import { IContainer } from '@aurelia/kernel';
 import { expect } from 'chai';
 
 describe('SelfBindingBehavior', () => {
@@ -8,7 +8,7 @@ describe('SelfBindingBehavior', () => {
   let targetProperty: string;
   let mode: BindingMode;
   let observerLocator: IObserverLocator;
-  let container: IContainer = DI.createContainer();
+  let container: IContainer = BasicConfiguration.createContainer();
   let sut: SelfBindingBehavior;
   let binding: Binding;
   let flags: LifecycleFlags;

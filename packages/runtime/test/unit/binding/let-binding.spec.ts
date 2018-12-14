@@ -16,7 +16,7 @@
 //   let dummyMode: BindingMode;
 
 //   beforeEach(() => {
-//     container = DI.createContainer();
+//     container = BasicConfiguration.createContainer();
 //     observerLocator = container.get(IObserverLocator);
 //     dummySourceExpression = <any>{};
 //     dummyTarget = <any>{ foo: 'bar' };

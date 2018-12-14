@@ -8,13 +8,28 @@ import {
   Reporter,
   Writable
 } from '@aurelia/kernel';
-import { buildTemplateDefinition, customElementBehavior, customElementKey, customElementName, ITemplateDefinition, TemplateDefinition } from '../definitions';
+import {
+  buildTemplateDefinition,
+  customElementBehavior,
+  customElementKey,
+  customElementName,
+  ITemplateDefinition,
+  TemplateDefinition
+} from '../definitions';
 import { INode } from '../dom.interfaces';
-import { Hooks, IAttach, IBindScope, ILifecycleHooks, ILifecycleUnbindAfterDetach, IMountable, IRenderable } from '../lifecycle';
-import { IChangeTracker } from '../observation';
+import { Hooks, IAttach, IBindScope, IChangeTracker, ILifecycleHooks, ILifecycleUnbindAfterDetach, IMountable } from '../interfaces';
+import { IRenderable } from '../lifecycle';
 import { $attachElement, $cacheElement, $detachElement, $mountElement, $unmountElement } from './lifecycle-attach';
 import { $bindElement, $unbindElement } from './lifecycle-bind';
-import { $hydrateElement, defaultShadowOptions, ICustomElementHost, IElementHydrationOptions, IElementProjector, ILifecycleRender, IRenderingEngine } from './lifecycle-render';
+import {
+  $hydrateElement,
+  defaultShadowOptions,
+  ICustomElementHost,
+  IElementHydrationOptions,
+  IElementProjector,
+  ILifecycleRender,
+  IRenderingEngine
+} from './lifecycle-render';
 
 type CustomElementStaticProperties = Pick<TemplateDefinition, 'containerless' | 'shadowOptions' | 'bindables'>;
 

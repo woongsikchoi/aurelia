@@ -1,6 +1,6 @@
-import { ILifecycle } from '../lifecycle';
-import { CollectionKind, ICollectionObserver, IndexMap, IObservedArray, LifecycleFlags } from '../observation';
+import { CollectionKind, ICollectionObserver, ILifecycle, IndexMap, IObservedArray, LifecycleFlags } from '../interfaces';
 import { collectionObserver } from './collection-observer';
+
 const proto = Array.prototype;
 export const nativePush = proto.push; // TODO: probably want to make these internal again
 export const nativeUnshift = proto.unshift;

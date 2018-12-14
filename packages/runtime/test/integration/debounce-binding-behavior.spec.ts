@@ -1,6 +1,16 @@
-import { IExpression, IObserverLocator, Binding, LifecycleFlags, IScope, BindingMode, DebounceBindingBehavior, IsBindingBehavior } from '../../src/index';
+import {
+  IExpression,
+  IObserverLocator,
+  Binding,
+  LifecycleFlags,
+  IScope,
+  BindingMode,
+  DebounceBindingBehavior,
+  IsBindingBehavior,
+  BasicConfiguration
+} from '../../src/index';
 import { expect } from 'chai';
-import { IContainer, DI } from '../../../kernel/src/index';
+import { IContainer } from '@aurelia/kernel';
 
 describe('DebounceBindingBehavior', () => {
   let sourceExpression: IsBindingBehavior;
@@ -8,7 +18,7 @@ describe('DebounceBindingBehavior', () => {
   let targetProperty: string;
   let mode: BindingMode;
   let observerLocator: IObserverLocator;
-  let container: IContainer = DI.createContainer();
+  let container: IContainer = BasicConfiguration.createContainer();
   let sut: DebounceBindingBehavior;
   let binding: Binding;
   let flags: LifecycleFlags;

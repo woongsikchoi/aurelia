@@ -1,8 +1,8 @@
-import { IObserverLocator, ILifecycle, SelectValueObserver, LifecycleFlags, DOM } from '../../src/index';
+import { IObserverLocator, ILifecycle, SelectValueObserver, LifecycleFlags, DOM, BasicConfiguration } from '../../src/index';
 import { createElement, _, eachCartesianJoin, eachCartesianJoinFactory, h, verifyEqual } from '../unit/util';
 import { expect } from 'chai';
 import { spy, SinonSpy } from 'sinon';
-import { DI, Primitive } from '../../../kernel/src/index';
+import { DI, Primitive } from'@aurelia/kernel';
 
 const eventDefaults = { bubbles: true };
 
@@ -11,7 +11,7 @@ type Anything = any;
 // TODO: need many more tests here, this is just preliminary
 describe('SelectValueObserver', () => {
   function createFixture(initialValue: Anything = '', options = [], multiple = false) {
-    const container = DI.createContainer();
+    const container = BasicConfiguration.createContainer();
     const observerLocator = <IObserverLocator>container.get(IObserverLocator);
     const lifecycle = container.get(ILifecycle);
     const optionElements = options.map(o => `<option value="${o}">${o}</option>`).join('\n');
@@ -242,7 +242,7 @@ describe('SelectValueObserver', () => {
       type SelectValidChild = HTMLOptionElement | HTMLOptGroupElement;
 
       function createMutiSelectSut(initialValue: Anything[], options: SelectValidChild[]) {
-        const container = DI.createContainer();
+        const container = BasicConfiguration.createContainer();
         const observerLocator = <IObserverLocator>container.get(IObserverLocator);
         // const lifecycle = <ILifecycle>container.get(ILifecycle);
         const el = select(...options);

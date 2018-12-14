@@ -1,4 +1,4 @@
-import { bindingBehavior, BindingBehaviorResource } from "../../../src/index";
+import { bindingBehavior, BindingBehaviorResource, BasicConfiguration } from "../../../src/index";
 import { IContainer, DI } from "../../../../kernel/src/index";
 import { expect } from 'chai';
 
@@ -6,7 +6,7 @@ describe(`@bindingBehavior('foo')`, () => {
   let container: IContainer;
 
   beforeEach(() => {
-    container = DI.createContainer();
+    container = BasicConfiguration.createContainer();
   });
 
   @bindingBehavior('foo')

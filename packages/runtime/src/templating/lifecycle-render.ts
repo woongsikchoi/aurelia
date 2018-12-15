@@ -283,7 +283,7 @@ export class RenderingEngine implements IRenderingEngine {
         definition = compiler.compile(definition as ITemplateDefinition, new RuntimeCompilationResources(parentContext as ExposedContext), ViewCompileFlags.surrogate);
       }
 
-      return new CompiledTemplate(this, parentContext, definition);
+      return new CompiledTemplate(parentContext, definition);
     }
 
     return noViewTemplate;
@@ -580,11 +580,11 @@ export class CompiledTemplate implements ITemplate {
 
   private templateDefinition: TemplateDefinition;
 
-  constructor(renderingEngine: IRenderingEngine, parentRenderContext: IRenderContext, templateDefinition: TemplateDefinition) {
+  constructor(parentRenderContext: IRenderContext, templateDefinition: TemplateDefinition) {
     this.templateDefinition = templateDefinition;
 
     this.factory = NodeSequenceFactory.createFor(this.templateDefinition.template);
-    this.renderContext = createRenderContext(renderingEngine, parentRenderContext, this.templateDefinition.dependencies);
+    this.renderContext = createRenderContext(parentRenderContext, this.templateDefinition.dependencies);
   }
 
   public render(renderable: IRenderable, host?: INode, parts?: TemplatePartDefinitions): void {
@@ -607,12 +607,12 @@ export const noViewTemplate: ITemplate = {
 /** @internal */
 export type ExposedContext = IRenderContext & IDisposable & IContainer;
 
-export function createRenderContext(renderingEngine: IRenderingEngine, parentRenderContext: IRenderContext, dependencies: ImmutableArray<IRegistry>): IRenderContext {
+export function createRenderContext(parentRenderContext: IRenderContext, dependencies: ImmutableArray<IRegistry>): IRenderContext {
   const context = parentRenderContext.createChild() as ExposedContext;
   const renderableProvider = new InstanceProvider();
   const elementProvider = new InstanceProvider();
   const instructionProvider = new InstanceProvider<ITargetedInstruction>();
-  const factoryProvider = new ViewFactoryProvider(renderingEngine);
+  const factoryProvider = new ViewFactoryProvider();
   const renderLocationProvider = new InstanceProvider<IRenderLocation>();
   const renderer = context.get(IRenderer);
 
@@ -685,12 +685,7 @@ export class InstanceProvider<T> implements IResolver {
 /** @internal */
 export class ViewFactoryProvider implements IResolver {
   private factory: IViewFactory | null;
-  private renderingEngine: IRenderingEngine;
   private replacements: TemplatePartDefinitions;
-
-  constructor(renderingEngine: IRenderingEngine) {
-    this.renderingEngine = renderingEngine;
-  }
 
   public prepare(factory: IViewFactory, parts: TemplatePartDefinitions): void {
     this.factory = factory;
@@ -707,7 +702,8 @@ export class ViewFactoryProvider implements IResolver {
     }
     const found = this.replacements[factory.name];
     if (found) {
-      return this.renderingEngine.getViewFactory(found, requestor);
+      const renderingEngine = handler.get(IRenderingEngine);
+      return renderingEngine.getViewFactory(found, requestor);
     }
 
     return factory;

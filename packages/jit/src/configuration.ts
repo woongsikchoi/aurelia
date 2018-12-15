@@ -1,24 +1,8 @@
-import { IContainer, IRegistry, Registration } from '@aurelia/kernel';
+import { DI, IContainer, IRegistry, Registration } from '@aurelia/kernel';
 import {
-  AttrBindingBehavior,
-  Compose,
-  DebounceBindingBehavior,
-  Else,
-  FromViewBindingBehavior,
+  BasicConfiguration as RuntimeConfiguration,
   HtmlRenderer,
-  If,
-  ITemplateCompiler,
-  OneTimeBindingBehavior,
-  Repeat,
-  Replaceable,
-  SanitizeValueConverter,
-  SelfBindingBehavior,
-  SignalBindingBehavior,
-  ThrottleBindingBehavior,
-  ToViewBindingBehavior,
-  TwoWayBindingBehavior,
-  UpdateTriggerBindingBehavior,
-  With
+  ITemplateCompiler
 } from '@aurelia/runtime';
 import {
   DotSeparatedAttributePattern,
@@ -39,26 +23,6 @@ import {
 import { ParserRegistration } from './expression-parser';
 import { TemplateCompiler } from './template-compiler';
 
-export const GlobalResources: IRegistry[] = [
-  Compose,
-  If,
-  Else,
-  Repeat,
-  Replaceable,
-  With,
-  SanitizeValueConverter,
-  AttrBindingBehavior,
-  DebounceBindingBehavior,
-  OneTimeBindingBehavior,
-  ToViewBindingBehavior,
-  FromViewBindingBehavior,
-  SelfBindingBehavior,
-  SignalBindingBehavior,
-  ThrottleBindingBehavior,
-  TwoWayBindingBehavior,
-  UpdateTriggerBindingBehavior
-];
-
 export const DefaultBindingLanguage: IRegistry[] = [
   DefaultBindingCommand,
   OneTimeBindingCommand,
@@ -77,11 +41,16 @@ export const DefaultBindingLanguage: IRegistry[] = [
 export const BasicConfiguration = {
   register(container: IContainer): void {
     container.register(
+      RuntimeConfiguration,
       ParserRegistration,
       HtmlRenderer,
       Registration.singleton(ITemplateCompiler, TemplateCompiler),
-      ...GlobalResources,
       ...DefaultBindingLanguage
     );
+  },
+  createContainer(): IContainer {
+    const container = DI.createContainer();
+    container.register(BasicConfiguration);
+    return container;
   }
 };

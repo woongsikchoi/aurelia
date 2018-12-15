@@ -2,7 +2,7 @@ import { PLATFORM, Reporter, Tracer, Writable } from '@aurelia/kernel';
 import { Scope } from '../binding/binding-context';
 import { IElementHydrationOptions, ITemplate, TemplateDefinition } from '../definitions';
 import { DOM } from '../dom';
-import { IElement, INode, INodeSequence, IRenderLocation } from '../dom.interfaces';
+import { IElement, INode, INodeSequence, IRenderLocation, ITraversable } from '../dom.interfaces';
 import { Hooks } from '../interfaces';
 import { IRenderingEngine } from '../rendering-engine';
 import { ICustomAttribute, ICustomAttributeType } from './custom-attribute';
@@ -18,7 +18,7 @@ export interface IElementProjector {
   readonly host: ICustomElementHost;
   readonly children: ArrayLike<ICustomElementHost>;
 
-  provideEncapsulationSource(parentEncapsulationSource: ICustomElementHost): ICustomElementHost;
+  provideEncapsulationSource(parentEncapsulationSource: unknown): INode;
   project(nodes: INodeSequence): void;
   take(nodes: INodeSequence): void;
 
@@ -140,7 +140,7 @@ export class ShadowDOMProjector implements IElementProjector {
   }
 
   get children(): ArrayLike<INode> {
-    return this.host.childNodes;
+    return this.host.childNodes as ArrayLike<INode>;
   }
 
   public subscribeToChildrenChange(callback: () => void): void {
@@ -148,7 +148,7 @@ export class ShadowDOMProjector implements IElementProjector {
   }
 
   public provideEncapsulationSource(parentEncapsulationSource: INode): INode {
-    return this.shadowRoot;
+    return this.shadowRoot as INode;
   }
 
   public project(nodes: INodeSequence): void {
@@ -168,7 +168,7 @@ export class ShadowDOMProjector implements IElementProjector {
 export class ContainerlessProjector implements IElementProjector {
   public host: ICustomElementHost;
 
-  private childNodes: ArrayLike<INode>;
+  private childNodes: ArrayLike<ITraversable>;
 
   constructor($customElement: ICustomElement, host: ICustomElementHost) {
     if (host.childNodes.length) {
@@ -182,7 +182,7 @@ export class ContainerlessProjector implements IElementProjector {
   }
 
   get children(): ArrayLike<INode> {
-    return this.childNodes;
+    return this.childNodes as ArrayLike<INode>;
   }
 
   public subscribeToChildrenChange(callback: () => void): void {
@@ -229,7 +229,7 @@ export class HostProjector implements IElementProjector {
   }
 
   public provideEncapsulationSource(parentEncapsulationSource: INode): INode {
-    return parentEncapsulationSource || this.host;
+    return parentEncapsulationSource || (this.host as INode);
   }
 
   public project(nodes: INodeSequence): void {

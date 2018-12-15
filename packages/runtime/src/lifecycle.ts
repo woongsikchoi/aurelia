@@ -67,8 +67,8 @@ export const IRenderable = DI.createInterface<IRenderable>().noDefault();
 
 export interface IRenderContext extends IServiceLocator {
   createChild(): IRenderContext;
-  render(renderable: IRenderable, targets: ArrayLike<INode>, templateDefinition: TemplateDefinition, host?: INode, parts?: TemplatePartDefinitions): void;
-  beginComponentOperation(renderable: IRenderable, target: INode, instruction: Immutable<ITargetedInstruction>, factory?: IViewFactory, parts?: TemplatePartDefinitions, location?: IRenderLocation, locationIsContainer?: boolean): IDisposable;
+  render(renderable: IRenderable, targets: ArrayLike<unknown>, templateDefinition: TemplateDefinition, host?: INode, parts?: TemplatePartDefinitions): void;
+  beginComponentOperation(renderable: IRenderable, target: unknown, instruction: Immutable<ITargetedInstruction>, factory?: IViewFactory, parts?: TemplatePartDefinitions, location?: IRenderLocation, locationIsContainer?: boolean): IDisposable;
 }
 
 export interface IView extends IBindScope, IRenderable, IAttach, IMountable {

@@ -379,7 +379,7 @@ export class ChildrenObserver implements Partial<IChildrenObserver> {
 }
 
 /** @internal */
-export function findElements(nodes: ArrayLike<INode>): ICustomElement[] {
+export function findElements(nodes: ArrayLike<unknown>): ICustomElement[] {
   const components: ICustomElement[] = [];
 
   for (let i = 0, ii = nodes.length; i < ii; ++i) {

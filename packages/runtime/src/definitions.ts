@@ -22,8 +22,8 @@ export function customElementKey(name: string): string {
   return `${customElementName}:${name}`;
 }
 /** @internal */
-export function customElementBehavior(node: ICustomElementHost): ICustomElement | null {
-  return node.$customElement === undefined ? null : node.$customElement;
+export function customElementBehavior(node: unknown): ICustomElement | null {
+  return (node as ICustomElementHost).$customElement === undefined ? null : (node as ICustomElementHost).$customElement;
 }
 
 /** @internal */

@@ -29,13 +29,14 @@ import {
   IShadowRootInit,
   ISVGElement,
   IText,
+  ITraversable,
   NodeType
 } from './dom.interfaces';
 
 const slice = Array.prototype.slice;
 
-function isRenderLocation(node: INode): node is IRenderLocation {
-  return node.textContent === 'au-end';
+function isRenderLocation(node: unknown): node is IRenderLocation {
+  return (node as INode).textContent === 'au-end';
 }
 
 declare var document: IDocument;
@@ -73,8 +74,8 @@ export const DOM = {
   addEventListener(eventName: string, subscriber: IEventListenerOrEventListenerObject, publisher?: IEventTarget, options?: boolean | IAddEventListenerOptions): void {
     (publisher || document).addEventListener(eventName, subscriber, options);
   },
-  appendChild(parent: INode, child: INode): void {
-    parent.appendChild(child);
+  appendChild(parent: unknown, child: unknown): void {
+    (parent as INode).appendChild(child as INode);
   },
   attachShadow(host: IElement, options: IShadowRootInit): IDocumentFragment {
     return host.attachShadow(options);
@@ -82,11 +83,11 @@ export const DOM = {
   cloneNode<T extends INode = INode>(node: T, deep?: boolean): T {
     return node.cloneNode(deep !== false) as T; // use true unless the caller explicitly passes in false
   },
-  convertToRenderLocation(node: INode): IRenderLocation {
+  convertToRenderLocation(node: unknown): IRenderLocation {
     if (isRenderLocation(node)) {
       return node; // it's already a RenderLocation (converted by FragmentNodeSequence)
     }
-    if (node.parentNode === null) {
+    if ((node as ITraversable).parentNode === null) {
       throw Reporter.error(52);
     }
     const locationEnd = document.createComment('au-end') as IRenderLocation;
@@ -103,7 +104,7 @@ export const DOM = {
   createElement: ((name: string): IElement => {
     return document.createElement(name);
   }) as IDocument['createElement'],
-  createNodeObserver(target: INode, callback: IMutationCallback, options: IMutationObserverInit): IMutationObserver {
+  createNodeObserver(target: unknown, callback: IMutationCallback, options: IMutationObserverInit): IMutationObserver {
     const observer = new MutationObserver(callback);
     observer.observe(target, options);
     return observer;
@@ -117,8 +118,8 @@ export const DOM = {
   hasClass(node: IElement, className: string): boolean {
     return node.classList.contains(className);
   },
-  insertBefore(nodeToInsert: INode, referenceNode: INode): void {
-    referenceNode.parentNode.insertBefore(nodeToInsert, referenceNode);
+  insertBefore(nodeToInsert: unknown, referenceNode: unknown): void {
+    (referenceNode as INode).parentNode.insertBefore(nodeToInsert as INode, referenceNode as INode);
   },
   isMarker(node: INode): node is IElement {
     return node.nodeName === 'AU-M';
@@ -165,9 +166,9 @@ export const DOM = {
   removeEventListener(eventName: string, subscriber: IEventListenerOrEventListenerObject, publisher?: IEventTarget, options?: boolean | IEventListenerOptions): void {
     (publisher || document).removeEventListener(eventName, subscriber, options);
   },
-  replaceNode(newChild: INode, oldChild: INode): void {
-    if (oldChild.parentNode) {
-      oldChild.parentNode.replaceChild(newChild, oldChild);
+  replaceNode(newChild: unknown, oldChild: unknown): void {
+    if ((oldChild as INode).parentNode) {
+      (oldChild as INode).parentNode.replaceChild(newChild as INode, oldChild as INode);
     }
   },
   setAttribute(node: IElement, name: string, value: string): void {
@@ -289,7 +290,7 @@ export class FragmentNodeSequence implements INodeSequence {
 
   public insertBefore(refNode: IRenderLocation): void {
     // tslint:disable-next-line:no-any
-    refNode.parentNode.insertBefore(this.fragment, refNode);
+    DOM.insertBefore(this.fragment, refNode);
     // internally we could generally assume that this is an IRenderLocation,
     // but since this is also public API we still need to double check
     // (or horrible things might happen)
@@ -326,28 +327,26 @@ export class FragmentNodeSequence implements INodeSequence {
       // repeater with a single item) then simply remove everything in-between (but not
       // the comments themselves as they belong to the parent)
       const end = this.end;
-      let next: INode;
+      let next: ITraversable;
       let current = this.start.nextSibling;
       while (current !== end) {
         next = current.nextSibling;
-        // tslint:disable-next-line:no-any
-        fragment.appendChild(current);
+        DOM.appendChild(fragment, current);
         current = next;
       }
       this.start.$nodes = null;
       this.start = this.end = null;
     } else {
       // otherwise just remove from first to last child in the regular way
-      let current = this.firstChild;
+      let current = this.firstChild as ITraversable;
 
       if (current.parentNode !== fragment) {
         const end = this.lastChild;
-        let next: INode;
+        let next: ITraversable;
 
         while (current !== null) {
           next = current.nextSibling;
-          // tslint:disable-next-line:no-any
-          fragment.appendChild(current);
+          DOM.appendChild(fragment, current);
 
           if (current === end) {
             break;

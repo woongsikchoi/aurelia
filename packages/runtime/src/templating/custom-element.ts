@@ -53,12 +53,12 @@ export interface ICustomElement extends
 
   readonly $projector: IElementProjector;
   readonly $host: ICustomElementHost;
-  $hydrate(renderingEngine: IRenderingEngine, host: INode, options?: IElementHydrationOptions): void;
+  $hydrate(renderingEngine: IRenderingEngine, host: unknown, options?: IElementHydrationOptions): void;
 }
 
 export interface ICustomElementResource extends
   IResourceKind<ITemplateDefinition, ICustomElement, Class<ICustomElement> & CustomElementStaticProperties> {
-  behaviorFor(node: INode): ICustomElement | null;
+  behaviorFor(node: unknown): ICustomElement | null;
 }
 
 type CustomElementDecorator = <T extends Constructable>(target: T) => T & ICustomElementType;

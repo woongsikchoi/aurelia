@@ -65,16 +65,13 @@ export interface IChildNode extends INode {
   remove(): void;
 }
 
-export interface INodeLike {
-  readonly childNodes: ArrayLike<INode>;
-  readonly firstChild: INode | null;
-  readonly lastChild: INode | null;
+export interface INodeLike<TNode> {
+  readonly childNodes: ArrayLike<TNode>;
+  readonly firstChild: TNode | null;
+  readonly lastChild: TNode | null;
 }
 
-export interface INode extends INodeLike, IEventTarget {
-  readonly childNodes: ArrayLike<IChildNode>;
-  readonly firstChild: IChildNode | null;
-  readonly lastChild: IChildNode | null;
+export interface INode extends INodeLike<IChildNode>, IEventTarget {
   readonly nextSibling: INode | null;
   readonly nodeName: string;
   readonly nodeType: NodeType;
@@ -281,7 +278,7 @@ export interface IMutationCallback {
 
 export interface IMutationObserver {
   disconnect(): void;
-  observe(target: INode, options?: IMutationObserverInit): void;
+  observe(target: unknown, options?: IMutationObserverInit): void;
 }
 
 export interface IDocument extends INode, IDocumentOrShadowRoot, IParentNode {
@@ -308,35 +305,41 @@ export interface IManagedEvent extends IEvent {
 
 export const INode = DI.createInterface<INode>().noDefault();
 
+export interface ITraversable {
+  nextSibling: null | ITraversable;
+  parentNode: ITraversable;
+  childNodes: ArrayLike<ITraversable>;
+}
+
 export const IRenderLocation = DI.createInterface<IRenderLocation>().noDefault();
-export interface IRenderLocation extends INode {
+export interface IRenderLocation extends ITraversable {
   $start?: IRenderLocation;
-  $nodes?: INodeSequence | Readonly<{}>;
+  $nodes?: INodeSequence<unknown> | Readonly<{}>;
 }
 
 /**
  * Represents a DocumentFragment
  */
-export interface INodeSequence extends INodeLike {
+export interface INodeSequence<TNode = unknown> extends INodeLike<TNode> {
   /**
    * The nodes of this sequence.
    */
-  childNodes: ReadonlyArray<INode>;
+  childNodes: ReadonlyArray<TNode>;
 
   /**
    * Find all instruction targets in this sequence.
    */
-  findTargets(): ArrayLike<INode> | ReadonlyArray<INode>;
+  findTargets(): ArrayLike<TNode> | ReadonlyArray<TNode>;
 
   /**
    * Insert this sequence as a sibling before refNode
    */
-  insertBefore(refNode: INode): void;
+  insertBefore(refNode: TNode): void;
 
   /**
    * Append this sequence as a child to parent
    */
-  appendTo(parent: INode): void;
+  appendTo(parent: TNode): void;
 
   /**
    * Remove this sequence from its parent.

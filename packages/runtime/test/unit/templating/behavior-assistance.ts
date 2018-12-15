@@ -90,8 +90,8 @@ interface IElementTestOptions {
   container?: IContainer;
 }
 
-export function hydrateCustomElement<T>(
-  Type: Constructable<T>,
+export function hydrateCustomElement<T extends Constructable>(
+  Type: T,
   options: IAttributeTestOptions = {}
 ) {
   const ElementType: ICustomElementType = Type as any;

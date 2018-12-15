@@ -17,7 +17,7 @@ import {
   TemplateDefinition
 } from '../definitions';
 import { INode } from '../dom.interfaces';
-import { Hooks, IAttach, IBindScope, IChangeTracker, ILifecycleHooks, ILifecycleUnbindAfterDetach, IMountable } from '../interfaces';
+import { Hooks, IAttach, IChangeTracker, ILifecycleHooks, ILifecycleUnbindAfterDetach, IMountable, IBind } from '../interfaces';
 import { IRenderable } from '../lifecycle';
 import { $attachElement, $cacheElement, $detachElement, $mountElement, $unmountElement } from './lifecycle-attach';
 import { $bindElement, $unbindElement } from './lifecycle-bind';
@@ -45,7 +45,7 @@ export interface ICustomElement extends
   Partial<IChangeTracker>,
   ILifecycleHooks,
   ILifecycleRender,
-  IBindScope,
+  IBind,
   ILifecycleUnbindAfterDetach,
   IAttach,
   IMountable,

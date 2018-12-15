@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { defineCustomElement } from "./prepare";
 import {
   bindable, Aurelia, ViewFactory, View, IView,
-  RenderPlan, IViewFactory, CompiledTemplate, IRenderingEngine, DOM, ILifecycle
+  RenderPlan, IViewFactory, CompiledHTMLTemplate, IRenderingEngine, DOM, ILifecycle
 } from "../../../runtime/src/index";
 import { baseSuite } from "./template-compiler.base";
 import { IContainer } from "@aurelia/kernel";
@@ -65,6 +65,7 @@ suite.addDataSlot('f') // subject + expected text
     ctx.g = 'sub';
     const engine = ctx.a.get(IRenderingEngine);
     return engine.getViewFactory({
+      name: 'sub',
       template: `<template>${msg}</template>`,
       build: { required: true, compiler: 'default' }
     });
@@ -75,6 +76,7 @@ suite.addDataSlot('f') // subject + expected text
     ctx.g = 'sub';
     const engine = ctx.a.get(IRenderingEngine);
     return engine.getViewFactory({
+      name: 'sub',
       template: `<template>${msg}</template>`,
       build: { required: true, compiler: 'default' }
     }).create();

@@ -1,11 +1,9 @@
-import { DI, IContainer, IRegistry, PLATFORM, Constructable, Tracer } from '../../../kernel/src';
+import { DI, IContainer, IRegistry, PLATFORM, Constructable, Tracer, IResourceDescriptions, RuntimeCompilationResources } from '../../../kernel/src';
 import {
   IExpressionParser,
-  IResourceDescriptions,
   BindingType,
   AccessScope,
   CustomAttributeResource,
-  RuntimeCompilationResources,
   BindingMode,
   customElement,
   TargetedInstructionType as TT,
@@ -37,13 +35,13 @@ import {
 import { expect } from 'chai';
 import { createElement, eachCartesianJoinFactory, verifyBindingInstructionsEqual, enableTracing, disableTracing, SymbolTraceWriter } from './util';
 import { stringifyTemplateDefinition } from '../../src/debugging';
-import { ITemplateFactory, TemplateFactory } from '../../src/template-factory';
+import { ITemplateElementFactory, HTMLTemplateElementFactory } from '../../src/template-element-factory';
 
 const c = DI.createContainer();
 c.register(<any>DotSeparatedAttributePattern);
 
 const attrParser = c.get(IAttributeParser);
-const tplFactory = new TemplateFactory();
+const tplFactory = new HTMLTemplateElementFactory();
 
 
 export function createAttribute(name: string, value: string): Attr {
@@ -59,8 +57,7 @@ describe('TemplateCompiler', () => {
   let resources: IResourceDescriptions;
 
   beforeEach(() => {
-    container = DI.createContainer();
-    container.register(<any>BasicConfiguration);
+    container = BasicConfiguration.createContainer();
     expressionParser = container.get<IExpressionParser>(IExpressionParser);
     sut = new TemplateCompiler(tplFactory, <any>attrParser, <any>expressionParser);
     container.registerResolver(CustomAttributeResource.keyFrom('foo'), <any>{ getFactory: () => ({ Type: { description: {} } }) });
@@ -631,10 +628,10 @@ type Bindables = { [pdName: string]: IBindableDescription };
 
 describe(`TemplateCompiler - combinations`, () => {
   function setup(...globals: IRegistry[]) {
-    const container = DI.createContainer();
-    container.register(BasicConfiguration, ...globals);
+    const container = BasicConfiguration.createContainer();
+    container.register(...globals);
     const expressionParser = container.get(IExpressionParser);
-    const factory = container.get(ITemplateFactory);
+    const factory = container.get(ITemplateElementFactory);
     const sut = new TemplateCompiler(factory, attrParser, expressionParser as any);
     const resources = new RuntimeCompilationResources(<any>container);
     return { container, expressionParser, sut, resources }

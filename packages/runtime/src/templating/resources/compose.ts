@@ -8,10 +8,10 @@ import {
 } from '../../definitions';
 import { LifecycleFlags } from '../../interfaces';
 import { CompositionCoordinator, IRenderable, IView, IViewFactory } from '../../lifecycle';
+import { IRenderingEngine } from '../../rendering-engine';
 import { bindable } from '../bindable';
 import { createElement, RenderPlan } from '../create-element';
 import { customElement, ICustomElement } from '../custom-element';
-import { IRenderingEngine } from '../lifecycle-render';
 
 const composeSource: ITemplateDefinition = {
   name: 'au-compose',

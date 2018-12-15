@@ -114,11 +114,11 @@ export function stringify(o) {
 }
 
 export function setupAndStart(template: string, $class: Constructable | null, ...registrations: any[]) {
-  const container = DI.createContainer();
+  const container = BasicConfiguration.createContainer();
   container.register(...registrations);
   const lifecycle = container.get(ILifecycle);
   const observerLocator = container.get(IObserverLocator);
-  container.register(TestConfiguration, BasicConfiguration)
+  container.register(TestConfiguration)
   const host = document.createElement('app');
   document.body.appendChild(host);
   const au = new Aurelia(container);
@@ -128,11 +128,11 @@ export function setupAndStart(template: string, $class: Constructable | null, ..
 }
 
 export function setup(template: string, $class: Constructable | null, ...registrations: any[]) {
-  const container = DI.createContainer();
+  const container = BasicConfiguration.createContainer();
   container.register(...registrations);
   const lifecycle = container.get(ILifecycle);
   const observerLocator = container.get(IObserverLocator);
-  container.register(TestConfiguration, BasicConfiguration)
+  container.register(TestConfiguration)
   const host = document.createElement('app');
   document.body.appendChild(host);
   const au = new Aurelia(container);

@@ -243,8 +243,7 @@ describe(spec, () => {
       }
     });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
     container.register(<any>Col, <any>Row, <any>CustomTable);
     const lifecycle = container.get(ILifecycle);
     const au = new Aurelia(<any>container);
@@ -318,8 +317,7 @@ describe(spec, () => {
       template: `<template><foo if.bind="true"></foo></template>`
     }, class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
     container.register(<any>Foo);
     const au = new Aurelia(<any>container);
 
@@ -379,8 +377,7 @@ describe(spec, () => {
       template: `<template><foo if.bind="true"></foo></template>`
     }, class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();;
     container.register(<any>Foo);
     const lifecycle = container.get(ILifecycle);
     const au = new Aurelia(<any>container);
@@ -445,8 +442,7 @@ describe(spec, () => {
       template: `<template><foo if.bind="true"></foo></template>`
     }, class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
     container.register(<any>Foo);
     const au = new Aurelia(<any>container);
 
@@ -514,8 +510,7 @@ describe(spec, () => {
       template: `<template><foo if.bind="true"></foo></template>`
     }, class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
     container.register(<any>Foo);
     const lifecycle = container.get(ILifecycle);
     const au = new Aurelia(<any>container);
@@ -580,8 +575,7 @@ describe(spec, () => {
       template: `<template><foo if.bind="true"></foo></template>`
     }, class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
     container.register(<any>Foo);
     const lifecycle = container.get(ILifecycle);
     const au = new Aurelia(<any>container);
@@ -643,8 +637,7 @@ describe(spec, () => {
       template: `<template><foo if.bind="true"></foo></template>`
     }, class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
     container.register(<any>Foo);
     const lifecycle = container.get(ILifecycle);
     const au = new Aurelia(<any>container);
@@ -706,8 +699,7 @@ describe(spec, () => {
       template: `<template><foo if.bind="true"></foo></template>`
     }, class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
     container.register(<any>Foo);
     const lifecycle = container.get(ILifecycle);
     const au = new Aurelia(<any>container);
@@ -772,8 +764,7 @@ describe(spec, () => {
       template: `<template><foo if.bind="true"></foo></template>`
     }, class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
     container.register(<any>Foo);
     const lifecycle = container.get(ILifecycle);
     const au = new Aurelia(<any>container);
@@ -819,8 +810,7 @@ describe(spec, () => {
       items = items;
     });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
 
     const signaler = container.get(ISignaler);
     const lifecycle = container.get(ILifecycle) as Lifecycle;
@@ -858,8 +848,7 @@ describe(spec, () => {
       items = items;
     });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
 
     const signaler = container.get(ISignaler);
     const lifecycle = container.get(ILifecycle) as Lifecycle;
@@ -898,8 +887,7 @@ describe(spec, () => {
       }
     });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration);
+    const container = BasicConfiguration.createContainer();
 
     const au = new Aurelia(<any>container);
 
@@ -943,8 +931,8 @@ describe(spec, () => {
       const App = defineCustomElement('app', `<template><foo>${appMarkup}</foo></template>`, class {});
       const Foo = defineCustomElement('foo', `<template>${ceMarkup}</template>`, class {});
 
-      const container = DI.createContainer();
-      container.register(<IRegistry>BasicConfiguration, <any>Foo);
+      const container = BasicConfiguration.createContainer();
+      container.register(<any>Foo);
 
       const au = new Aurelia(<any>container);
 
@@ -965,8 +953,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><div replace-part="bar">\${baz}</div></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><div replaceable part="bar"></div></template>`, <any>class { baz = 'abc' });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -986,8 +974,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><div replace-part="bar">\${baz}</div></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><div replaceable part="bar"></div></template>`, <any>class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1007,8 +995,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><template replace-part="bar">\${baz}</template></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><template replaceable part="bar"></template></template>`, <any>class { baz = 'abc' });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1028,8 +1016,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><template replace-part="bar">\${baz}</template></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><template replaceable part="bar"></template></template>`, <any>class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1049,8 +1037,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><template replace-part="bar">\${qux}</template><template replace-part="bar">\${baz}</template></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><template replaceable part="bar"></template></template>`, <any>class {});
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1070,8 +1058,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><template replace-part="bar">\${baz}</template></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><template replaceable part="bar"></template><template replaceable part="bar"></template></template>`, <any>class { baz = 'abc' });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1092,8 +1080,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><template if.bind="true"><template replace-part="bar">\${baz}</template></template></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><template replaceable part="bar"></template></template>`, <any>class { baz = 'abc' });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1113,8 +1101,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><template if.bind="true" replace-part="bar">\${baz}</template></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><template replaceable part="bar"></template></template>`, <any>class { baz = 'abc' });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1134,8 +1122,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><template replace-part="bar" if.bind="true">\${baz}</template></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><template replaceable part="bar"></template></template>`, <any>class { baz = 'abc' });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1155,8 +1143,8 @@ describe(spec, () => {
     const App = defineCustomElement('app', `<template><foo><template replace-part="bar" if.bind="true">\${baz}</template></foo><foo><template replace-part="bar" if.bind="false">\${baz}</template></foo></template>`, <any>class { baz = 'def' });
     const Foo = defineCustomElement('foo', `<template><template replaceable part="bar"></template></template>`, <any>class { baz = 'abc'; });
 
-    const container = DI.createContainer();
-    container.register(<IRegistry>BasicConfiguration, <any>Foo);
+    const container = BasicConfiguration.createContainer();
+    container.register(<any>Foo);
 
     const au = new Aurelia(<any>container);
 
@@ -1178,8 +1166,7 @@ describe("generated.template-compiler.static (with tracing)", function () {
   function setup() {
       enableTracing();
       Tracer.enableLiveLogging(SymbolTraceWriter);
-      const container = DI.createContainer();
-      container.register(BasicConfiguration);
+      const container = BasicConfiguration.createContainer();
       const au = new Aurelia(container);
       const host = DOM.createElement("div");
       return { au, host };

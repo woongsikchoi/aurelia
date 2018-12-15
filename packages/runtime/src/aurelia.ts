@@ -1,8 +1,8 @@
 import { DI, IContainer, IRegistry, PLATFORM, Registration } from '@aurelia/kernel';
 import { INode } from './dom.interfaces';
 import { LifecycleFlags } from './interfaces';
+import { IRenderingEngine } from './rendering-engine';
 import { CustomElementResource, ICustomElement, ICustomElementType } from './templating/custom-element';
-import { IRenderingEngine } from './templating/lifecycle-render';
 
 export interface ISinglePageApp {
   host: unknown;

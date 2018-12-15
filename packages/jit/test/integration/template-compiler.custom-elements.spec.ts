@@ -1,7 +1,6 @@
 import { expect } from "chai";
 import { tearDown, createCustomElement, setupAndStart, TestConfiguration, cleanup } from "./prepare";
 import { customElement, bindable, Aurelia, Binding, SetterObserver, PropertyAccessor, ElementPropertyAccessor, Observer } from '../../../runtime/src/index';;
-import { DI } from "@aurelia/kernel";
 import { BasicConfiguration } from "../../src";
 import { h } from "./util";
 import { InterpolationBinding } from "../../../runtime/src/binding/interpolation-binding";
@@ -166,10 +165,10 @@ describe('template-compiler.custom-elements', () => {
     }
 
     const customElementCtors: any[] = [Foo1, Foo2, Foo3, Foo4, Foo5];
-    const container = DI.createContainer();
+    const container = BasicConfiguration.createContainer();
     const lifecycle = container.get(ILifecycle);
     container.register(...customElementCtors);
-    container.register(TestConfiguration, BasicConfiguration)
+    container.register(TestConfiguration)
     const host = document.createElement('app');
     document.body.appendChild(host);
     const au = new Aurelia(container);

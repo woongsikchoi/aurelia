@@ -9,8 +9,10 @@ import { SignalBindingBehavior } from './binding/resources/signals';
 import { ThrottleBindingBehavior } from './binding/resources/throttle-binding-behavior';
 import { UpdateTriggerBindingBehavior } from './binding/resources/update-trigger-binding-behavior';
 import { HtmlRenderer } from './html-renderer';
+import { HTMLTemplateFactory } from './html-template';
 import { ILifecycle, IObserverLocator } from './interfaces';
 import { Lifecycle } from './lifecycle';
+import { ITemplateFactory } from './rendering-engine';
 import { Compose } from './templating/resources/compose';
 import { Else, If } from './templating/resources/if';
 import { Repeat } from './templating/resources/repeat';
@@ -43,6 +45,7 @@ export const BasicConfiguration = {
       HtmlRenderer,
       Registration.singleton(IObserverLocator, ObserverLocator),
       Registration.singleton(ILifecycle, Lifecycle),
+      Registration.singleton(ITemplateFactory, HTMLTemplateFactory),
       ...GlobalResources
     );
   },

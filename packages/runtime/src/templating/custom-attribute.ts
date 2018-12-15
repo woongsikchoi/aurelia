@@ -22,9 +22,10 @@ import {
   ILifecycleUnbindAfterDetach
 } from '../interfaces';
 import { IRenderable } from '../lifecycle';
+import { IRenderingEngine } from '../rendering-engine';
 import { $attachAttribute, $cacheAttribute, $detachAttribute } from './lifecycle-attach';
 import { $bindAttribute, $unbindAttribute } from './lifecycle-bind';
-import { $hydrateAttribute, IRenderingEngine } from './lifecycle-render';
+import { $hydrateAttribute } from './lifecycle-render';
 
 type CustomAttributeStaticProperties = Pick<Immutable<Required<IAttributeDefinition>>, 'bindables'>;
 

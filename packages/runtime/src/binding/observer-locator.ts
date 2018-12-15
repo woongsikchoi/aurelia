@@ -1,4 +1,4 @@
-import { inject, Reporter } from '@aurelia/kernel';
+import { inject, Primitive, Reporter } from '@aurelia/kernel';
 import { DOM } from '../dom';
 import { IElement, IHTMLElement } from '../dom.interfaces';
 import {
@@ -37,7 +37,6 @@ import {
 } from './target-accessors';
 
 const toStringTag = Object.prototype.toString;
-
 
 function getPropertyDescriptor(subject: object, name: string): PropertyDescriptor {
   let pd = Object.getOwnPropertyDescriptor(subject, name);
@@ -169,7 +168,7 @@ export class ObserverLocator implements IObserverLocator {
   // TODO: Reduce complexity (currently at 37)
   private createPropertyObserver(obj: IObservable, propertyName: string): AccessorOrObserver {
     if (!(obj instanceof Object)) {
-      return new PrimitiveObserver(obj, propertyName) as IBindingTargetAccessor;
+      return new PrimitiveObserver(obj as unknown as Primitive, propertyName) as IBindingTargetAccessor;
     }
 
     let isNode: boolean;

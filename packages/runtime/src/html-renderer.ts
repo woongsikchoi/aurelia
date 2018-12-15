@@ -11,6 +11,7 @@ import {
   customAttributeKey,
   customElementKey,
   ICallBindingInstruction,
+  IElementHydrationOptions,
   IHydrateAttributeInstruction,
   IHydrateElementInstruction,
   IHydrateLetElementInstruction,
@@ -31,9 +32,10 @@ import { DOM } from './dom';
 import { IElement, IHTMLElement, INode, IRenderLocation } from './dom.interfaces';
 import { BindingMode, IAttach, IAttachables, IBindables, IBindScope, IObserverLocator } from './interfaces';
 import { IRenderable, IRenderContext } from './lifecycle';
+import { IInstructionRenderer, instructionRenderer, IRenderer } from './renderer';
+import { IRenderingEngine } from './rendering-engine';
 import { ICustomAttribute } from './templating/custom-attribute';
 import { ICustomElement } from './templating/custom-element';
-import { IElementHydrationOptions, IInstructionRenderer, instructionRenderer, IRenderer, IRenderingEngine } from './templating/lifecycle-render';
 
 const slice = Array.prototype.slice;
 

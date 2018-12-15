@@ -3,15 +3,15 @@ import { _, stringify, jsonStringify, htmlStringify, verifyEqual, createElement,
 import { h } from '../../../../scripts/test-lib-dom';
 import { expect } from 'chai';
 import {
-  Tracer as DebugTracer
+  Tracer as DebugTracer, stringifyLifecycleFlags
 } from '../../../debug/src/index';
 import {
   Tracer, ITraceInfo, PLATFORM
 } from '../../../kernel/src/index';
 import {
-  stringifyLifecycleFlags, IHTMLElement, isTargetedInstruction, TargetedInstructionType
+  IHTMLElement, isTargetedInstruction, TargetedInstructionType
 } from '../../../runtime/src/index';
-import { NodeSymbol, AttributeSymbol, ISymbol } from '../../src/index';
+import { NodeSymbol, AttributeSymbol, AnySymbol } from '../../src/index';
 
 
 
@@ -33,14 +33,14 @@ export const SymbolTraceWriter = {
           if (p === null) {
             output += 'null';
           } else {
-            if ((<ISymbol>p).kind) {
+            if ((<AnySymbol>p).flags) {
               const symbol = p as NodeSymbol | AttributeSymbol;
-              if ('attr' in symbol) {
-                output += `attr: ${symbol.attr.name}=${symbol.attr.value}`;
-              } else if ('text' in symbol) {
-                output += `text: "${symbol.text.textContent}"`;
+              if ('syntax' in symbol) {
+                output += `attr: ${symbol.syntax.rawName}=${symbol.syntax.rawValue}`;
+              } else if ('physicalNode' in symbol && 'outerHTML' in symbol.physicalNode) {
+                output += `element: "${symbol.physicalNode.outerHTML}"`;
               } else {
-                output += `element: ${symbol.element.outerHTML}`;
+                output += `text: "${symbol.physicalNode.textContent}"`;
               }
             } else {
               if ('outerHTML' in (p as IHTMLElement)) {

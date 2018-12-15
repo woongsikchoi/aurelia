@@ -19,6 +19,7 @@
     "packages/runtime-libui",
     "packages/runtime-ns",
     "packages/runtime-pixi",
+    "packages/runtime-threejs",
     "packages/runtime",
     "packages/testing",
     "packages/validation"

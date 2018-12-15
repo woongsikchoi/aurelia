@@ -19,6 +19,7 @@
     { "path": "runtime-libui" },
     { "path": "runtime-ns" },
     { "path": "runtime-pixi" },
+    { "path": "runtime-threejs" },
     { "path": "runtime" },
     { "path": "testing" },
     { "path": "validation" },

@@ -42,7 +42,7 @@ import {
   TemplateControllerSymbol,
   TextSymbol
 } from './template-binder';
-import { ITemplateFactory } from './template-factory';
+import { ITemplateElementFactory } from './template-element-factory';
 
 const buildNotRequired: IBuildInstruction = Object.freeze({
   required: false,
@@ -54,9 +54,9 @@ const buildNotRequired: IBuildInstruction = Object.freeze({
  *
  * @internal
  */
-@inject(ITemplateFactory, IAttributeParser, IExpressionParser)
+@inject(ITemplateElementFactory, IAttributeParser, IExpressionParser)
 export class TemplateCompiler implements ITemplateCompiler {
-  private factory: ITemplateFactory;
+  private factory: ITemplateElementFactory;
   private attrParser: IAttributeParser;
   private exprParser: IExpressionParser;
 
@@ -69,7 +69,7 @@ export class TemplateCompiler implements ITemplateCompiler {
     return 'default';
   }
 
-  constructor(factory: ITemplateFactory, attrParser: IAttributeParser, exprParser: IExpressionParser) {
+  constructor(factory: ITemplateElementFactory, attrParser: IAttributeParser, exprParser: IExpressionParser) {
     this.factory = factory;
     this.attrParser = attrParser;
     this.exprParser = exprParser;
@@ -79,7 +79,7 @@ export class TemplateCompiler implements ITemplateCompiler {
   public compile(definition: ITemplateDefinition, descriptions: IResourceDescriptions): TemplateDefinition {
     const resources = new ResourceModel(descriptions);
     const binder = new TemplateBinder(resources, this.attrParser, this.exprParser);
-    const template = definition.template = this.factory.createTemplate(definition.template);
+    const template = definition.template = this.factory.create(definition.template);
     const surrogate = binder.bind(template);
     if (definition.instructions === undefined || definition.instructions === PLATFORM.emptyArray) {
       definition.instructions = [];

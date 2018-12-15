@@ -9,4 +9,4 @@ export * from './expression-parser';
 export * from './resource-model';
 export * from './template-binder';
 export * from './template-compiler';
-export * from './template-factory';
+export * from './template-element-factory';

@@ -1,4 +1,4 @@
-import { Class, Constructable, IContainer, IRegistry, PLATFORM, Registration, Writable } from '@aurelia/kernel';
+import { Class, Constructable, IContainer, IRegistry, IResourceDefinition, IResourceKind, IResourceType, PLATFORM, Registration, Writable } from '@aurelia/kernel';
 import {
   AttributeInstruction,
   BindingMode,
@@ -8,9 +8,6 @@ import {
   DelegateBindingInstruction,
   ForOfStatement,
   FromViewBindingInstruction,
-  IResourceDefinition,
-  IResourceKind,
-  IResourceType,
   IsBindingBehavior,
   IteratorBindingInstruction,
   OneTimeBindingInstruction,

@@ -1,4 +1,4 @@
-import { PLATFORM, Reporter, Tracer } from '@aurelia/kernel';
+import { PLATFORM, Tracer } from '@aurelia/kernel';
 import { BindingMode, BindingType, DOM, IExpressionParser, IHTMLElement, IHTMLTemplateElement, INode, Interpolation, IsExpressionOrStatement, IText, NodeType } from '@aurelia/runtime';
 import { AttrSyntax } from './ast';
 import { IAttributeParser } from './attribute-parser';

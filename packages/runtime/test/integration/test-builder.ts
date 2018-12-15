@@ -81,7 +81,6 @@ import {
   ICustomElement,
   BindingType,
 
-  BasicConfiguration,
   IHTMLTemplateElement
 } from '../../../runtime/src/index';
 import {
@@ -91,7 +90,10 @@ import {
   Constructable,
   Class
 } from'@aurelia/kernel';
-import {parseCore } from '../../../jit/src/index';
+import {
+  parseCore,
+  BasicConfiguration as JitConfiguration
+} from '../../../jit/src/index';
 import { eachCartesianJoin } from '../unit/util';
 import { expect } from 'chai';
 
@@ -379,8 +381,8 @@ export class TestBuilder<T extends Constructable> {
   private Type: T;
 
   constructor(Type: T) {
-    this.container = BasicConfiguration.createContainer();
-    this.container.register(<any>BasicConfiguration, <any>Type);
+    this.container = JitConfiguration.createContainer();
+    this.container.register(<any>Type);
     this.Type = Type;
   }
 

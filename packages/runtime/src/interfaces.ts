@@ -1,5 +1,5 @@
 import { DI, IDisposable, IIndexable, InterfaceSymbol, IServiceLocator, Omit } from '@aurelia/kernel';
-import { INode } from './dom.interfaces';
+import { IEventListenerOrEventListenerObject, INode } from './dom.interfaces';
 
 export const enum State {
   none                  = 0b000000000000,
@@ -205,6 +205,10 @@ export interface IBindingTargetAccessor<
           IAccessor<TValue>,
           IPropertyChangeTracker<TObj, TProp> { }
 
+export interface IEventSubscriber extends IDisposable {
+  subscribe(node: INode, callbackOrListener: IEventListenerOrEventListenerObject): void;
+}
+
 /**
  * Describes a target observer for from-view or two-way bindings.
  */
@@ -216,6 +220,7 @@ export interface IBindingTargetObserver<
           ISubscribable<MutationKind.instance>,
           ISubscriberCollection<MutationKind.instance> {
 
+  handler: IEventSubscriber;
   bind?(flags: LifecycleFlags): void;
   unbind?(flags: LifecycleFlags): void;
 }

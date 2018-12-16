@@ -1,9 +1,22 @@
 import { Constructable, PLATFORM, Writable } from '@aurelia/kernel';
-import { TemplateDefinition } from './definitions';
-import { AuMarker, DOM, INodeSequenceFactory, NodeSequence } from './dom';
-import { IDocumentFragment, INode, INodeSequence, IRenderLocation, IText, ITraversable, NodeType } from './dom.interfaces';
-import { IRenderContext } from './lifecycle';
-import { CompiledTemplate, ITemplate, ITemplateFactory } from './rendering-engine';
+import {
+  AuMarker,
+  CompiledTemplate,
+  DOM,
+  IDocumentFragment,
+  INode,
+  INodeSequence,
+  INodeSequenceFactory,
+  IRenderContext,
+  IRenderLocation,
+  ITemplate,
+  ITemplateFactory,
+  IText,
+  ITraversable,
+  NodeSequence,
+  NodeType,
+  TemplateDefinition
+} from '@aurelia/runtime';
 
 export class HTMLTemplateFactory implements ITemplateFactory {
   public create(parentRenderContext: IRenderContext, definition: TemplateDefinition): ITemplate {

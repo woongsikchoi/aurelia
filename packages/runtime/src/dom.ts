@@ -195,7 +195,6 @@ export interface INodeSequenceFactory {
 
 export interface AuMarker extends INode { }
 
-/** @internal */
 export class AuMarker implements INode {
   public get parentNode(): INode & IParentNode {
     return this.nextSibling.parentNode;

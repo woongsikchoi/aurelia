@@ -1,9 +1,6 @@
 import { DI, IContainer, IRegistry, Registration } from '@aurelia/kernel';
-import {
-  BasicConfiguration as RuntimeConfiguration,
-  HtmlRenderer,
-  ITemplateCompiler
-} from '@aurelia/runtime';
+import { ITemplateCompiler } from '@aurelia/runtime';
+import { BasicConfiguration as HtmlRuntimeConfiguration } from '@aurelia/runtime-html';
 import {
   DotSeparatedAttributePattern,
   RefAttributePattern
@@ -41,9 +38,8 @@ export const DefaultBindingLanguage: IRegistry[] = [
 export const BasicConfiguration = {
   register(container: IContainer): void {
     container.register(
-      RuntimeConfiguration,
+      HtmlRuntimeConfiguration,
       ParserRegistration,
-      HtmlRenderer,
       Registration.singleton(ITemplateCompiler, TemplateCompiler),
       ...DefaultBindingLanguage
     );

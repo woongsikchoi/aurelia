@@ -1,12 +1,26 @@
 
 import { IContainer, Registration } from '@aurelia/kernel';
-import { CheckedObserver, IInputElement, ISelectElement, SelectValueObserver, ValueAttributeObserver } from './binding/element-observation';
-import { EventSubscriber } from './binding/event-manager';
-import { ITargetAccessorLocator, ITargetObserverLocator } from './binding/observer-locator';
-import { SetterObserver } from './binding/property-observation';
-import { AttributeNSAccessor, ClassAttributeAccessor, DataAttributeAccessor, ElementPropertyAccessor, StyleAttributeAccessor } from './binding/target-accessors';
-import { IElement, IHTMLElement, INode } from './dom.interfaces';
-import { IBindingTargetAccessor, IBindingTargetObserver, ILifecycle, IObserverLocator } from './interfaces';
+import {
+  ElementPropertyAccessor,
+  EventSubscriber,
+  IBindingTargetAccessor,
+  IBindingTargetObserver,
+  IElement,
+  IHTMLElement,
+  ILifecycle,
+  INode,
+  IObserverLocator,
+  ITargetAccessorLocator,
+  ITargetObserverLocator,
+  SetterObserver
+} from '@aurelia/runtime';
+import { AttributeNSAccessor } from './binding/attribute-ns-accessor';
+import { CheckedObserver, IInputElement } from './binding/checked-observer';
+import { ClassAttributeAccessor } from './binding/class-attribute-accessor';
+import { DataAttributeAccessor } from './binding/data-attribute-accessor';
+import { ISelectElement, SelectValueObserver } from './binding/select-value-observer';
+import { StyleAttributeAccessor } from './binding/style-attribute-accessor';
+import { ValueAttributeObserver } from './binding/value-attribute-observer';
 
 // https://infra.spec.whatwg.org/#namespaces
 const htmlNS = 'http://www.w3.org/1999/xhtml';
@@ -129,7 +143,7 @@ export class TargetAccessorLocator {
   }
 }
 
-export const HtmlObservation = {
+export const HtmlObserverLocator = {
   register(container: IContainer): void {
     container.register(
       Registration.singleton(ITargetAccessorLocator, TargetAccessorLocator),

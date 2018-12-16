@@ -9,9 +9,8 @@ import {
   ResourcePartDescription
 } from '@aurelia/kernel';
 import { ForOfStatement, Interpolation, IsBindingBehavior } from './binding/ast';
-import { INode, IShadowRootInit } from './dom.interfaces';
+import { IShadowRootInit } from './dom.interfaces';
 import { BindingMode, DelegationStrategy } from './interfaces';
-import { IRenderable, IRenderContext } from './lifecycle';
 import { CustomElementConstructor, ICustomElement } from './templating/custom-element';
 import { ICustomElementHost } from './templating/lifecycle-render';
 
@@ -31,16 +30,6 @@ export const customAttributeName = 'custom-attribute';
 /** @internal */
 export function customAttributeKey(name: string): string {
   return `${customAttributeName}:${name}`;
-}
-
-// The basic template abstraction that allows consumers to create
-// instances of an INodeSequence on-demand. Templates are contextual in that they are, in the very least,
-// part of a particular application, with application-level resources, but they also may have their
-// own scoped resources or be part of another view (via a template controller) which provides a
-// context for the template.
-export interface ITemplate {
-  readonly renderContext: IRenderContext;
-  render(renderable: IRenderable, host?: INode, parts?: Immutable<Pick<IHydrateElementInstruction, 'parts'>>): void;
 }
 
 export type IElementHydrationOptions = { parts?: Record<string, TemplateDefinition> };

@@ -1,8 +1,8 @@
 import { all, DI, IContainer, IDisposable, IIndexable, Immutable, ImmutableArray, inject, IRegistry, IResolver, PLATFORM, Reporter, RuntimeCompilationResources, Writable } from '@aurelia/kernel';
 import { Observer } from './binding/property-observation';
 import { subscriberCollection } from './binding/subscriber-collection';
-import { BindableDefinitions, buildTemplateDefinition, customElementBehavior, ITargetedInstruction, ITemplate, ITemplateDefinition, TemplateDefinition, TemplatePartDefinitions } from './definitions';
-import { DOM, NodeSequence } from './dom';
+import { BindableDefinitions, buildTemplateDefinition, customElementBehavior, ITargetedInstruction, ITemplateDefinition, TemplateDefinition, TemplatePartDefinitions } from './definitions';
+import { DOM, INodeSequenceFactory, NodeSequence } from './dom';
 import { INode, IRenderLocation } from './dom.interfaces';
 import { IAccessor, ILifecycle, IPropertySubscriber, ISubscribable, ISubscriberCollection, LifecycleFlags, MutationKind } from './interfaces';
 import { IRenderable, IRenderContext, IViewFactory } from './lifecycle';
@@ -16,6 +16,41 @@ export interface ITemplateFactory {
 }
 
 export const ITemplateFactory = DI.createInterface<ITemplateFactory>().noDefault();
+
+// The basic template abstraction that allows consumers to create
+// instances of an INodeSequence on-demand. Templates are contextual in that they are, in the very least,
+// part of a particular application, with application-level resources, but they also may have their
+// own scoped resources or be part of another view (via a template controller) which provides a
+// context for the template.
+export interface ITemplate {
+  readonly renderContext: IRenderContext;
+  render(renderable: IRenderable, host?: INode, parts?: Immutable<Record<string, ITemplateDefinition>>): void;
+}
+
+// This is the main implementation of ITemplate.
+// It is used to create instances of IView based on a compiled TemplateDefinition.
+// TemplateDefinitions are hand-coded today, but will ultimately be the output of the
+// TemplateCompiler either through a JIT or AOT process.
+// Essentially, CompiledTemplate wraps up the small bit of code that is needed to take a TemplateDefinition
+// and create instances of it on demand.
+export class CompiledTemplate implements ITemplate {
+  public readonly factory: INodeSequenceFactory;
+  public readonly renderContext: IRenderContext;
+
+  private definition: TemplateDefinition;
+
+  constructor(definition: TemplateDefinition, factory: INodeSequenceFactory, parentRenderContext: IRenderContext) {
+    this.definition = definition;
+    this.factory = factory;
+    this.renderContext = createRenderContext(parentRenderContext, definition.dependencies);
+  }
+
+  public render(renderable: IRenderable, host?: unknown, parts?: TemplatePartDefinitions): void {
+    const nodes = (renderable as Writable<IRenderable>).$nodes = this.factory.createNodeSequence();
+    (renderable as Writable<IRenderable>).$context = this.renderContext;
+    this.renderContext.render(renderable, nodes.findTargets(), this.definition, host, parts);
+  }
+}
 
 // This is an implementation of ITemplate that always returns a node sequence representing "no DOM" to render.
 /** @internal */

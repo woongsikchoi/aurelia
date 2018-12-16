@@ -1,10 +1,10 @@
 import { PLATFORM, Reporter, Tracer, Writable } from '@aurelia/kernel';
 import { Scope } from '../binding/binding-context';
-import { IElementHydrationOptions, ITemplate, TemplateDefinition } from '../definitions';
+import { IElementHydrationOptions, TemplateDefinition } from '../definitions';
 import { DOM } from '../dom';
 import { IElement, INode, INodeSequence, IRenderLocation, ITraversable } from '../dom.interfaces';
 import { Hooks } from '../interfaces';
-import { IRenderingEngine } from '../rendering-engine';
+import { IRenderingEngine, ITemplate } from '../rendering-engine';
 import { ICustomAttribute, ICustomAttributeType } from './custom-attribute';
 import { ICustomElement, ICustomElementType } from './custom-element';
 

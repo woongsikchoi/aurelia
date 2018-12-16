@@ -1,8 +1,8 @@
 import { Reporter, Tracer } from '@aurelia/kernel';
-import { ITemplate } from '../definitions';
 import { INodeSequence, IRenderLocation } from '../dom.interfaces';
 import { IAttach, IBindScope, ILifecycle, ILifecycleUnbind, IMountable, IScope, LifecycleFlags, State } from '../interfaces';
 import { IRenderContext, IView, IViewCache, IViewFactory } from '../lifecycle';
+import { ITemplate } from '../rendering-engine';
 import { $attachView, $cacheView, $detachView, $mountView, $unmountView } from './lifecycle-attach';
 import { $bindView, $unbindView } from './lifecycle-bind';
 

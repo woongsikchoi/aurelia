@@ -883,7 +883,7 @@ describe(spec, () => {
     }, class {
       $nodes: INodeSequence;
       render() {
-        this.$nodes = NodeSequenceFactory.createFor('foo').createNodeSequence();
+        this.$nodes = new NodeSequenceFactory('foo').createNodeSequence();
       }
     });
 

@@ -2,7 +2,7 @@ import { expect } from "chai";
 import { defineCustomElement } from "./prepare";
 import {
   bindable, Aurelia, ViewFactory, View, IView,
-  RenderPlan, IViewFactory, CompiledHTMLTemplate, IRenderingEngine, DOM, ILifecycle
+  RenderPlan, IViewFactory, IRenderingEngine, DOM, ILifecycle
 } from "../../../runtime/src/index";
 import { baseSuite } from "./template-compiler.base";
 import { IContainer } from "@aurelia/kernel";

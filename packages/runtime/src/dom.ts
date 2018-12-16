@@ -167,8 +167,8 @@ export const DOM = {
       (oldChild as INode).parentNode.replaceChild(newChild as INode, oldChild as INode);
     }
   },
-  setAttribute(node: IElement, name: string, value: string): void {
-    node.setAttribute(name, value);
+  setAttribute(node: unknown, name: string, value: string): void {
+    (node as IElement).setAttribute(name, value);
   }
 };
 

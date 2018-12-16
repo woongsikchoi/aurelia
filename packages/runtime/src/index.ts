@@ -59,5 +59,4 @@ export * from './html-template';
 export * from './instructions';
 export * from './interfaces';
 export * from './lifecycle';
-export * from './renderer';
 export * from './rendering-engine';

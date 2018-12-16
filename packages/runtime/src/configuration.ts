@@ -12,7 +12,7 @@ import { HtmlRenderer } from './html-renderer';
 import { HTMLTemplateFactory } from './html-template';
 import { ILifecycle, IObserverLocator } from './interfaces';
 import { Lifecycle } from './lifecycle';
-import { ITemplateFactory } from './rendering-engine';
+import { BasicRenderer, ITemplateFactory } from './rendering-engine';
 import { Compose } from './templating/resources/compose';
 import { Else, If } from './templating/resources/if';
 import { Repeat } from './templating/resources/repeat';
@@ -42,6 +42,7 @@ export const GlobalResources: IRegistry[] = [
 export const BasicConfiguration = {
   register(container: IContainer): void {
     container.register(
+      BasicRenderer,
       HtmlRenderer,
       Registration.singleton(IObserverLocator, ObserverLocator),
       Registration.singleton(ILifecycle, Lifecycle),

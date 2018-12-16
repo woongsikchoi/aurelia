@@ -1,5 +1,6 @@
-import { DI } from '@aurelia/kernel';
-import { DOM, IElement, IHTMLTemplateElement, INode } from '@aurelia/runtime';
+import { DI, inject } from '@aurelia/kernel';
+import { INode, IDOM } from '@aurelia/runtime';
+import { IInternalNode } from './ast';
 
 /**
  * Utility that creates a `HTMLTemplateElement` out of string markup or an existing DOM node.
@@ -13,21 +14,21 @@ export interface ITemplateElementFactory {
    *
    * @param markup A raw html string that may or may not be wrapped in `<template></template>`
    */
-  create(markup: string): IHTMLTemplateElement;
+  create(markup: string): IInternalNode;
   /**
    * Create a `HTMLTemplateElement` from a provided DOM node. If the node is already a template, it
    * will be returned as-is (and removed from the DOM).
    *
    * @param node A DOM node that may or may not be wrapped in `<template></template>`
    */
-  create(node: INode): IHTMLTemplateElement;
+  create(node: INode): IInternalNode;
   /**
    * Create a `HTMLTemplateElement` from a provided DOM node or html string.
    *
    * @param input A DOM node or raw html string that may or may not be wrapped in `<template></template>`
    */
-  create(input: unknown): IHTMLTemplateElement;
-  create(input: unknown): IHTMLTemplateElement;
+  create(input: unknown): IInternalNode;
+  create(input: unknown): IInternalNode;
 }
 
 export const ITemplateElementFactory = DI.createInterface<ITemplateElementFactory>()
@@ -38,43 +39,46 @@ export const ITemplateElementFactory = DI.createInterface<ITemplateElementFactor
  *
  * @internal
  */
+@inject(IDOM)
 export class HTMLTemplateElementFactory implements ITemplateElementFactory {
-  private template: IHTMLTemplateElement;
+  private dom: IDOM;
+  private template: IInternalNode;
 
-  constructor() {
-    this.template = DOM.createTemplate();
+  constructor(dom: IDOM) {
+    this.dom = dom;
+    this.template = dom.createTemplate() as IInternalNode;
   }
 
-  public create(markup: string): IHTMLTemplateElement;
-  public create(node: INode): IHTMLTemplateElement;
-  public create(input: unknown): IHTMLTemplateElement;
-  public create(input: string | INode): IHTMLTemplateElement {
+  public create(markup: string): IInternalNode;
+  public create(node: INode): IInternalNode;
+  public create(input: unknown): IInternalNode;
+  public create(input: string | INode): IInternalNode {
     if (typeof input === 'string') {
       const template = this.template;
       template.innerHTML = input;
-      const node = template.content.firstElementChild as IElement;
+      const node = template.content.firstElementChild;
       // if the input is either not wrapped in a template or there is more than one node,
       // return the whole template that wraps it/them (and create a new one for the next input)
       if (node === null || node.nodeName !== 'TEMPLATE' || node.nextElementSibling !== null) {
-        this.template = DOM.createTemplate();
+        this.template = this.dom.createTemplate() as IInternalNode;
         return template;
       }
       // the node to return is both a template and the only node, so return just the node
       // and clean up the template for the next input
-      template.content.removeChild(node);
-      return node as IHTMLTemplateElement;
+      this.dom.remove(node);
+      return node;
     }
     if (input.nodeName !== 'TEMPLATE') {
       // if we get one node that is not a template, wrap it in one
-      const template = DOM.createTemplate();
-      template.content.appendChild(input);
+      const template = this.dom.createTemplate() as IInternalNode;
+      this.dom.appendChild(template.content, input);
       return template;
     }
     // we got a template element, remove it from the DOM if it's present there and don't
     // do any other processing
-    if (input.parentNode !== null) {
-      input.parentNode.removeChild(input);
+    if (this.dom.hasParent(input)) {
+      this.dom.remove(input);
     }
-    return input as IHTMLTemplateElement;
+    return input as IInternalNode;
   }
 }

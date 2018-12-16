@@ -65,6 +65,8 @@ export interface IMutationObserver<TNode = unknown> {
 }
 
 export interface INode {
+  nodeName: string;
+  nodeType: number;
 }
 
 export interface IManagedEvent<TEvent = unknown, TEventTarget = unknown> {

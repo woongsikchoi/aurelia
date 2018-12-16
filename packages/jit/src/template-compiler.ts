@@ -5,6 +5,7 @@ import {
   HydrateElementInstruction,
   HydrateTemplateController,
   IBuildInstruction,
+  IDOM,
   IExpressionParser,
   ILetBindingInstruction,
   InstructionRow,
@@ -54,8 +55,9 @@ const buildNotRequired: IBuildInstruction = Object.freeze({
  *
  * @internal
  */
-@inject(ITemplateElementFactory, IAttributeParser, IExpressionParser)
+@inject(IDOM, ITemplateElementFactory, IAttributeParser, IExpressionParser)
 export class TemplateCompiler implements ITemplateCompiler {
+  private dom: IDOM;
   private factory: ITemplateElementFactory;
   private attrParser: IAttributeParser;
   private exprParser: IExpressionParser;
@@ -69,7 +71,8 @@ export class TemplateCompiler implements ITemplateCompiler {
     return 'default';
   }
 
-  constructor(factory: ITemplateElementFactory, attrParser: IAttributeParser, exprParser: IExpressionParser) {
+  constructor(dom: IDOM, factory: ITemplateElementFactory, attrParser: IAttributeParser, exprParser: IExpressionParser) {
+    this.dom = dom;
     this.factory = factory;
     this.attrParser = attrParser;
     this.exprParser = exprParser;
@@ -77,8 +80,8 @@ export class TemplateCompiler implements ITemplateCompiler {
   }
 
   public compile(definition: ITemplateDefinition, descriptions: IResourceDescriptions): TemplateDefinition {
-    const resources = new ResourceModel(descriptions);
-    const binder = new TemplateBinder(resources, this.attrParser, this.exprParser);
+    const resources = new ResourceModel(this.dom, descriptions);
+    const binder = new TemplateBinder(this.dom, resources, this.attrParser, this.exprParser);
     const template = definition.template = this.factory.create(definition.template);
     const surrogate = binder.bind(template);
     if (definition.instructions === undefined || definition.instructions === PLATFORM.emptyArray) {

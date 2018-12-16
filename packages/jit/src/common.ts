@@ -1,3 +1,4 @@
+
 /** @internal */
 export function unescapeCode(code: number): number {
   switch (code) {

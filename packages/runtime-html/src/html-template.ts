@@ -61,7 +61,7 @@ export class NodeSequenceFactory implements INodeSequenceFactory {
   }
 
   public createNodeSequence(): INodeSequence {
-    return new this.Type(this.dom.cloneNode(this.node, this.deepClone));
+    return new this.Type(this.dom, this.dom.cloneNode(this.node, this.deepClone));
   }
 }
 

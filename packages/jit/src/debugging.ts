@@ -1,16 +1,18 @@
-import { IHTMLElement, IHTMLTemplateElement, INode, ITemplateDefinition, NodeType, TargetedInstruction, TargetedInstructionType } from '@aurelia/runtime';
+import { INode, ITemplateDefinition, TargetedInstruction, TargetedInstructionType } from '@aurelia/runtime';
+import { IInternalNode, NodeType } from './ast';
 
 export function stringifyDOM(node: INode, depth: number): string {
+  const $node = node as IInternalNode;
   const indent = ' '.repeat(depth);
   let output = indent;
-  output += `Node: ${node.nodeName}`;
-  if (node.nodeType === NodeType.Text) {
-    output += ` "${node.textContent}"`;
+  output += `Node: ${$node.nodeName}`;
+  if ($node.nodeType === NodeType.Text) {
+    output += ` "${$node.textContent}"`;
   }
-  if (node.nodeType === NodeType.Element) {
+  if ($node.nodeType === NodeType.Element) {
     let i = 0;
     let attr;
-    const attributes = (node as IHTMLElement).attributes;
+    const attributes = $node.attributes;
     const len = attributes.length;
     for (; i < len; ++i) {
       attr = attributes[i];
@@ -18,16 +20,16 @@ export function stringifyDOM(node: INode, depth: number): string {
     }
   }
   output += '\n';
-  if (node.nodeType === NodeType.Element) {
+  if ($node.nodeType === NodeType.Element) {
     let i = 0;
-    let childNodes = node.childNodes;
+    let childNodes = $node.childNodes;
     let len = childNodes.length;
     for (; i < len; ++i) {
       output += stringifyDOM(childNodes[i], depth + 1);
     }
-    if (node.nodeName === 'TEMPLATE') {
+    if ($node.nodeName === 'TEMPLATE') {
       i = 0;
-      childNodes = (node as IHTMLTemplateElement).content.childNodes;
+      childNodes = $node.content.childNodes;
       len = childNodes.length;
       for (; i < len; ++i) {
         output += stringifyDOM(childNodes[i], depth + 1);

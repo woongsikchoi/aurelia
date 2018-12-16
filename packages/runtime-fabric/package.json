@@ -43,7 +43,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@aurelia/kernel": "0.3.0"
+    "@aurelia/kernel": "0.3.0",
+    "fabric": "^2.4.5"
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",

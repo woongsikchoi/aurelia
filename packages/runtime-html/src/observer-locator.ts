@@ -1,6 +1,7 @@
 
 import { IContainer, Registration } from '@aurelia/kernel';
 import {
+  DOM,
   ElementPropertyAccessor,
   EventSubscriber,
   IBindingTargetAccessor,
@@ -70,7 +71,7 @@ const overrideProps = {
   'xmlns:xlink': true
 };
 
-export class TargetObserverLocator {
+export class TargetObserverLocator implements ITargetObserverLocator {
   public getObserver(lifecycle: ILifecycle, observerLocator: IObserverLocator, obj: INode, propertyName: string): IBindingTargetObserver | IBindingTargetAccessor {
     switch (propertyName) {
       case 'checked':
@@ -107,9 +108,13 @@ export class TargetObserverLocator {
   public overridesAccessor(obj: INode, propertyName: string): boolean {
     return overrideProps[propertyName] === true;
   }
+
+  public handles(obj: unknown): boolean {
+    return DOM.isNodeInstance(obj);
+  }
 }
 
-export class TargetAccessorLocator {
+export class TargetAccessorLocator implements ITargetAccessorLocator {
   public getAccessor(lifecycle: ILifecycle, obj: INode, propertyName: string): IBindingTargetAccessor {
     switch (propertyName) {
       case 'textContent':
@@ -140,6 +145,10 @@ export class TargetAccessorLocator {
         }
         return new ElementPropertyAccessor(lifecycle, obj, propertyName);
     }
+  }
+
+  public handles(obj: unknown): boolean {
+    return DOM.isNodeInstance(obj);
   }
 }
 

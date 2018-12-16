@@ -1,6 +1,4 @@
-import { DI, inject, Primitive, Reporter } from '@aurelia/kernel';
-import { DOM } from '../dom';
-import { INode } from '../dom.interfaces';
+import { IIndexable, inject, Primitive, Reporter } from '@aurelia/kernel';
 import {
   AccessorOrObserver,
   CollectionKind,
@@ -16,7 +14,8 @@ import {
   IObservedMap,
   IObservedSet,
   IObserverLocator,
-  IOverrideContext
+  ITargetAccessorLocator,
+  ITargetObserverLocator
 } from '../interfaces';
 import { getArrayObserver } from './array-observer';
 import { createComputedObserver } from './computed-observer';
@@ -40,17 +39,6 @@ function getPropertyDescriptor(subject: object, name: string): PropertyDescripto
   return pd;
 }
 
-export interface ITargetObserverLocator {
-  getObserver(lifecycle: ILifecycle, observerLocator: IObserverLocator, obj: INode, propertyName: string): IBindingTargetObserver;
-  overridesAccessor(obj: INode, propertyName: string): boolean;
-}
-export const ITargetObserverLocator = DI.createInterface<ITargetObserverLocator>().noDefault();
-
-export interface ITargetAccessorLocator {
-  getAccessor(lifecycle: ILifecycle, obj: INode, propertyName: string): IBindingTargetAccessor;
-}
-export const ITargetAccessorLocator = DI.createInterface<ITargetAccessorLocator>().noDefault();
-
 @inject(ILifecycle, IDirtyChecker, ITargetObserverLocator, ITargetAccessorLocator)
 /** @internal */
 export class ObserverLocator implements IObserverLocator {
@@ -73,11 +61,11 @@ export class ObserverLocator implements IObserverLocator {
     this.targetAccessorLocator = targetAccessorLocator;
   }
 
-  public getObserver(obj: IObservable | IBindingContext | IOverrideContext, propertyName: string): AccessorOrObserver {
-    if (obj.$synthetic === true) {
-      return obj.getObservers().getOrCreate(obj, propertyName);
+  public getObserver(obj: unknown, propertyName: string): AccessorOrObserver {
+    if ((obj as IIndexable).$synthetic === true) {
+      return (obj as IBindingContext).getObservers().getOrCreate(obj as IBindingContext, propertyName);
     }
-    let observersLookup = obj.$observers;
+    let observersLookup = (obj as IObservable).$observers;
     let observer: AccessorOrObserver & { doNotCache?: boolean };
 
     if (observersLookup && propertyName in observersLookup) {
@@ -88,7 +76,7 @@ export class ObserverLocator implements IObserverLocator {
 
     if (!observer.doNotCache) {
       if (observersLookup === undefined) {
-        observersLookup = this.getOrCreateObserversLookup(obj);
+        observersLookup = this.getOrCreateObserversLookup(obj as IObservable);
       }
 
       observersLookup[propertyName] = observer;
@@ -101,15 +89,15 @@ export class ObserverLocator implements IObserverLocator {
     this.adapters.push(adapter);
   }
 
-  public getAccessor(obj: IObservable, propertyName: string): IBindingTargetAccessor {
-    if (DOM.isNodeInstance(obj)) {
+  public getAccessor(obj: unknown, propertyName: string): IBindingTargetAccessor {
+    if (this.targetAccessorLocator.handles(obj)) {
       if (this.targetObserverLocator.overridesAccessor(obj, propertyName)) {
         return this.getObserver(obj, propertyName);
       }
       return this.targetAccessorLocator.getAccessor(this.lifecycle, obj, propertyName);
     }
 
-    return new PropertyAccessor(obj, propertyName);
+    return new PropertyAccessor(obj as IIndexable, propertyName);
   }
 
   public getArrayObserver(observedArray: IObservedArray): ICollectionObserver<CollectionKind.array> {
@@ -152,12 +140,12 @@ export class ObserverLocator implements IObserverLocator {
     return null;
   }
 
-  private createPropertyObserver(obj: IObservable, propertyName: string): AccessorOrObserver {
+  private createPropertyObserver(obj: unknown, propertyName: string): AccessorOrObserver {
     if (!(obj instanceof Object)) {
       return new PrimitiveObserver(obj as unknown as Primitive, propertyName) as IBindingTargetAccessor;
     }
 
-    if (DOM.isNodeInstance(obj)) {
+    if (this.targetObserverLocator.handles(obj)) {
       const observer = this.targetObserverLocator.getObserver(this.lifecycle, this, obj, propertyName);
       if (observer !== null) {
         return observer;

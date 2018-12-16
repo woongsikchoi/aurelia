@@ -163,6 +163,19 @@ export interface IObserverLocator {
 
 export const IObserverLocator = DI.createInterface<IObserverLocator>().noDefault();
 
+export interface ITargetObserverLocator {
+  getObserver(lifecycle: ILifecycle, observerLocator: IObserverLocator, obj: unknown, propertyName: string): IBindingTargetAccessor | IBindingTargetObserver;
+  overridesAccessor(obj: unknown, propertyName: string): boolean;
+  handles(obj: unknown): boolean;
+}
+export const ITargetObserverLocator = DI.createInterface<ITargetObserverLocator>().noDefault();
+
+export interface ITargetAccessorLocator {
+  getAccessor(lifecycle: ILifecycle, obj: unknown, propertyName: string): IBindingTargetAccessor;
+  handles(obj: unknown): boolean;
+}
+export const ITargetAccessorLocator = DI.createInterface<ITargetAccessorLocator>().noDefault();
+
 export interface IConnectableBinding extends IPartialConnectableBinding {
   $nextConnect?: IConnectableBinding;
   $nextPatch?: IConnectableBinding;

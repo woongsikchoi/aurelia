@@ -1,4 +1,5 @@
 import { inject, IRegistry, Reporter } from '@aurelia/kernel';
+import { IDOM } from '../../dom';
 import { BindingMode, IBindingTargetObserver, IEventSubscriber, IObserverLocator, IScope, LifecycleFlags } from '../../interfaces';
 import { Binding } from '../binding';
 import { bindingBehavior } from '../binding-behavior';
@@ -13,14 +14,16 @@ export type UpdateTriggerableBinding = Binding & {
 };
 
 @bindingBehavior('updateTrigger')
-@inject(IObserverLocator)
+@inject(IObserverLocator, IDOM)
 export class UpdateTriggerBindingBehavior {
   public static register: IRegistry['register'];
 
   private observerLocator: IObserverLocator;
+  private dom: IDOM;
 
-  constructor(observerLocator: IObserverLocator) {
+  constructor(observerLocator: IObserverLocator, dom: IDOM) {
     this.observerLocator = observerLocator;
+    this.dom = dom;
   }
 
   public bind(flags: LifecycleFlags, scope: IScope, binding: UpdateTriggerableBinding, ...events: string[]): void {
@@ -49,7 +52,7 @@ export class UpdateTriggerBindingBehavior {
 
   public unbind(flags: LifecycleFlags, scope: IScope, binding: UpdateTriggerableBinding): void {
     // restore the state of the binding.
-    binding.targetObserver.handler.dispose();
+    binding.targetObserver.handler.dispose(this.dom);
     binding.targetObserver.handler = binding.targetObserver.originalHandler;
     binding.targetObserver.originalHandler = null;
   }

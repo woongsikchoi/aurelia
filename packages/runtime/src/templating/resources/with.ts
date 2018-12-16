@@ -1,6 +1,6 @@
 import { inject, IRegistry } from '@aurelia/kernel';
 import { Scope } from '../../binding/binding-context';
-import { IRenderLocation } from '../../dom.interfaces';
+import { IRenderLocation } from '../../dom';
 import { IBindingContext, IBindScope, LifecycleFlags, State } from '../../interfaces';
 import { IView, IViewFactory } from '../../lifecycle';
 import { bindable } from '../bindable';

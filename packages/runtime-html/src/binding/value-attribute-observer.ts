@@ -1,4 +1,5 @@
 import { IBindingTargetObserver, IEventSubscriber, ILifecycle, INode, IPropertySubscriber, LifecycleFlags, targetObserver } from '@aurelia/runtime';
+import { IHTMLDOM } from '../dom';
 
 const inputValueDefaults = {
   ['button']: '',
@@ -32,6 +33,7 @@ export interface ValueAttributeObserver extends
 
 @targetObserver('')
 export class ValueAttributeObserver implements ValueAttributeObserver {
+  public readonly dom: IHTMLDOM;
   public currentFlags: LifecycleFlags;
   public currentValue: unknown;
   public defaultValue: unknown;
@@ -42,7 +44,8 @@ export class ValueAttributeObserver implements ValueAttributeObserver {
   public obj: INode;
   public propertyKey: string;
 
-  constructor(lifecycle: ILifecycle, obj: INode, propertyKey: string, handler: IEventSubscriber) {
+  constructor(dom: IHTMLDOM, lifecycle: ILifecycle, obj: INode, propertyKey: string, handler: IEventSubscriber) {
+    this.dom = dom;
     this.handler = handler;
     this.lifecycle = lifecycle;
     this.obj = obj;
@@ -88,14 +91,14 @@ export class ValueAttributeObserver implements ValueAttributeObserver {
   public subscribe(subscriber: IPropertySubscriber): void {
     if (!this.hasSubscribers()) {
       this.oldValue = this.getValue();
-      this.handler.subscribe(this.obj, this);
+      this.handler.subscribe(this.dom, this.obj, this);
     }
     this.addSubscriber(subscriber);
   }
 
   public unsubscribe(subscriber: IPropertySubscriber): void {
     if (this.removeSubscriber(subscriber) && !this.hasSubscribers()) {
-      this.handler.dispose();
+      this.handler.dispose(this.dom);
     }
   }
 

@@ -1,5 +1,5 @@
 import { IServiceLocator, Tracer } from '@aurelia/kernel';
-import { INode } from '../dom.interfaces';
+import { INode } from '../dom';
 import {
   IAccessor,
   IBindScope,

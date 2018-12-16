@@ -1,12 +1,9 @@
 import {
   CollectionKind,
-  DOM,
   IBatchedCollectionSubscriber,
   IBindingTargetObserver,
   ICollectionObserver,
   IEventSubscriber,
-  IHTMLOptionElement,
-  IHTMLSelectElement,
   ILifecycle,
   IMutationObserver,
   IndexMap,
@@ -15,6 +12,7 @@ import {
   LifecycleFlags,
   targetObserver
 } from '@aurelia/runtime';
+import { IHTMLDOM } from '../dom';
 
 const handleEventFlags = LifecycleFlags.fromDOMEvent | LifecycleFlags.updateSourceExpression;
 
@@ -28,11 +26,11 @@ function defaultMatcher(a: unknown, b: unknown): boolean {
   return a === b;
 }
 
-export interface ISelectElement extends IHTMLSelectElement {
-  options: ArrayLike<IOptionElement>;
+export interface ISelectElement extends HTMLSelectElement {
+  options: HTMLCollectionOf<IOptionElement> & Pick<HTMLOptionsCollection, 'length' | 'selectedIndex' | 'add' | 'remove'>;
   matcher?: typeof defaultMatcher;
 }
-export interface IOptionElement extends IHTMLOptionElement {
+export interface IOptionElement extends HTMLOptionElement {
   model?: unknown;
 }
 
@@ -43,6 +41,11 @@ export interface SelectValueObserver extends
 
 @targetObserver()
 export class SelectValueObserver implements SelectValueObserver {
+  public readonly dom: IHTMLDOM;
+  public lifecycle: ILifecycle;
+  public obj: ISelectElement;
+  public handler: IEventSubscriber;
+  public observerLocator: IObserverLocator;
   public currentValue: unknown;
   public currentFlags: LifecycleFlags;
   public oldValue: unknown;
@@ -54,11 +57,18 @@ export class SelectValueObserver implements SelectValueObserver {
   private nodeObserver: IMutationObserver;
 
   constructor(
-    public lifecycle: ILifecycle,
-    public obj: ISelectElement,
-    public handler: IEventSubscriber,
-    public observerLocator: IObserverLocator
-  ) { }
+    dom: IHTMLDOM,
+    lifecycle: ILifecycle,
+    obj: ISelectElement,
+    handler: IEventSubscriber,
+    observerLocator: IObserverLocator
+  ) {
+    this.dom = dom;
+    this.lifecycle = lifecycle;
+    this.obj = obj;
+    this.handler = handler;
+    this.observerLocator = observerLocator;
+  }
 
   public getValue(): unknown {
     return this.currentValue;
@@ -223,19 +233,19 @@ export class SelectValueObserver implements SelectValueObserver {
 
   public subscribe(subscriber: IPropertySubscriber): void {
     if (!this.hasSubscribers()) {
-      this.handler.subscribe(this.obj, this);
+      this.handler.subscribe(this.dom, this.obj, this);
     }
     this.addSubscriber(subscriber);
   }
 
   public unsubscribe(subscriber: IPropertySubscriber): void {
     if (this.removeSubscriber(subscriber) && !this.hasSubscribers()) {
-      this.handler.dispose();
+      this.handler.dispose(this.dom);
     }
   }
 
   public bind(): void {
-    this.nodeObserver = DOM.createNodeObserver(
+    this.nodeObserver = this.dom.createNodeObserver(
       this.obj,
       this.handleNodeChange.bind(this),
       childObserverOptions

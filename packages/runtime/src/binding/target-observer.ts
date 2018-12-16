@@ -1,5 +1,4 @@
 import { Tracer } from '@aurelia/kernel';
-import { DOM } from '../dom';
 import { IBindingTargetAccessor, ILifecycle, LifecycleFlags, MutationKind } from '../interfaces';
 import { subscriberCollection } from './subscriber-collection';
 
@@ -22,7 +21,7 @@ function setValue(this: BindingTargetAccessor, newValue: unknown, flags: Lifecyc
   if (currentValue !== newValue) {
     this.currentValue = newValue;
     if ((flags & (LifecycleFlags.fromFlush | LifecycleFlags.fromBind)) &&
-      !((flags & LifecycleFlags.doNotUpdateDOM) && DOM.isNodeInstance(this.obj))) {
+      !((flags & LifecycleFlags.doNotUpdateDOM) && this.dom.isNodeInstance(this.obj))) {
       this.setValueCore(newValue, flags);
     } else {
       this.currentFlags = flags;
@@ -36,7 +35,7 @@ function setValue(this: BindingTargetAccessor, newValue: unknown, flags: Lifecyc
 
 function flush(this: BindingTargetAccessor, flags: LifecycleFlags): void {
   if (Tracer.enabled) { Tracer.enter(`${this['constructor'].name}.flush`, slice.call(arguments)); }
-  if ((flags & LifecycleFlags.doNotUpdateDOM) && DOM.isNodeInstance(this.obj)) {
+  if ((flags & LifecycleFlags.doNotUpdateDOM) && this.dom.isNodeInstance(this.obj)) {
     // re-queue the change so it will still propagate on flush when it's attached again
     this.lifecycle.enqueueFlush(this).catch(error => { throw error; });
     if (Tracer.enabled) { Tracer.leave(); }

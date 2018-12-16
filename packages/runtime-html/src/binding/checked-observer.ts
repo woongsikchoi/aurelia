@@ -4,7 +4,6 @@ import {
   IBindingTargetObserver,
   ICollectionObserver,
   IEventSubscriber,
-  IHTMLInputElement,
   ILifecycle,
   IObserverLocator,
   IPropertySubscriber,
@@ -13,13 +12,14 @@ import {
   SetterObserver,
   targetObserver
 } from '@aurelia/runtime';
+import { IHTMLDOM } from '../dom';
 import { ValueAttributeObserver } from './value-attribute-observer';
 
 const handleEventFlags = LifecycleFlags.fromDOMEvent | LifecycleFlags.updateSourceExpression;
 
 const defaultHandleBatchedChangeFlags = LifecycleFlags.fromFlush | LifecycleFlags.updateTargetInstance;
 
-export interface IInputElement extends IHTMLInputElement {
+export interface IInputElement extends HTMLInputElement {
   model?: unknown;
   $observers?: ObserversLookup & {
     model?: SetterObserver;
@@ -39,6 +39,7 @@ export interface CheckedObserver extends
 
 @targetObserver()
 export class CheckedObserver implements CheckedObserver {
+  public readonly dom: IHTMLDOM;
   public currentFlags: LifecycleFlags;
   public currentValue: unknown;
   public defaultValue: unknown;
@@ -52,7 +53,8 @@ export class CheckedObserver implements CheckedObserver {
   private arrayObserver: ICollectionObserver<CollectionKind.array>;
   private valueObserver: ValueAttributeObserver | SetterObserver;
 
-  constructor(lifecycle: ILifecycle, obj: IInputElement, handler: IEventSubscriber, observerLocator: IObserverLocator) {
+  constructor(dom: IHTMLDOM, lifecycle: ILifecycle, obj: IInputElement, handler: IEventSubscriber, observerLocator: IObserverLocator) {
+    this.dom = dom;
     this.handler = handler;
     this.lifecycle = lifecycle;
     this.obj = obj;
@@ -98,7 +100,7 @@ export class CheckedObserver implements CheckedObserver {
     const element = this.obj;
     const elementValue = element.hasOwnProperty('model') ? element['model'] : element.value;
     const isRadio = element.type === 'radio';
-    const matcher = element['matcher'] || ((a: unknown, b: unknown) => a === b);
+    const matcher = element['matcher'] || defaultMatcher;
 
     if (isRadio) {
       element.checked = !!matcher(value, elementValue);
@@ -127,7 +129,7 @@ export class CheckedObserver implements CheckedObserver {
     let value = this.currentValue;
     const element = this.obj;
     const elementValue = element.hasOwnProperty('model') ? element['model'] : element.value;
-    let index;
+    let index: number;
     const matcher = element['matcher'] || defaultMatcher;
 
     if (element.type === 'checkbox') {
@@ -154,14 +156,14 @@ export class CheckedObserver implements CheckedObserver {
 
   public subscribe(subscriber: IPropertySubscriber): void {
     if (!this.hasSubscribers()) {
-      this.handler.subscribe(this.obj, this);
+      this.handler.subscribe(this.dom, this.obj, this);
     }
     this.addSubscriber(subscriber);
   }
 
   public unsubscribe(subscriber: IPropertySubscriber): void {
     if (this.removeSubscriber(subscriber) && !this.hasSubscribers()) {
-      this.handler.dispose();
+      this.handler.dispose(this.dom);
     }
   }
 

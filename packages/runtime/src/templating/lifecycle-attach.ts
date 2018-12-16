@@ -1,5 +1,5 @@
 import { Tracer, Writable } from '@aurelia/kernel';
-import { INode } from '../dom.interfaces';
+import { INode } from '../dom';
 import { Hooks, LifecycleFlags, State } from '../interfaces';
 import { IView } from '../lifecycle';
 import { ICustomAttribute } from './custom-attribute';

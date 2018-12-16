@@ -1,36 +1,41 @@
-import { Constructable, PLATFORM, Writable } from '@aurelia/kernel';
+import { Constructable, inject, PLATFORM, Writable } from '@aurelia/kernel';
 import {
   AuMarker,
   CompiledTemplate,
-  DOM,
-  IDocumentFragment,
-  INode,
+  IDOM,
   INodeSequence,
   INodeSequenceFactory,
   IRenderContext,
   IRenderLocation,
   ITemplate,
   ITemplateFactory,
-  IText,
-  ITraversable,
   NodeSequence,
-  NodeType,
   TemplateDefinition
 } from '@aurelia/runtime';
+import { IHTMLDOM } from './dom';
 
+@inject(IHTMLDOM)
 export class HTMLTemplateFactory implements ITemplateFactory {
+  private readonly dom: IHTMLDOM;
+
+  constructor(dom: IHTMLDOM) {
+    this.dom = dom;
+  }
+
   public create(parentRenderContext: IRenderContext, definition: TemplateDefinition): ITemplate {
-    return new CompiledTemplate(definition, new NodeSequenceFactory(definition.template), parentRenderContext);
+    return new CompiledTemplate(this.dom, definition, new NodeSequenceFactory(this.dom, definition.template as string | Node), parentRenderContext);
   }
 }
 
 export class NodeSequenceFactory implements INodeSequenceFactory {
+  private readonly dom: IHTMLDOM;
   private readonly deepClone: boolean;
-  private readonly node: INode;
+  private readonly node: Node;
   private readonly Type: Constructable;
 
-  constructor(markupOrNode: unknown) {
-    const fragment = DOM.createDocumentFragment(markupOrNode);
+  constructor(dom: IHTMLDOM, markupOrNode: string | Node) {
+    this.dom = dom;
+    const fragment = dom.createDocumentFragment(markupOrNode);
     const childNodes = fragment.childNodes;
     switch (childNodes.length) {
       case 0:
@@ -40,7 +45,7 @@ export class NodeSequenceFactory implements INodeSequenceFactory {
         const target = childNodes[0];
         if (target.nodeName === 'AU-M' || target.nodeName === '#comment') {
           const text = childNodes[1];
-          if (text.nodeType === NodeType.Text && text.textContent.length === 0) {
+          if (text.nodeType === Node.TEXT_NODE && text.textContent.length === 0) {
             this.deepClone = false;
             this.node = text;
             this.Type = TextNodeSequence;
@@ -56,7 +61,7 @@ export class NodeSequenceFactory implements INodeSequenceFactory {
   }
 
   public createNodeSequence(): INodeSequence {
-    return new this.Type(this.node.cloneNode(this.deepClone));
+    return new this.Type(this.dom.cloneNode(this.node, this.deepClone));
   }
 }
 
@@ -66,34 +71,36 @@ export class NodeSequenceFactory implements INodeSequenceFactory {
  * - the previous element is an `au-m` node
  * - text is the actual text node
  */
-export class TextNodeSequence implements INodeSequence {
-  public firstChild: IText;
-  public lastChild: IText;
-  public childNodes: IText[];
+export class TextNodeSequence implements INodeSequence<Node> {
+  public firstChild: Text;
+  public lastChild: Text;
+  public childNodes: Text[];
 
-  private targets: [INode];
+  private readonly dom: IHTMLDOM;
+  private targets: [Node];
 
-  constructor(text: IText) {
+  constructor(dom: IHTMLDOM, text: Text) {
+    this.dom = dom;
     this.firstChild = text;
     this.lastChild = text;
     this.childNodes = [text];
-    this.targets = [new AuMarker(text)];
+    this.targets = ([new AuMarker(text)] as unknown) as [Node];
   }
 
-  public findTargets(): ArrayLike<INode> {
+  public findTargets(): ArrayLike<Node> {
     return this.targets;
   }
 
-  public insertBefore(refNode: INode): void {
-    refNode.parentNode.insertBefore(this.firstChild, refNode);
+  public insertBefore(refNode: Node): void {
+    this.dom.insertBefore(this.firstChild, refNode);
   }
 
-  public appendTo(parent: INode): void {
-    parent.appendChild(this.firstChild);
+  public appendTo(parent: Node): void {
+    this.dom.appendChild(parent, this.firstChild);
   }
 
   public remove(): void {
-    this.firstChild.remove();
+    this.dom.remove(this.firstChild);
   }
 }
 // tslint:enable:no-any
@@ -104,17 +111,19 @@ export class TextNodeSequence implements INodeSequence {
 // a string of markup would also receive an instance of this.
 // CompiledTemplates create instances of FragmentNodeSequence.
 /** @internal */
-export class FragmentNodeSequence implements INodeSequence {
-  public firstChild: INode;
-  public lastChild: INode;
-  public childNodes: INode[];
+export class FragmentNodeSequence implements INodeSequence<Node> {
+  public firstChild: Node;
+  public lastChild: Node;
+  public childNodes: Node[];
 
-  private end: IRenderLocation;
-  private fragment: IDocumentFragment;
-  private start: IRenderLocation;
-  private targets: ArrayLike<INode>;
+  private readonly dom: IHTMLDOM;
+  private end: IRenderLocation<Comment>;
+  private fragment: DocumentFragment;
+  private start: IRenderLocation<Comment>;
+  private targets: ArrayLike<Node>;
 
-  constructor(fragment: IDocumentFragment) {
+  constructor(dom: IHTMLDOM, fragment: DocumentFragment) {
+    this.dom = dom;
     this.fragment = fragment;
     // tslint:disable-next-line:no-any
     const targetNodeList = fragment.querySelectorAll('.au');
@@ -129,7 +138,7 @@ export class FragmentNodeSequence implements INodeSequence {
       if (target.nodeName === 'AU-M') {
         // note the renderer will still call this method, but it will just return the
         // location if it sees it's already a location
-        targets[i] = DOM.convertToRenderLocation(target);
+        targets[i] = this.dom.convertToRenderLocation(target);
       } else {
         // also store non-markers for consistent ordering
         targets[i] = target;
@@ -141,7 +150,7 @@ export class FragmentNodeSequence implements INodeSequence {
     ii = childNodeList.length;
     const childNodes = this.childNodes = Array(ii);
     while (i < ii) {
-      childNodes[i] = childNodeList[i] as Writable<INode>;
+      childNodes[i] = childNodeList[i] as Writable<Node>;
       ++i;
     }
 
@@ -151,17 +160,16 @@ export class FragmentNodeSequence implements INodeSequence {
     this.start = this.end = null;
   }
 
-  public findTargets(): ArrayLike<INode> {
+  public findTargets(): ArrayLike<Node> {
     return this.targets;
   }
 
   public insertBefore(refNode: IRenderLocation): void {
-    // tslint:disable-next-line:no-any
-    DOM.insertBefore(this.fragment, refNode);
+    this.dom.insertBefore(this.fragment, refNode as Node);
     // internally we could generally assume that this is an IRenderLocation,
     // but since this is also public API we still need to double check
     // (or horrible things might happen)
-    if (DOM.isRenderLocation(refNode)) {
+    if (this.dom.isRenderLocation(refNode)) {
       this.end = refNode;
       const start = this.start = refNode.$start;
       if (start.$nodes === null) {
@@ -179,9 +187,8 @@ export class FragmentNodeSequence implements INodeSequence {
     }
   }
 
-  public appendTo(parent: INode): void {
-    // tslint:disable-next-line:no-any
-    parent.appendChild(this.fragment);
+  public appendTo(parent: Node): void {
+    this.dom.appendChild(parent, this.fragment);
     // this can never be a RenderLocation, and if for whatever reason we moved
     // from a RenderLocation to a host, make sure "start" and "end" are null
     this.start = this.end = null;
@@ -194,26 +201,27 @@ export class FragmentNodeSequence implements INodeSequence {
       // repeater with a single item) then simply remove everything in-between (but not
       // the comments themselves as they belong to the parent)
       const end = this.end;
-      let next: ITraversable;
-      let current = this.start.nextSibling;
+      const start = this.start as Node;
+      let next: Node;
+      let current = start.nextSibling;
       while (current !== end) {
         next = current.nextSibling;
-        DOM.appendChild(fragment, current);
+        this.dom.appendChild(fragment, current);
         current = next;
       }
       this.start.$nodes = null;
       this.start = this.end = null;
     } else {
       // otherwise just remove from first to last child in the regular way
-      let current = this.firstChild as ITraversable;
+      let current = this.firstChild;
 
       if (current.parentNode !== fragment) {
         const end = this.lastChild;
-        let next: ITraversable;
+        let next: Node;
 
         while (current !== null) {
           next = current.nextSibling;
-          DOM.appendChild(fragment, current);
+          this.dom.appendChild(fragment, current);
 
           if (current === end) {
             break;

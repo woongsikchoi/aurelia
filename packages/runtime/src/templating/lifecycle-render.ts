@@ -1,8 +1,7 @@
 import { PLATFORM, Reporter, Tracer, Writable } from '@aurelia/kernel';
 import { Scope } from '../binding/binding-context';
 import { IElementHydrationOptions, TemplateDefinition } from '../definitions';
-import { DOM } from '../dom';
-import { IElement, INode, INodeSequence, IRenderLocation, ITraversable } from '../dom.interfaces';
+import { IDOM, INode, INodeSequence, IRenderLocation } from '../dom';
 import { Hooks } from '../interfaces';
 import { IRenderingEngine, ITemplate } from '../rendering-engine';
 import { ICustomAttribute, ICustomAttributeType } from './custom-attribute';
@@ -14,9 +13,10 @@ export interface ICustomElementHost extends IRenderLocation {
   $customElement?: ICustomElement;
 }
 
-export interface IElementProjector {
+export interface IElementProjector<TDOM extends IDOM = IDOM> {
+  readonly dom: TDOM;
   readonly host: ICustomElementHost;
-  readonly children: ArrayLike<ICustomElementHost>;
+  readonly children: ReadonlyArray<ICustomElementHost>;
 
   provideEncapsulationSource(parentEncapsulationSource: unknown): INode;
   project(nodes: INodeSequence): void;
@@ -57,7 +57,7 @@ export interface ILifecycleRender {
 }
 
 /** @internal */
-export function $hydrateAttribute(this: Writable<ICustomAttribute>, renderingEngine: IRenderingEngine): void {
+export function $hydrateAttribute(this: Writable<ICustomAttribute>, dom: IDOM, renderingEngine: IRenderingEngine): void {
   if (Tracer.enabled) { Tracer.enter(`${this['constructor'].name}.$hydrateAttribute`, slice.call(arguments)); }
   const Type = this.constructor as ICustomAttributeType;
 
@@ -70,14 +70,14 @@ export function $hydrateAttribute(this: Writable<ICustomAttribute>, renderingEng
 }
 
 /** @internal */
-export function $hydrateElement(this: Writable<ICustomElement>, renderingEngine: IRenderingEngine, host: INode, options: IElementHydrationOptions = PLATFORM.emptyObject): void {
+export function $hydrateElement(this: Writable<ICustomElement>, dom: IDOM, renderingEngine: IRenderingEngine, host: INode, options: IElementHydrationOptions = PLATFORM.emptyObject): void {
   if (Tracer.enabled) { Tracer.enter(`${this['constructor'].name}.$hydrateElement`, slice.call(arguments)); }
   const Type = this.constructor as ICustomElementType;
   const description = Type.description;
 
   this.$scope = Scope.create(this, null);
   this.$host = host;
-  this.$projector = determineProjector(this, host, description);
+  this.$projector = determineProjector(dom, this, host, description);
 
   renderingEngine.applyRuntimeBehavior(Type, this);
 
@@ -104,47 +104,50 @@ export const defaultShadowOptions = {
   mode: 'open' as 'open' | 'closed'
 };
 
-function determineProjector(
+function determineProjector<TDOM extends IDOM = IDOM>(
+  dom: TDOM,
   $customElement: ICustomElement,
   host: ICustomElementHost,
   definition: TemplateDefinition
-): IElementProjector {
+): IElementProjector<TDOM> {
   if (definition.shadowOptions || definition.hasSlots) {
     if (definition.containerless) {
       throw Reporter.error(21);
     }
 
-    return new ShadowDOMProjector($customElement, host, definition);
+    return new ShadowDOMProjector(dom, $customElement, host, definition);
   }
 
   if (definition.containerless) {
-    return new ContainerlessProjector($customElement, host);
+    return new ContainerlessProjector(dom, $customElement, host);
   }
 
-  return new HostProjector($customElement, host);
+  return new HostProjector(dom, $customElement, host);
 }
 
 const childObserverOptions = { childList: true };
 
 /** @internal */
-export class ShadowDOMProjector implements IElementProjector {
+export class ShadowDOMProjector<TDOM extends IDOM = IDOM> implements IElementProjector {
+  public readonly dom: TDOM;
   public host: ICustomElementHost;
   public shadowRoot: ICustomElementHost;
 
-  constructor($customElement: ICustomElement, host: ICustomElementHost, definition: TemplateDefinition) {
+  constructor(dom: TDOM, $customElement: ICustomElement, host: ICustomElementHost, definition: TemplateDefinition) {
+    this.dom = dom;
     this.host = host;
 
-    this.shadowRoot = DOM.attachShadow(this.host as IElement, definition.shadowOptions || defaultShadowOptions);
+    this.shadowRoot = dom.attachShadow(host, definition.shadowOptions || defaultShadowOptions) as ICustomElementHost;
     this.host.$customElement = $customElement;
     this.shadowRoot.$customElement = $customElement;
   }
 
-  get children(): ArrayLike<INode> {
-    return this.host.childNodes as ArrayLike<INode>;
+  get children(): ReadonlyArray<ICustomElementHost> {
+    return this.dom.getChildNodes(this.host) as ReadonlyArray<ICustomElementHost>;
   }
 
   public subscribeToChildrenChange(callback: () => void): void {
-    DOM.createNodeObserver(this.host, callback, childObserverOptions);
+    this.dom.createNodeObserver(this.host, callback, childObserverOptions);
   }
 
   public provideEncapsulationSource(parentEncapsulationSource: INode): INode {
@@ -165,24 +168,22 @@ export class ShadowDOMProjector implements IElementProjector {
 }
 
 /** @internal */
-export class ContainerlessProjector implements IElementProjector {
+export class ContainerlessProjector<TDOM extends IDOM = IDOM> implements IElementProjector {
+  public readonly dom: TDOM;
   public host: ICustomElementHost;
 
-  private childNodes: ArrayLike<ITraversable>;
+  private childNodes: ReadonlyArray<ICustomElementHost>;
 
-  constructor($customElement: ICustomElement, host: ICustomElementHost) {
-    if (host.childNodes.length) {
-      this.childNodes = PLATFORM.toArray(host.childNodes);
-    } else {
-      this.childNodes = PLATFORM.emptyArray;
-    }
+  constructor(dom: TDOM, $customElement: ICustomElement, host: ICustomElementHost) {
+    this.dom = dom;
+    this.childNodes = dom.getChildNodes(host) as ReadonlyArray<ICustomElementHost>;
 
-    this.host = DOM.convertToRenderLocation(host);
+    this.host = this.dom.convertToRenderLocation(host) as ICustomElementHost;
     this.host.$customElement = $customElement;
   }
 
-  get children(): ArrayLike<INode> {
-    return this.childNodes as ArrayLike<INode>;
+  get children(): ReadonlyArray<ICustomElementHost> {
+    return this.childNodes;
   }
 
   public subscribeToChildrenChange(callback: () => void): void {
@@ -211,16 +212,18 @@ export class ContainerlessProjector implements IElementProjector {
 }
 
 /** @internal */
-export class HostProjector implements IElementProjector {
+export class HostProjector<TDOM extends IDOM = IDOM> implements IElementProjector {
+  public readonly dom: TDOM;
   public host: ICustomElementHost;
 
-  constructor($customElement: ICustomElement, host: ICustomElementHost) {
+  constructor(dom: TDOM, $customElement: ICustomElement, host: ICustomElementHost) {
+    this.dom = dom;
     this.host = host;
 
     this.host.$customElement = $customElement;
   }
 
-  get children(): ArrayLike<INode> {
+  get children(): ReadonlyArray<ICustomElementHost> {
     return PLATFORM.emptyArray;
   }
 

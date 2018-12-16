@@ -1,5 +1,5 @@
 import { Reporter, Tracer } from '@aurelia/kernel';
-import { INodeSequence, IRenderLocation } from '../dom.interfaces';
+import { INodeSequence, IRenderLocation, IDOM } from '../dom';
 import { IAttach, IBindScope, ILifecycle, ILifecycleUnbind, IMountable, IScope, LifecycleFlags, State } from '../interfaces';
 import { IRenderContext, IView, IViewCache, IViewFactory } from '../lifecycle';
 import { ITemplate } from '../rendering-engine';
@@ -38,9 +38,10 @@ export class View implements IView {
   public location: IRenderLocation;
   public isFree: boolean;
 
+  public readonly dom: IDOM;
   public readonly $lifecycle: ILifecycle;
 
-  constructor($lifecycle: ILifecycle, cache: IViewCache) {
+  constructor(dom: IDOM, $lifecycle: ILifecycle, cache: IViewCache) {
     this.$bindableHead = null;
     this.$bindableTail = null;
 
@@ -62,13 +63,14 @@ export class View implements IView {
     this.$scope = null;
     this.isFree = false;
 
+    this.dom = dom;
     this.$lifecycle = $lifecycle;
     this.cache = cache;
   }
 
   public hold(location: IRenderLocation, flags: LifecycleFlags): void {
     if (Tracer.enabled) { Tracer.enter('View.hold', slice.call(arguments)); }
-    if (!location.parentNode) { // unmet invariant: location must be a child of some other node
+    if (!this.dom.hasParent(location)) { // unmet invariant: location must be a child of some other node
       throw Reporter.error(60); // TODO: organize error codes
     }
     this.location = location;
@@ -163,7 +165,7 @@ export class ViewFactory implements IViewFactory {
       return view;
     }
 
-    view = new View(this.lifecycle, this);
+    view = new View(this.template.dom, this.lifecycle, this);
     this.template.render(view);
     if (!view.$nodes) {
       throw Reporter.error(90);

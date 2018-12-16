@@ -1,19 +1,22 @@
-import { IBindingTargetAccessor, IHTMLElement, ILifecycle, targetObserver } from '@aurelia/runtime';
+import { IBindingTargetAccessor, ILifecycle, targetObserver } from '@aurelia/runtime';
+import { IHTMLDOM } from '../dom';
 
-export interface AttributeNSAccessor extends IBindingTargetAccessor<IHTMLElement, string, string> {}
+export interface AttributeNSAccessor extends IBindingTargetAccessor<HTMLElement, string, string> {}
 
 @targetObserver('')
 export class AttributeNSAccessor implements AttributeNSAccessor {
+  public readonly dom: IHTMLDOM;
   public attributeName: string;
   public currentValue: string;
   public defaultValue: string;
   public lifecycle: ILifecycle;
-  public obj: IHTMLElement;
+  public obj: HTMLElement;
   public oldValue: string;
   public propertyKey: string;
   public namespace: string;
 
-  constructor(lifecycle: ILifecycle, obj: IHTMLElement, propertyKey: string, attributeName: string, namespace: string) {
+  constructor(dom: IHTMLDOM, lifecycle: ILifecycle, obj: HTMLElement, propertyKey: string, attributeName: string, namespace: string) {
+    this.dom = dom;
     this.attributeName = attributeName;
     this.lifecycle = lifecycle;
     this.obj = obj;

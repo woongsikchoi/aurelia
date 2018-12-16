@@ -19,7 +19,7 @@ import {
   TargetedInstruction,
   TargetedInstructionType
 } from './definitions';
-import { INode } from './dom.interfaces';
+import { INode } from './dom';
 import { BindingMode, DelegationStrategy } from './interfaces';
 
 export class TextBindingInstruction implements ITextBindingInstruction {

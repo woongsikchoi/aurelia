@@ -24,6 +24,7 @@ import { getMapObserver } from './map-observer';
 import { PrimitiveObserver, SetterObserver } from './property-observation';
 import { getSetObserver } from './set-observer';
 import { PropertyAccessor } from './target-accessors';
+import { IDOM } from '../dom';
 
 const toStringTag = Object.prototype.toString;
 
@@ -39,9 +40,10 @@ function getPropertyDescriptor(subject: object, name: string): PropertyDescripto
   return pd;
 }
 
-@inject(ILifecycle, IDirtyChecker, ITargetObserverLocator, ITargetAccessorLocator)
+@inject(IDOM, ILifecycle, IDirtyChecker, ITargetObserverLocator, ITargetAccessorLocator)
 /** @internal */
 export class ObserverLocator implements IObserverLocator {
+  private dom: IDOM;
   private adapters: IObjectObservationAdapter[];
   private dirtyChecker: IDirtyChecker;
   private lifecycle: ILifecycle;
@@ -49,11 +51,13 @@ export class ObserverLocator implements IObserverLocator {
   private targetAccessorLocator: ITargetAccessorLocator;
 
   constructor(
+    dom: IDOM,
     lifecycle: ILifecycle,
     dirtyChecker: IDirtyChecker,
     targetObserverLocator: ITargetObserverLocator,
     targetAccessorLocator: ITargetAccessorLocator
   ) {
+    this.dom = dom;
     this.adapters = [];
     this.dirtyChecker = dirtyChecker;
     this.lifecycle = lifecycle;

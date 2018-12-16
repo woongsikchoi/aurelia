@@ -9,7 +9,7 @@ import {
   ResourcePartDescription
 } from '@aurelia/kernel';
 import { ForOfStatement, Interpolation, IsBindingBehavior } from './binding/ast';
-import { IShadowRootInit } from './dom.interfaces';
+import { IShadowRootInit } from './dom';
 import { BindingMode, DelegationStrategy } from './interfaces';
 import { CustomElementConstructor, ICustomElement } from './templating/custom-element';
 import { ICustomElementHost } from './templating/lifecycle-render';

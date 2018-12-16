@@ -1,18 +1,21 @@
-import { IBindingTargetAccessor, IHTMLElement, ILifecycle, targetObserver } from '@aurelia/runtime';
+import { IBindingTargetAccessor, ILifecycle, targetObserver } from '@aurelia/runtime';
+import { IHTMLDOM } from '../dom';
 
-export interface StyleAttributeAccessor extends IBindingTargetAccessor<IHTMLElement, 'style', string | Record<string, string>> {}
+export interface StyleAttributeAccessor extends IBindingTargetAccessor<HTMLElement, 'style', string | Record<string, string>> {}
 
 @targetObserver()
 export class StyleAttributeAccessor implements StyleAttributeAccessor {
+  public readonly dom: IHTMLDOM;
   public currentValue: string | Record<string, string>;
   public defaultValue: string | Record<string, string>;
   public lifecycle: ILifecycle;
-  public obj: IHTMLElement;
+  public obj: HTMLElement;
   public oldValue: string | Record<string, string>;
   public styles: object;
   public version: number;
 
-  constructor(lifecycle: ILifecycle, obj: IHTMLElement) {
+  constructor(dom: IHTMLDOM, lifecycle: ILifecycle, obj: HTMLElement) {
+    this.dom = dom;
     this.oldValue = this.currentValue = obj.style.cssText;
     this.lifecycle = lifecycle;
     this.obj = obj;
@@ -37,12 +40,12 @@ export class StyleAttributeAccessor implements StyleAttributeAccessor {
 
   public setValueCore(newValue: string | Record<string, string>): void {
     const styles = this.styles || {};
-    let style;
+    let style: string;
     let version = this.version;
 
     if (newValue !== null) {
       if (newValue instanceof Object) {
-        let value;
+        let value: string;
         for (style in (newValue as Object)) {
           if (newValue.hasOwnProperty(style)) {
             value = newValue[style];
@@ -53,7 +56,7 @@ export class StyleAttributeAccessor implements StyleAttributeAccessor {
         }
       } else if ((newValue as string).length) {
         const rx = /\s*([\w\-]+)\s*:\s*((?:(?:[\w\-]+\(\s*(?:"(?:\\"|[^"])*"|'(?:\\'|[^'])*'|[\w\-]+\(\s*(?:[^"](?:\\"|[^"])*"|'(?:\\'|[^'])*'|[^\)]*)\),?|[^\)]*)\),?|"(?:\\"|[^"])*"|'(?:\\'|[^'])*'|[^;]*),?\s*)+);?/g;
-        let pair;
+        let pair: RegExpExecArray;
         while ((pair = rx.exec(newValue)) !== null) {
           style = pair[1];
           if (!style) { continue; }

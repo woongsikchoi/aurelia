@@ -50,8 +50,7 @@ import {
   TemplateDefinition,
   TemplatePartDefinitions
 } from './definitions';
-import { DOM, INodeSequenceFactory, NodeSequence } from './dom';
-import { IElement, INode, IRenderLocation } from './dom.interfaces';
+import { IDOM, INode, INodeSequenceFactory, IRenderLocation, NodeSequence } from './dom';
 import {
   BindingMode,
   IAccessor,
@@ -100,6 +99,7 @@ export const ITemplateFactory = DI.createInterface<ITemplateFactory>().noDefault
 // context for the template.
 export interface ITemplate {
   readonly renderContext: IRenderContext;
+  readonly dom: IDOM;
   render(renderable: IRenderable, host?: INode, parts?: Immutable<Record<string, ITemplateDefinition>>): void;
 }
 
@@ -112,13 +112,15 @@ export interface ITemplate {
 export class CompiledTemplate implements ITemplate {
   public readonly factory: INodeSequenceFactory;
   public readonly renderContext: IRenderContext;
+  public readonly dom: IDOM;
 
   private definition: TemplateDefinition;
 
-  constructor(definition: TemplateDefinition, factory: INodeSequenceFactory, parentRenderContext: IRenderContext) {
+  constructor(dom: IDOM, definition: TemplateDefinition, factory: INodeSequenceFactory, parentRenderContext: IRenderContext) {
+    this.dom = dom;
     this.definition = definition;
     this.factory = factory;
-    this.renderContext = createRenderContext(parentRenderContext, definition.dependencies);
+    this.renderContext = createRenderContext(dom, parentRenderContext, definition.dependencies);
   }
 
   public render(renderable: IRenderable, host?: unknown, parts?: TemplatePartDefinitions): void {
@@ -132,6 +134,7 @@ export class CompiledTemplate implements ITemplate {
 /** @internal */
 export const noViewTemplate: ITemplate = {
   renderContext: null,
+  dom: null,
   render(renderable: IRenderable): void {
     (renderable as Writable<IRenderable>).$nodes = NodeSequence.empty;
     (renderable as Writable<IRenderable>).$context = null;
@@ -250,7 +253,7 @@ export class RenderingEngine implements IRenderingEngine {
   }
 }
 
-export function createRenderContext(parentRenderContext: IRenderContext, dependencies: ImmutableArray<IRegistry>): IRenderContext {
+export function createRenderContext(dom: IDOM, parentRenderContext: IRenderContext, dependencies: ImmutableArray<IRegistry>): IRenderContext {
   const context = parentRenderContext.createChild() as ExposedContext;
   const renderableProvider = new InstanceProvider();
   const elementProvider = new InstanceProvider();
@@ -259,7 +262,7 @@ export function createRenderContext(parentRenderContext: IRenderContext, depende
   const renderLocationProvider = new InstanceProvider<IRenderLocation>();
   const renderer = context.get(IRenderer);
 
-  DOM.registerElementResolver(context, elementProvider);
+  dom.registerElementResolver(context, elementProvider);
 
   context.registerResolver(IViewFactory, factoryProvider);
   context.registerResolver(IRenderable, renderableProvider);
@@ -271,7 +274,7 @@ export function createRenderContext(parentRenderContext: IRenderContext, depende
   }
 
   context.render = function(this: IRenderContext, renderable: IRenderable, targets: ArrayLike<INode>, templateDefinition: TemplateDefinition, host?: INode, parts?: TemplatePartDefinitions): void {
-    renderer.render(this, renderable, targets, templateDefinition, host, parts);
+    renderer.render(dom, this, renderable, targets, templateDefinition, host, parts);
   };
 
   context.beginComponentOperation = function(renderable: IRenderable, target: INode, instruction: ITargetedInstruction, factory?: IViewFactory, parts?: TemplatePartDefinitions, location?: IRenderLocation): IDisposable {
@@ -510,7 +513,7 @@ export type ExposedContext = IRenderContext & IDisposable & IContainer;
 
 export interface IRenderer {
   instructionRenderers: Record<string, IInstructionRenderer>;
-  render(context: IRenderContext, renderable: IRenderable, targets: ArrayLike<INode>, templateDefinition: TemplateDefinition, host?: INode, parts?: TemplatePartDefinitions): void;
+  render(dom: IDOM, context: IRenderContext, renderable: IRenderable, targets: ArrayLike<INode>, templateDefinition: TemplateDefinition, host?: INode, parts?: TemplatePartDefinitions): void;
 }
 
 export const IRenderer = DI.createInterface<IRenderer>().withDefault(x => x.singleton(Renderer));
@@ -520,7 +523,7 @@ export interface IInstructionTypeClassifier<TType extends string = string> {
 }
 
 export interface IInstructionRenderer<TType extends string = string> extends Partial<IInstructionTypeClassifier<TType>> {
-  render(context: IRenderContext, renderable: IRenderable, target: unknown, instruction: ITargetedInstruction, ...rest: unknown[]): void;
+  render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: unknown, instruction: ITargetedInstruction, ...rest: unknown[]): void;
 }
 
 export const IInstructionRenderer = DI.createInterface<IInstructionRenderer>().noDefault();
@@ -565,7 +568,7 @@ export class Renderer implements IRenderer {
     });
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, targets: ArrayLike<INode>, definition: TemplateDefinition, host?: INode, parts?: TemplatePartDefinitions): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, targets: ArrayLike<INode>, definition: TemplateDefinition, host?: INode, parts?: TemplatePartDefinitions): void {
     if (Tracer.enabled) { Tracer.enter('Renderer.render', slice.call(arguments)); }
     const targetInstructions = definition.instructions;
     const instructionRenderers = this.instructionRenderers;
@@ -583,7 +586,7 @@ export class Renderer implements IRenderer {
 
       for (let j = 0, jj = instructions.length; j < jj; ++j) {
         const current = instructions[j];
-        instructionRenderers[current.type].render(context, renderable, target, current, parts);
+        instructionRenderers[current.type].render(dom, context, renderable, target, current, parts);
       }
     }
 
@@ -592,7 +595,7 @@ export class Renderer implements IRenderer {
 
       for (let i = 0, ii = surrogateInstructions.length; i < ii; ++i) {
         const current = surrogateInstructions[i];
-        instructionRenderers[current.type].render(context, renderable, host, current, parts);
+        instructionRenderers[current.type].render(dom, context, renderable, host, current, parts);
       }
     }
     if (Tracer.enabled) { Tracer.leave(); }
@@ -635,7 +638,7 @@ export function addAttachable(renderable: IAttachables, attachable: IAttach): vo
 @instructionRenderer(TargetedInstructionType.setProperty)
 /** @internal */
 export class SetPropertyRenderer implements IInstructionRenderer {
-  public render(context: IRenderContext, renderable: IRenderable, target: IIndexable, instruction: ISetPropertyInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: IIndexable, instruction: ISetPropertyInstruction): void {
     if (Tracer.enabled) { Tracer.enter('SetPropertyRenderer.render', slice.call(arguments)); }
     target[instruction.to] = instruction.value;
     if (Tracer.enabled) { Tracer.leave(); }
@@ -645,9 +648,9 @@ export class SetPropertyRenderer implements IInstructionRenderer {
 @instructionRenderer(TargetedInstructionType.setAttribute)
 /** @internal */
 export class SetAttributeRenderer implements IInstructionRenderer {
-  public render(context: IRenderContext, renderable: IRenderable, target: unknown, instruction: ISetAttributeInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: unknown, instruction: ISetAttributeInstruction): void {
     if (Tracer.enabled) { Tracer.enter('SetAttributeRenderer.render', slice.call(arguments)); }
-    DOM.setAttribute(target, instruction.to, instruction.value);
+    dom.setAttribute(target, instruction.to, instruction.value);
     if (Tracer.enabled) { Tracer.leave(); }
   }
 }
@@ -662,18 +665,18 @@ export class CustomElementRenderer implements IInstructionRenderer {
     this.renderingEngine = renderingEngine;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: IRenderLocation, instruction: IHydrateElementInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: IRenderLocation, instruction: IHydrateElementInstruction): void {
     if (Tracer.enabled) { Tracer.enter('CustomElementRenderer.render', slice.call(arguments)); }
     const operation = context.beginComponentOperation(renderable, target, instruction, null, null, target, true);
     const component = context.get<ICustomElement>(customElementKey(instruction.res));
     const instructionRenderers = context.get(IRenderer).instructionRenderers;
     const childInstructions = instruction.instructions;
 
-    component.$hydrate(this.renderingEngine, target, instruction as IElementHydrationOptions);
+    component.$hydrate(dom, this.renderingEngine, target, instruction as IElementHydrationOptions);
 
     for (let i = 0, ii = childInstructions.length; i < ii; ++i) {
       const current = childInstructions[i];
-      instructionRenderers[current.type].render(context, renderable, component, current);
+      instructionRenderers[current.type].render(dom, context, renderable, component, current);
     }
 
     addBindable(renderable, component);
@@ -694,18 +697,18 @@ export class CustomAttributeRenderer implements IInstructionRenderer {
     this.renderingEngine = renderingEngine;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: IElement, instruction: IHydrateAttributeInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: unknown, instruction: IHydrateAttributeInstruction): void {
     if (Tracer.enabled) { Tracer.enter('CustomAttributeRenderer.render', slice.call(arguments)); }
     const operation = context.beginComponentOperation(renderable, target, instruction);
     const component = context.get<ICustomAttribute>(customAttributeKey(instruction.res));
     const instructionRenderers = context.get(IRenderer).instructionRenderers;
     const childInstructions = instruction.instructions;
 
-    component.$hydrate(this.renderingEngine);
+    component.$hydrate(dom, this.renderingEngine);
 
     for (let i = 0, ii = childInstructions.length; i < ii; ++i) {
       const current = childInstructions[i];
-      instructionRenderers[current.type].render(context, renderable, component, current);
+      instructionRenderers[current.type].render(dom, context, renderable, component, current);
     }
 
     addBindable(renderable, component);
@@ -726,15 +729,15 @@ export class TemplateControllerRenderer implements IInstructionRenderer {
     this.renderingEngine = renderingEngine;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: IElement, instruction: IHydrateTemplateController, parts?: TemplatePartDefinitions): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: unknown, instruction: IHydrateTemplateController, parts?: TemplatePartDefinitions): void {
     if (Tracer.enabled) { Tracer.enter('TemplateControllerRenderer.render', slice.call(arguments)); }
     const factory = this.renderingEngine.getViewFactory(instruction.def, context);
-    const operation = context.beginComponentOperation(renderable, target, instruction, factory, parts, DOM.convertToRenderLocation(target), false);
+    const operation = context.beginComponentOperation(renderable, target, instruction, factory, parts, dom.convertToRenderLocation(target), false);
     const component = context.get<ICustomAttribute>(customAttributeKey(instruction.res));
     const instructionRenderers = context.get(IRenderer).instructionRenderers;
     const childInstructions = instruction.instructions;
 
-    component.$hydrate(this.renderingEngine);
+    component.$hydrate(dom, this.renderingEngine);
 
     if (instruction.link) {
       (component as ICustomAttribute & { link(attachableTail: IAttach): void}).link(renderable.$attachableTail);
@@ -742,7 +745,7 @@ export class TemplateControllerRenderer implements IInstructionRenderer {
 
     for (let i = 0, ii = childInstructions.length; i < ii; ++i) {
       const current = childInstructions[i];
-      instructionRenderers[current.type].render(context, renderable, component, current);
+      instructionRenderers[current.type].render(dom, context, renderable, component, current);
     }
 
     addBindable(renderable, component);
@@ -765,9 +768,9 @@ export class LetElementRenderer implements IInstructionRenderer {
     this.observerLocator = observerLocator;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: IElement, instruction: IHydrateLetElementInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: unknown, instruction: IHydrateLetElementInstruction): void {
     if (Tracer.enabled) { Tracer.enter('LetElementRenderer.render', slice.call(arguments)); }
-    target.remove();
+    dom.remove(target);
     const childInstructions = instruction.instructions;
     const toViewModel = instruction.toViewModel;
     for (let i = 0, ii = childInstructions.length; i < ii; ++i) {
@@ -792,7 +795,7 @@ export class CallBindingRenderer implements IInstructionRenderer {
     this.observerLocator = observerLocator;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: INode, instruction: ICallBindingInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: INode, instruction: ICallBindingInstruction): void {
     if (Tracer.enabled) { Tracer.enter('CallBindingRenderer.render', slice.call(arguments)); }
     const expr = ensureExpression(this.parser, instruction.from, BindingType.CallCommand);
     const bindable = new Call(expr, target, instruction.to, this.observerLocator, context);
@@ -811,7 +814,7 @@ export class RefBindingRenderer implements IInstructionRenderer {
     this.parser = parser;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: INode, instruction: IRefBindingInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: INode, instruction: IRefBindingInstruction): void {
     if (Tracer.enabled) { Tracer.enter('RefBindingRenderer.render', slice.call(arguments)); }
     const expr = ensureExpression(this.parser, instruction.from, BindingType.IsRef);
     const bindable = new Ref(expr, target, context);
@@ -832,7 +835,7 @@ export class InterpolationBindingRenderer implements IInstructionRenderer {
     this.observerLocator = observerLocator;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: INode, instruction: IInterpolationInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: INode, instruction: IInterpolationInstruction): void {
     if (Tracer.enabled) { Tracer.enter('InterpolationBindingRenderer.render', slice.call(arguments)); }
     let bindable: MultiInterpolationBinding | InterpolationBinding;
     const expr = ensureExpression(this.parser, instruction.from, BindingType.Interpolation);
@@ -858,7 +861,7 @@ export class PropertyBindingRenderer implements IInstructionRenderer {
     this.observerLocator = observerLocator;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: INode, instruction: IPropertyBindingInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: INode, instruction: IPropertyBindingInstruction): void {
     if (Tracer.enabled) { Tracer.enter('PropertyBindingRenderer.render', slice.call(arguments)); }
     const expr = ensureExpression(this.parser, instruction.from, BindingType.IsPropertyCommand | instruction.mode);
     const bindable = new Binding(expr, target, instruction.to, instruction.mode, this.observerLocator, context);
@@ -879,7 +882,7 @@ export class IteratorBindingRenderer implements IInstructionRenderer {
     this.observerLocator = observerLocator;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: INode, instruction: IIteratorBindingInstruction): void {
+  public render(dom: IDOM, context: IRenderContext, renderable: IRenderable, target: INode, instruction: IIteratorBindingInstruction): void {
     if (Tracer.enabled) { Tracer.enter('IteratorBindingRenderer.render', slice.call(arguments)); }
     const expr = ensureExpression(this.parser, instruction.from, BindingType.ForCommand);
     const bindable = new Binding(expr, target, instruction.to, BindingMode.toView, this.observerLocator, context);

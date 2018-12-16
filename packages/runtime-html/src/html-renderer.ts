@@ -4,14 +4,11 @@ import {
   Binding,
   BindingMode,
   BindingType,
-  DOM,
   ensureExpression,
   IEventManager,
   IExpressionParser,
-  IHTMLElement,
   IInstructionRenderer,
   IListenerBindingInstruction,
-  INode,
   instructionRenderer,
   InterpolationBinding,
   IObserverLocator,
@@ -23,6 +20,7 @@ import {
   MultiInterpolationBinding,
   TargetedInstructionType
 } from '@aurelia/runtime';
+import { IHTMLDOM } from './dom';
 
 const slice = Array.prototype.slice;
 
@@ -38,11 +36,11 @@ export class TextBindingRenderer implements IInstructionRenderer {
     this.observerLocator = observerLocator;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: INode, instruction: ITextBindingInstruction): void {
+  public render(dom: IHTMLDOM, context: IRenderContext, renderable: IRenderable, target: Node, instruction: ITextBindingInstruction): void {
     if (Tracer.enabled) { Tracer.enter('TextBindingRenderer.render', slice.call(arguments)); }
     const next = target.nextSibling;
-    if (DOM.isMarker(target)) {
-      DOM.remove(target);
+    if (dom.isMarker(target)) {
+      dom.remove(target);
     }
     let bindable: MultiInterpolationBinding | InterpolationBinding;
     const expr = ensureExpression(this.parser, instruction.from, BindingType.Interpolation);
@@ -68,7 +66,7 @@ export class ListenerBindingRenderer implements IInstructionRenderer {
     this.eventManager = eventManager;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: INode, instruction: IListenerBindingInstruction): void {
+  public render(dom: IHTMLDOM, context: IRenderContext, renderable: IRenderable, target: Node, instruction: IListenerBindingInstruction): void {
     if (Tracer.enabled) { Tracer.enter('ListenerBindingRenderer.render', slice.call(arguments)); }
     const expr = ensureExpression(this.parser, instruction.from, BindingType.IsEventCommand | (instruction.strategy + BindingType.DelegationStrategyDelta));
     const bindable = new Listener(instruction.to, instruction.strategy, expr, target, instruction.preventDefault, this.eventManager, context);
@@ -89,7 +87,7 @@ export class StylePropertyBindingRenderer implements IInstructionRenderer {
     this.observerLocator = observerLocator;
   }
 
-  public render(context: IRenderContext, renderable: IRenderable, target: IHTMLElement, instruction: IStylePropertyBindingInstruction): void {
+  public render(dom: IHTMLDOM, context: IRenderContext, renderable: IRenderable, target: HTMLElement, instruction: IStylePropertyBindingInstruction): void {
     if (Tracer.enabled) { Tracer.enter('StylePropertyBindingRenderer.render', slice.call(arguments)); }
     const expr = ensureExpression(this.parser, instruction.from, BindingType.IsPropertyCommand | BindingMode.toView);
     const bindable = new Binding(expr, target.style, instruction.to, BindingMode.toView, this.observerLocator, context);

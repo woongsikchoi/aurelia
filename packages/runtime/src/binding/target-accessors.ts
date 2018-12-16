@@ -1,4 +1,5 @@
 import { IIndexable } from '@aurelia/kernel';
+import { IDOM } from '../dom';
 import { IBindingTargetAccessor, ILifecycle } from '../interfaces';
 import { targetObserver } from './target-observer';
 
@@ -6,11 +7,13 @@ export interface ElementPropertyAccessor extends IBindingTargetAccessor<object, 
 
 @targetObserver('')
 export class ElementPropertyAccessor implements ElementPropertyAccessor {
+  public dom: IDOM;
   public lifecycle: ILifecycle;
   public obj: object;
   public propertyKey: string;
 
-  constructor(lifecycle: ILifecycle, obj: object, propertyKey: string) {
+  constructor(dom: IDOM, lifecycle: ILifecycle, obj: object, propertyKey: string) {
+    this.dom = dom;
     this.lifecycle = lifecycle;
     this.obj = obj;
     this.propertyKey = propertyKey;

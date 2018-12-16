@@ -1,5 +1,5 @@
 import { DI, IContainer, IRegistry, PLATFORM, Registration } from '@aurelia/kernel';
-import { INode } from './dom.interfaces';
+import { IDOM, INode } from './dom';
 import { LifecycleFlags } from './interfaces';
 import { IRenderingEngine } from './rendering-engine';
 import { CustomElementResource, ICustomElement, ICustomElementType } from './templating/custom-element';
@@ -52,7 +52,8 @@ export class Aurelia {
         this._root = component;
         this.components.push(component);
         const re = this.container.get(IRenderingEngine);
-        component.$hydrate(re, host);
+        const dom = this.container.get(IDOM);
+        component.$hydrate(dom, re, host);
       }
 
       component.$bind(LifecycleFlags.fromStartTask | LifecycleFlags.fromBind, null);

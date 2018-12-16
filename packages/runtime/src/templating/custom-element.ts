@@ -17,7 +17,7 @@ import {
   ITemplateDefinition,
   TemplateDefinition
 } from '../definitions';
-import { INode } from '../dom.interfaces';
+import { IDOM } from '../dom';
 import { Hooks, IAttach, IBind, IChangeTracker, ILifecycleHooks, ILifecycleUnbindAfterDetach, IMountable } from '../interfaces';
 import { IRenderable } from '../lifecycle';
 import { IRenderingEngine } from '../rendering-engine';
@@ -53,7 +53,7 @@ export interface ICustomElement extends
 
   readonly $projector: IElementProjector;
   readonly $host: ICustomElementHost;
-  $hydrate(renderingEngine: IRenderingEngine, host: unknown, options?: IElementHydrationOptions): void;
+  $hydrate(dom: IDOM, renderingEngine: IRenderingEngine, host: unknown, options?: IElementHydrationOptions): void;
 }
 
 export interface ICustomElementResource extends

@@ -1,5 +1,5 @@
 import { DI, IDisposable, IIndexable, InterfaceSymbol, IServiceLocator, Omit } from '@aurelia/kernel';
-import { IEventListenerOrEventListenerObject, INode } from './dom.interfaces';
+import { IEventListenerOrEventListenerObject, INode, IDOM } from './dom';
 
 export const enum State {
   none                  = 0b000000000000,
@@ -216,10 +216,13 @@ export interface IBindingTargetAccessor<
   TValue = unknown>
   extends IDisposable,
           IAccessor<TValue>,
-          IPropertyChangeTracker<TObj, TProp> { }
+          IPropertyChangeTracker<TObj, TProp> {
+  readonly dom?: IDOM;
+}
 
-export interface IEventSubscriber extends IDisposable {
-  subscribe(node: INode, callbackOrListener: IEventListenerOrEventListenerObject): void;
+export interface IEventSubscriber {
+  dispose(dom: IDOM): void;
+  subscribe(dom: IDOM, node: INode, callbackOrListener: IEventListenerOrEventListenerObject): void;
 }
 
 /**

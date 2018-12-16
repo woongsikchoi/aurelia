@@ -12,6 +12,7 @@ import {
   Writable
 } from '@aurelia/kernel';
 import { customAttributeKey, customAttributeName, IAttributeDefinition } from '../definitions';
+import { IDOM } from '../dom';
 import {
   BindingMode,
   Hooks,
@@ -43,7 +44,7 @@ export interface ICustomAttribute extends
   IAttach,
   IRenderable {
 
-  $hydrate(renderingEngine: IRenderingEngine): void;
+  $hydrate(dom: IDOM, renderingEngine: IRenderingEngine): void;
 }
 
 export interface ICustomAttributeResource extends

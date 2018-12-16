@@ -1,8 +1,10 @@
 import { IIndexable, PLATFORM, Primitive } from '@aurelia/kernel';
-import { IAccessor, IPropertyObserver, IPropertySubscriber, ISubscribable, LifecycleFlags, MutationKind } from '../interfaces';
+import { IAccessor, IBindingTargetAccessor, IPropertyObserver, IPropertySubscriber, ISubscribable, LifecycleFlags, MutationKind } from '../interfaces';
 import { propertyObserver } from './property-observer';
 
 const noop = PLATFORM.noop;
+
+export interface PrimitiveObserver extends IBindingTargetAccessor {}
 
 // note: string.length is the only property of any primitive that is not a function,
 // so we can hardwire it to that and simply return undefined for anything else
@@ -43,7 +45,7 @@ PrimitiveObserver.prototype.subscribe = noop;
 PrimitiveObserver.prototype.unsubscribe = noop;
 PrimitiveObserver.prototype.dispose = noop;
 
-export interface SetterObserver extends IPropertyObserver<IIndexable, string> {}
+export interface SetterObserver extends IPropertyObserver<IIndexable, string>, IBindingTargetAccessor {}
 
 @propertyObserver()
 export class SetterObserver implements SetterObserver {
@@ -80,7 +82,7 @@ export class SetterObserver implements SetterObserver {
   }
 }
 
-export interface Observer extends IPropertyObserver<IIndexable, string> {}
+export interface Observer extends IPropertyObserver<IIndexable, string>, IBindingTargetAccessor {}
 
 @propertyObserver()
 export class Observer implements Observer {

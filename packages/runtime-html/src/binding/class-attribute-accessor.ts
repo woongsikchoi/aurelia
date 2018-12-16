@@ -1,24 +1,26 @@
-import { DOM, IBindingTargetAccessor, IElement, ILifecycle, INode, targetObserver } from '@aurelia/runtime';
+import { IBindingTargetAccessor, ILifecycle, INode, targetObserver } from '@aurelia/runtime';
+import { IHTMLDOM } from '../dom';
 
 export interface ClassAttributeAccessor extends IBindingTargetAccessor<INode, string, string> {}
 
 @targetObserver('')
 export class ClassAttributeAccessor implements ClassAttributeAccessor {
+  public readonly dom: IHTMLDOM;
   public currentValue: string;
   public doNotCache: true;
   public lifecycle: ILifecycle;
   public nameIndex: object;
-  public obj: IElement;
+  public obj: HTMLElement;
   public oldValue: string;
   public version: number;
 
-  constructor(lifecycle: ILifecycle, obj: IElement) {
+  constructor(dom: IHTMLDOM, lifecycle: ILifecycle, obj: HTMLElement) {
+    this.dom = dom;
     this.doNotCache = true;
     this.lifecycle = lifecycle;
     this.nameIndex = null;
     this.obj = obj;
     this.version = 0;
-
   }
 
   public getValue(): string {
@@ -28,8 +30,8 @@ export class ClassAttributeAccessor implements ClassAttributeAccessor {
   public setValueCore(newValue: string): void {
     const nameIndex = this.nameIndex || {};
     let version = this.version;
-    let names;
-    let name;
+    let names: string[];
+    let name: string;
 
     // Add the classes, tracking the version at which they were added.
     if (newValue.length) {
@@ -41,7 +43,7 @@ export class ClassAttributeAccessor implements ClassAttributeAccessor {
           continue;
         }
         nameIndex[name] = version;
-        DOM.addClass(node, name);
+        this.dom.addClass(node, name);
       }
     }
 
@@ -65,7 +67,7 @@ export class ClassAttributeAccessor implements ClassAttributeAccessor {
       // will be removed if they're not present in the next update.
       // Better would be do have some configurability for this behavior, allowing the user to
       // decide whether initial classes always need to be kept, always removed, or something in between
-      DOM.removeClass(this.obj, name);
+      this.dom.removeClass(this.obj, name);
     }
   }
 }

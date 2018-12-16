@@ -1,5 +1,5 @@
 import { IDisposable, IIndexable, IServiceLocator, Tracer } from '@aurelia/kernel';
-import { IEvent, INode } from '../dom.interfaces';
+import { IManagedEvent, INode } from '../dom';
 import { DelegationStrategy, IBinding, IBindScope, IConnectableBinding, IScope, LifecycleFlags, State } from '../interfaces';
 import { hasBind, hasUnbind, IsBindingBehavior } from './ast';
 import { IEventManager } from './event-manager';
@@ -38,7 +38,7 @@ export class Listener implements IBinding {
     this.eventManager = eventManager;
   }
 
-  public callSource(event: IEvent): ReturnType<IsBindingBehavior['evaluate']> {
+  public callSource(event: IManagedEvent): ReturnType<IsBindingBehavior['evaluate']> {
     if (Tracer.enabled) { Tracer.enter('Listener.callSource', slice.call(arguments)); }
     const overrideContext = this.$scope.overrideContext;
     overrideContext['$event'] = event;
@@ -55,7 +55,7 @@ export class Listener implements IBinding {
     return result;
   }
 
-  public handleEvent(event: IEvent): void {
+  public handleEvent(event: IManagedEvent): void {
     this.callSource(event);
   }
 

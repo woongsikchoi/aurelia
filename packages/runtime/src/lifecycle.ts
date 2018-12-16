@@ -11,7 +11,7 @@ import {
   Tracer
 } from '@aurelia/kernel';
 import { ITargetedInstruction, TemplateDefinition, TemplatePartDefinitions } from './definitions';
-import { INode, INodeSequence, IRenderLocation } from './dom.interfaces';
+import { IDOM, INodeSequence, IRenderLocation } from './dom';
 import {
   IAttach,
   IAttachables,
@@ -68,7 +68,7 @@ export const IRenderable = DI.createInterface<IRenderable>().noDefault();
 export interface IRenderContext extends IServiceLocator {
   createChild(): IRenderContext;
   render(renderable: IRenderable, targets: ArrayLike<unknown>, templateDefinition: TemplateDefinition, host?: unknown, parts?: TemplatePartDefinitions): void;
-  beginComponentOperation(renderable: IRenderable, target: unknown, instruction: Immutable<ITargetedInstruction>, factory?: IViewFactory, parts?: TemplatePartDefinitions, location?: IRenderLocation, locationIsContainer?: boolean): IDisposable;
+  beginComponentOperation(renderable: IRenderable, target: unknown, instruction: Immutable<ITargetedInstruction>, factory?: IViewFactory, parts?: TemplatePartDefinitions, location?: unknown, locationIsContainer?: boolean): IDisposable;
 }
 
 export interface IView extends IBindScope, IRenderable, IAttach, IMountable {

@@ -1,15 +1,11 @@
 
-import { IContainer, Registration } from '@aurelia/kernel';
+import { IContainer, inject, Registration } from '@aurelia/kernel';
 import {
-  DOM,
   ElementPropertyAccessor,
   EventSubscriber,
   IBindingTargetAccessor,
   IBindingTargetObserver,
-  IElement,
-  IHTMLElement,
   ILifecycle,
-  INode,
   IObserverLocator,
   ITargetAccessorLocator,
   ITargetObserverLocator,
@@ -22,6 +18,7 @@ import { DataAttributeAccessor } from './binding/data-attribute-accessor';
 import { ISelectElement, SelectValueObserver } from './binding/select-value-observer';
 import { StyleAttributeAccessor } from './binding/style-attribute-accessor';
 import { ValueAttributeObserver } from './binding/value-attribute-observer';
+import { IHTMLDOM } from './dom';
 
 // https://infra.spec.whatwg.org/#namespaces
 const htmlNS = 'http://www.w3.org/1999/xhtml';
@@ -71,84 +68,97 @@ const overrideProps = {
   'xmlns:xlink': true
 };
 
+@inject(IHTMLDOM)
 export class TargetObserverLocator implements ITargetObserverLocator {
-  public getObserver(lifecycle: ILifecycle, observerLocator: IObserverLocator, obj: INode, propertyName: string): IBindingTargetObserver | IBindingTargetAccessor {
+  private readonly dom: IHTMLDOM;
+
+  constructor(dom: IHTMLDOM) {
+    this.dom = dom;
+  }
+  public getObserver(lifecycle: ILifecycle, observerLocator: IObserverLocator, obj: Node, propertyName: string): IBindingTargetObserver | IBindingTargetAccessor {
     switch (propertyName) {
       case 'checked':
-        return new CheckedObserver(lifecycle, obj as IInputElement, new EventSubscriber(inputEvents), observerLocator);
+        return new CheckedObserver(this.dom, lifecycle, obj as IInputElement, new EventSubscriber(inputEvents), observerLocator);
       case 'value':
         if (obj['tagName'] === 'SELECT') {
-          return new SelectValueObserver(lifecycle, obj as ISelectElement, new EventSubscriber(selectEvents), observerLocator);
+          return new SelectValueObserver(this.dom, lifecycle, obj as ISelectElement, new EventSubscriber(selectEvents), observerLocator);
         }
-        return new ValueAttributeObserver(lifecycle, obj, propertyName, new EventSubscriber(inputEvents));
+        return new ValueAttributeObserver(this.dom, lifecycle, obj, propertyName, new EventSubscriber(inputEvents));
       case 'files':
-        return new ValueAttributeObserver(lifecycle, obj, propertyName, new EventSubscriber(inputEvents));
+        return new ValueAttributeObserver(this.dom, lifecycle, obj, propertyName, new EventSubscriber(inputEvents));
       case 'textContent':
       case 'innerHTML':
-        return new ValueAttributeObserver(lifecycle, obj, propertyName, new EventSubscriber(contentEvents));
+        return new ValueAttributeObserver(this.dom, lifecycle, obj, propertyName, new EventSubscriber(contentEvents));
       case 'scrollTop':
       case 'scrollLeft':
-        return new ValueAttributeObserver(lifecycle, obj, propertyName, new EventSubscriber(scrollEvents));
+        return new ValueAttributeObserver(this.dom, lifecycle, obj, propertyName, new EventSubscriber(scrollEvents));
       case 'class':
-        return new ClassAttributeAccessor(lifecycle, obj as IElement);
+        return new ClassAttributeAccessor(this.dom, lifecycle, obj as HTMLElement);
       case 'style':
       case 'css':
-        return new StyleAttributeAccessor(lifecycle, obj as IHTMLElement);
+        return new StyleAttributeAccessor(this.dom, lifecycle, obj as HTMLElement);
       case 'model':
         return new SetterObserver(obj, propertyName);
       default:
         if (nsAttributes[propertyName] !== undefined) {
           const nsProps = nsAttributes[propertyName];
-          return new AttributeNSAccessor(lifecycle, obj as IHTMLElement, propertyName, nsProps[0], nsProps[1]);
+          return new AttributeNSAccessor(this.dom, lifecycle, obj as HTMLElement, propertyName, nsProps[0], nsProps[1]);
         }
     }
     return null;
   }
 
-  public overridesAccessor(obj: INode, propertyName: string): boolean {
+  public overridesAccessor(obj: Node, propertyName: string): boolean {
     return overrideProps[propertyName] === true;
   }
 
   public handles(obj: unknown): boolean {
-    return DOM.isNodeInstance(obj);
+    return this.dom.isNodeInstance(obj);
   }
 }
 
+@inject(IHTMLDOM)
 export class TargetAccessorLocator implements ITargetAccessorLocator {
-  public getAccessor(lifecycle: ILifecycle, obj: INode, propertyName: string): IBindingTargetAccessor {
+  private readonly dom: IHTMLDOM;
+
+  constructor(dom: IHTMLDOM) {
+    this.dom = dom;
+  }
+
+  public getAccessor(lifecycle: ILifecycle, obj: Node, propertyName: string): IBindingTargetAccessor {
     switch (propertyName) {
       case 'textContent':
         // note: this case is just an optimization (textContent is the most often used property)
-        return new ElementPropertyAccessor(lifecycle, obj, propertyName);
+        return new ElementPropertyAccessor(this.dom, lifecycle, obj, propertyName);
       case 'class':
-        return new ClassAttributeAccessor(lifecycle, obj as IElement);
+        return new ClassAttributeAccessor(this.dom, lifecycle, obj as HTMLElement);
       case 'style':
       case 'css':
-        return new StyleAttributeAccessor(lifecycle, obj as IHTMLElement);
+        return new StyleAttributeAccessor(this.dom, lifecycle, obj as HTMLElement);
       // TODO: there are (many) more situation where we want to default to DataAttributeAccessor,
       // but for now stick to what vCurrent does
       case 'src':
       case 'href':
       // https://html.spec.whatwg.org/multipage/dom.html#wai-aria
       case 'role':
-        return new DataAttributeAccessor(lifecycle, obj as IHTMLElement, propertyName);
+        return new DataAttributeAccessor(this.dom, lifecycle, obj as HTMLElement, propertyName);
       default:
         if (nsAttributes[propertyName] !== undefined) {
           const nsProps = nsAttributes[propertyName];
-          return new AttributeNSAccessor(lifecycle, obj as IHTMLElement, propertyName, nsProps[0], nsProps[1]);
+          return new AttributeNSAccessor(this.dom, lifecycle, obj as HTMLElement, propertyName, nsProps[0], nsProps[1]);
         }
         const prefix = propertyName.slice(0, 5);
         // https://html.spec.whatwg.org/multipage/dom.html#wai-aria
         // https://html.spec.whatwg.org/multipage/dom.html#custom-data-attribute
         if (prefix === 'aria-' || prefix === 'data-') {
-          return new DataAttributeAccessor(lifecycle, obj as IHTMLElement, propertyName);
+          return new DataAttributeAccessor(this.dom, lifecycle, obj as HTMLElement, propertyName);
         }
-        return new ElementPropertyAccessor(lifecycle, obj, propertyName);
+        return new ElementPropertyAccessor(this.dom, lifecycle, obj, propertyName);
     }
   }
 
   public handles(obj: unknown): boolean {
-    return DOM.isNodeInstance(obj);
+    return this.dom.isNodeInstance(obj);
   }
 }
 

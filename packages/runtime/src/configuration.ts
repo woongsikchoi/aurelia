@@ -8,6 +8,7 @@ import { SelfBindingBehavior } from './binding/resources/self-binding-behavior';
 import { SignalBindingBehavior } from './binding/resources/signals';
 import { ThrottleBindingBehavior } from './binding/resources/throttle-binding-behavior';
 import { UpdateTriggerBindingBehavior } from './binding/resources/update-trigger-binding-behavior';
+import { HtmlObservation } from './html-observation';
 import { HtmlRenderer } from './html-renderer';
 import { HTMLTemplateFactory } from './html-template';
 import { ILifecycle, IObserverLocator } from './interfaces';
@@ -44,6 +45,7 @@ export const BasicConfiguration = {
     container.register(
       BasicRenderer,
       HtmlRenderer,
+      HtmlObservation,
       Registration.singleton(IObserverLocator, ObserverLocator),
       Registration.singleton(ILifecycle, Lifecycle),
       Registration.singleton(ITemplateFactory, HTMLTemplateFactory),

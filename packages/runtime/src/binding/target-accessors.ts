@@ -4,12 +4,10 @@ import { IElement, IHTMLElement, INode } from '../dom.interfaces';
 import { IBindingTargetAccessor, ILifecycle } from '../interfaces';
 import { targetObserver } from './target-observer';
 
-const xlinkAttributeNS = 'http://www.w3.org/1999/xlink';
-
-export interface XLinkAttributeAccessor extends IBindingTargetAccessor<IHTMLElement, string, string> {}
+export interface AttributeNSAccessor extends IBindingTargetAccessor<IHTMLElement, string, string> {}
 
 @targetObserver('')
-export class XLinkAttributeAccessor implements XLinkAttributeAccessor {
+export class AttributeNSAccessor implements AttributeNSAccessor {
   public attributeName: string;
   public currentValue: string;
   public defaultValue: string;
@@ -17,32 +15,25 @@ export class XLinkAttributeAccessor implements XLinkAttributeAccessor {
   public obj: IHTMLElement;
   public oldValue: string;
   public propertyKey: string;
+  public namespace: string;
 
-  // xlink namespaced attributes require getAttributeNS/setAttributeNS
-  // (even though the NS version doesn't work for other namespaces
-  // in html5 documents)
-
-  // Using very HTML-specific code here since this isn't likely to get
-  // called unless operating against a real HTML element.
-
-  constructor(lifecycle: ILifecycle, obj: IHTMLElement, propertyKey: string, attributeName: string) {
+  constructor(lifecycle: ILifecycle, obj: IHTMLElement, propertyKey: string, attributeName: string, namespace: string) {
     this.attributeName = attributeName;
     this.lifecycle = lifecycle;
     this.obj = obj;
     this.oldValue = this.currentValue = this.getValue();
     this.propertyKey = propertyKey;
+    this.namespace = namespace;
   }
 
   public getValue(): string {
-    return this.obj.getAttributeNS(xlinkAttributeNS, this.attributeName);
+    return this.obj.getAttributeNS(this.namespace, this.attributeName);
   }
 
   public setValueCore(newValue: string): void {
-    this.obj.setAttributeNS(xlinkAttributeNS, this.attributeName, newValue);
+    this.obj.setAttributeNS(this.namespace, this.attributeName, newValue);
   }
 }
-
-XLinkAttributeAccessor.prototype.attributeName = '';
 
 export interface DataAttributeAccessor extends IBindingTargetAccessor<INode, string, string> {}
 
@@ -84,14 +75,15 @@ export class StyleAttributeAccessor implements StyleAttributeAccessor {
   public lifecycle: ILifecycle;
   public obj: IHTMLElement;
   public oldValue: string | Record<string, string>;
-  public propertyKey: 'style';
   public styles: object;
   public version: number;
 
   constructor(lifecycle: ILifecycle, obj: IHTMLElement) {
+    this.oldValue = this.currentValue = obj.style.cssText;
     this.lifecycle = lifecycle;
     this.obj = obj;
-    this.oldValue = this.currentValue = obj.style.cssText;
+    this.styles = null;
+    this.version = 0;
   }
 
   public getValue(): string {
@@ -154,16 +146,11 @@ export class StyleAttributeAccessor implements StyleAttributeAccessor {
   }
 }
 
-StyleAttributeAccessor.prototype.styles = null;
-StyleAttributeAccessor.prototype.version = 0;
-StyleAttributeAccessor.prototype.propertyKey = 'style';
-
 export interface ClassAttributeAccessor extends IBindingTargetAccessor<INode, string, string> {}
 
 @targetObserver('')
 export class ClassAttributeAccessor implements ClassAttributeAccessor {
   public currentValue: string;
-  public defaultValue: string;
   public doNotCache: true;
   public lifecycle: ILifecycle;
   public nameIndex: object;
@@ -172,8 +159,12 @@ export class ClassAttributeAccessor implements ClassAttributeAccessor {
   public version: number;
 
   constructor(lifecycle: ILifecycle, obj: IElement) {
+    this.doNotCache = true;
     this.lifecycle = lifecycle;
+    this.nameIndex = null;
     this.obj = obj;
+    this.version = 0;
+
   }
 
   public getValue(): string {
@@ -224,10 +215,6 @@ export class ClassAttributeAccessor implements ClassAttributeAccessor {
     }
   }
 }
-
-ClassAttributeAccessor.prototype.doNotCache = true;
-ClassAttributeAccessor.prototype.version = 0;
-ClassAttributeAccessor.prototype.nameIndex = null;
 
 export interface ElementPropertyAccessor extends IBindingTargetAccessor<object, string> {}
 

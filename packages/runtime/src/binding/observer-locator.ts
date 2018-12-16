@@ -1,6 +1,6 @@
-import { inject, Primitive, Reporter } from '@aurelia/kernel';
+import { DI, inject, Primitive, Reporter } from '@aurelia/kernel';
 import { DOM } from '../dom';
-import { IElement, IHTMLElement } from '../dom.interfaces';
+import { INode } from '../dom.interfaces';
 import {
   AccessorOrObserver,
   CollectionKind,
@@ -21,20 +21,10 @@ import {
 import { getArrayObserver } from './array-observer';
 import { createComputedObserver } from './computed-observer';
 import { IDirtyChecker } from './dirty-checker';
-import { CheckedObserver, IInputElement, ISelectElement, SelectValueObserver, ValueAttributeObserver } from './element-observation';
-import { IEventManager } from './event-manager';
 import { getMapObserver } from './map-observer';
 import { PrimitiveObserver, SetterObserver } from './property-observation';
 import { getSetObserver } from './set-observer';
-import { ISVGAnalyzer } from './svg-analyzer';
-import {
-  ClassAttributeAccessor,
-  DataAttributeAccessor,
-  ElementPropertyAccessor,
-  PropertyAccessor,
-  StyleAttributeAccessor,
-  XLinkAttributeAccessor
-} from './target-accessors';
+import { PropertyAccessor } from './target-accessors';
 
 const toStringTag = Object.prototype.toString;
 
@@ -50,21 +40,37 @@ function getPropertyDescriptor(subject: object, name: string): PropertyDescripto
   return pd;
 }
 
-@inject(ILifecycle, IEventManager, IDirtyChecker, ISVGAnalyzer)
+export interface ITargetObserverLocator {
+  getObserver(lifecycle: ILifecycle, observerLocator: IObserverLocator, obj: INode, propertyName: string): IBindingTargetObserver;
+  overridesAccessor(obj: INode, propertyName: string): boolean;
+}
+export const ITargetObserverLocator = DI.createInterface<ITargetObserverLocator>().noDefault();
+
+export interface ITargetAccessorLocator {
+  getAccessor(lifecycle: ILifecycle, obj: INode, propertyName: string): IBindingTargetAccessor;
+}
+export const ITargetAccessorLocator = DI.createInterface<ITargetAccessorLocator>().noDefault();
+
+@inject(ILifecycle, IDirtyChecker, ITargetObserverLocator, ITargetAccessorLocator)
 /** @internal */
 export class ObserverLocator implements IObserverLocator {
   private adapters: IObjectObservationAdapter[];
   private dirtyChecker: IDirtyChecker;
-  private eventManager: IEventManager;
   private lifecycle: ILifecycle;
-  private svgAnalyzer: ISVGAnalyzer;
+  private targetObserverLocator: ITargetObserverLocator;
+  private targetAccessorLocator: ITargetAccessorLocator;
 
-  constructor(lifecycle: ILifecycle, eventManager: IEventManager, dirtyChecker: IDirtyChecker, svgAnalyzer: ISVGAnalyzer) {
+  constructor(
+    lifecycle: ILifecycle,
+    dirtyChecker: IDirtyChecker,
+    targetObserverLocator: ITargetObserverLocator,
+    targetAccessorLocator: ITargetAccessorLocator
+  ) {
     this.adapters = [];
     this.dirtyChecker = dirtyChecker;
-    this.eventManager = eventManager;
     this.lifecycle = lifecycle;
-    this.svgAnalyzer = svgAnalyzer;
+    this.targetObserverLocator = targetObserverLocator;
+    this.targetAccessorLocator = targetAccessorLocator;
   }
 
   public getObserver(obj: IObservable | IBindingContext | IOverrideContext, propertyName: string): AccessorOrObserver {
@@ -72,7 +78,7 @@ export class ObserverLocator implements IObserverLocator {
       return obj.getObservers().getOrCreate(obj, propertyName);
     }
     let observersLookup = obj.$observers;
-    let observer;
+    let observer: AccessorOrObserver & { doNotCache?: boolean };
 
     if (observersLookup && propertyName in observersLookup) {
       return observersLookup[propertyName];
@@ -97,29 +103,10 @@ export class ObserverLocator implements IObserverLocator {
 
   public getAccessor(obj: IObservable, propertyName: string): IBindingTargetAccessor {
     if (DOM.isNodeInstance(obj)) {
-      const tagName = obj['tagName'];
-      // this check comes first for hot path optimization
-      if (propertyName === 'textContent') {
-        return new ElementPropertyAccessor(this.lifecycle, obj, propertyName);
-      }
-
-      // TODO: optimize and make pluggable
-      if (propertyName === 'class' || propertyName === 'style' || propertyName === 'css'
-        || propertyName === 'value' && (tagName === 'INPUT' || tagName === 'SELECT')
-        || propertyName === 'checked' && tagName === 'INPUT'
-        || propertyName === 'model' && tagName === 'INPUT'
-        || /^xlink:.+$/.exec(propertyName)) {
+      if (this.targetObserverLocator.overridesAccessor(obj, propertyName)) {
         return this.getObserver(obj, propertyName);
       }
-
-      if (/^\w+:|^data-|^aria-/.test(propertyName)
-        || this.svgAnalyzer.isStandardSvgAttribute(obj, propertyName)
-        || tagName === 'IMG' && propertyName === 'src'
-        || tagName === 'A' && propertyName === 'href'
-      ) {
-        return new DataAttributeAccessor(this.lifecycle, obj as IElement, propertyName);
-      }
-      return new ElementPropertyAccessor(this.lifecycle, obj, propertyName);
+      return this.targetAccessorLocator.getAccessor(this.lifecycle, obj, propertyName);
     }
 
     return new PropertyAccessor(obj, propertyName);
@@ -165,47 +152,18 @@ export class ObserverLocator implements IObserverLocator {
     return null;
   }
 
-  // TODO: Reduce complexity (currently at 37)
   private createPropertyObserver(obj: IObservable, propertyName: string): AccessorOrObserver {
     if (!(obj instanceof Object)) {
       return new PrimitiveObserver(obj as unknown as Primitive, propertyName) as IBindingTargetAccessor;
     }
 
-    let isNode: boolean;
     if (DOM.isNodeInstance(obj)) {
-      if (propertyName === 'class') {
-        return new ClassAttributeAccessor(this.lifecycle, obj as IElement);
+      const observer = this.targetObserverLocator.getObserver(this.lifecycle, this, obj, propertyName);
+      if (observer !== null) {
+        return observer;
       }
-
-      if (propertyName === 'style' || propertyName === 'css') {
-        return new StyleAttributeAccessor(this.lifecycle, obj as IHTMLElement);
-      }
-
-      const tagName = obj['tagName'];
-      const handler = this.eventManager.getElementHandler(obj, propertyName);
-      if (propertyName === 'value' && tagName === 'SELECT') {
-        return new SelectValueObserver(this.lifecycle, obj as ISelectElement, handler, this);
-      }
-
-      if (propertyName === 'checked' && tagName === 'INPUT') {
-        return new CheckedObserver(this.lifecycle, obj as IInputElement, handler, this);
-      }
-
-      if (handler) {
-        return new ValueAttributeObserver(this.lifecycle, obj, propertyName, handler);
-      }
-
-      const xlinkResult = /^xlink:(.+)$/.exec(propertyName);
-      if (xlinkResult) {
-        return new XLinkAttributeAccessor(this.lifecycle, obj as IHTMLElement, propertyName, xlinkResult[1]);
-      }
-
-      if (propertyName === 'role'
-        || /^\w+:|^data-|^aria-/.test(propertyName)
-        || this.svgAnalyzer.isStandardSvgAttribute(obj, propertyName)) {
-        return new DataAttributeAccessor(this.lifecycle, obj as IElement, propertyName);
-      }
-      isNode = true;
+      // TODO: use MutationObserver
+      return this.dirtyChecker.createProperty(obj, propertyName);
     }
 
     const tag = toStringTag.call(obj);
@@ -240,10 +198,6 @@ export class ObserverLocator implements IObserverLocator {
       const adapterObserver = this.getAdapterObserver(obj, propertyName, descriptor);
       if (adapterObserver) {
         return adapterObserver;
-      }
-      if (isNode) {
-        // TODO: use MutationObserver
-        return this.dirtyChecker.createProperty(obj, propertyName);
       }
 
       return createComputedObserver(this, this.dirtyChecker, this.lifecycle, obj, propertyName, descriptor);

@@ -54,6 +54,7 @@ export * from './configuration';
 export * from './definitions';
 export * from './dom.interfaces';
 export * from './dom';
+export * from './html-observation';
 export * from './html-renderer';
 export * from './html-template';
 export * from './instructions';

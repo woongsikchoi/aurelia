@@ -1,22 +1,23 @@
-/// <reference path="./fabric-types.d.ts" />
-import { PLATFORM, DI, Constructable, Writable, IContainer, IResolver } from '../kernel';
-import { INode, DOM } from './dom';
+import { Constructable, DI, IContainer, IResolver, PLATFORM, Writable } from '@aurelia/kernel';
+import { DOM, INode } from '@aurelia/runtime';
+import * as THREE from 'three';
+import { VNode } from './node';
 import { I3VNode, ThreeObject } from './three-vnode';
-import { VNode } from 'dom/node';
-import * as Threejs from 'three';
+
+// tslint:disable:no-commented-code
 
 function isRenderLocation(node: I3VNode): node is IFabricRenderLocation {
   return node instanceof VNode && node.nodeName === '#comment' && node.text === 'au-end';
 }
 
 const FabricDomMap: Record<string, (node?: Element) => I3VNode> = {};
-export const ThreejsDOM = new class {
+export const ThreejsDOM = {
   registerElementResolver(container: IContainer, resolver: IResolver): void {
     container.registerResolver(IFabricNode, resolver);
     container.registerResolver(Element, resolver);
     container.registerResolver(HTMLElement, resolver);
     // container.registerResolver(SVGElement, resolver);
-  }
+  },
   createDocumentFragment(markupOrNode?: any): DocumentFragment {
     if (markupOrNode === undefined || markupOrNode === null) {
       return document.createDocumentFragment();
@@ -29,8 +30,8 @@ export const ThreejsDOM = new class {
       fragment.appendChild(markupOrNode);
       return fragment;
     }
-    return ThreejsDOM.createTemplate(<string>markupOrNode).content;
-  }
+    return ThreejsDOM.createTemplate(markupOrNode as string).content;
+  },
   createTemplate(markup?: string): HTMLTemplateElement {
     if (markup === undefined) {
       return document.createElement('template');
@@ -38,7 +39,7 @@ export const ThreejsDOM = new class {
     const template = document.createElement('template');
     template.innerHTML = markup;
     return template;
-  }
+  },
   convertToRenderLocation(node: I3VNode) {
     if (isRenderLocation(node)) {
       // it's already a RenderLocation (converted by FragmentNodeSequence)
@@ -56,7 +57,7 @@ export const ThreejsDOM = new class {
     locationEnd.$start = locationStart;
     // locationStart.$nodes = null;
     return locationEnd;
-  }
+  },
   /**
   * Create basic node of a PIXI DOM
   */
@@ -64,25 +65,24 @@ export const ThreejsDOM = new class {
     const dObj: I3VNode = new VNode('#comment', false);
     dObj.text = text;
     return dObj;
-  }
+  },
   createTextNode(text: string): I3VNode {
     const textNode: I3VNode = new VNode('#text', false);
     textNode.text = text;
     return textNode;
-  }
+  },
   // createElement(tagName: 'Text'): TextBase;
   // createElement(tagName: 'Button'): Button;
   // createElement(tagName: 'Frame'): Frame;
-  createElement(tagName: string, node?: Element): I3VNode;
   createElement(tagName: string, node?: Element): I3VNode {
     if (!(tagName in FabricDomMap)) {
       console.log(Object.keys(FabricDomMap));
       throw new Error('There is no element with ' + tagName + ' registered');
     }
-    let fabricNode: I3VNode = FabricDomMap[tagName](node);
+    const fabricNode: I3VNode = FabricDomMap[tagName](node);
     fabricNode.nodeName = tagName;
     return fabricNode;
-  }
+  },
   remove<T extends IFabricNode = IFabricNode>(childView: T, parentView?: IFabricNode): T | null {
     // // if (node.parent) {
     // //   node.parent.removeChild(node);
@@ -120,14 +120,14 @@ export const ThreejsDOM = new class {
     //   // throw new Error("Unknown parent type: " + parent);
     // }
     throw new Error('Not easy to remove');
-  }
+  },
   replaceNode(newNode: I3VNode, refNode: I3VNode) {
     ThreejsDOM.insertBefore(newNode, refNode);
     refNode.remove();
     // refNode.parent.insertBefore(newNode, refNode);
     // refNode.parent.removeChild(refNode);
     return newNode;
-  }
+  },
   insertBefore<T extends I3VNode = I3VNode>(newNode: T, refNode: I3VNode): T {
     const parentNode = refNode.parentNode;
     if (!parentNode) {
@@ -135,7 +135,7 @@ export const ThreejsDOM = new class {
     }
     parentNode.insertBefore(newNode, refNode);
     return newNode;
-  }
+  },
   // appendChild<T extends IFabricNode = IFabricNode>(node: T, parentNode: IFabricNode): T {
   //   if (FabricDOM.isCollection(parentNode)) {
   //     parentNode.add(node);
@@ -149,17 +149,17 @@ export const ThreejsDOM = new class {
   // }
   isObject3D(node: ThreeObject): node is THREE.Object3D {
     return (node as THREE.Object3D).isObject3D === true;
-  }
+  },
   map(tagName: string, ctor: ((node?: Element) => I3VNode)): void {
     if (tagName in FabricDomMap) {
       throw new Error(`Element with the same name "${tagName}" already exists`);
     }
     FabricDomMap[tagName] = ctor;
-  }
+  },
 
   treatAsNonWhitespace(node: IFabricNode): void {
     // see isAllWhitespace above
-    (<any>node).auInterpolationTarget = true;
+    (node as any).auInterpolationTarget = true;
   }
 };
 
@@ -179,8 +179,8 @@ export interface IFabricRenderLocation extends I3VNode {
   $nodes: IFabricNodeSequence;
 }
 /**
-* Represents a DocumentFragment
-*/
+ * Represents a DocumentFragment
+ */
 export interface IFabricNodeSequence {
   firstChild: I3VNode;
   lastChild: I3VNode;
@@ -189,20 +189,20 @@ export interface IFabricNodeSequence {
    */
   children: ReadonlyArray<Node | I3VNode>;
   /**
-  * Find all instruction targets in this sequence.
-  */
+   * Find all instruction targets in this sequence.
+   */
   findTargets(): ReadonlyArray<I3VNode>;
   /**
-  * Insert this sequence as a sibling before refNode
-  */
+   * Insert this sequence as a sibling before refNode
+   */
   insertBefore(refNode: I3VNode): void;
   /**
-  * Append this sequence as a child to parent
-  */
+   * Append this sequence as a child to parent
+   */
   appendTo(parent: I3VNode): void;
   /**
-  * Remove this sequence from its parent.
-  */
+   * Remove this sequence from its parent.
+   */
   remove(): void;
 }
 // This is an implementation of INodeSequence that represents "no DOM" to render.
@@ -221,11 +221,11 @@ export const FabricNodeSequence = {
   empty: emptySequence
 };
 /**
-* An specialized INodeSequence with optimizations for text (interpolation) bindings
-* The contract of this INodeSequence is:
-* - the previous element is an `au-marker` node
-* - text is the actual text node
-*/
+ * An specialized INodeSequence with optimizations for text (interpolation) bindings
+ * The contract of this INodeSequence is:
+ * - the previous element is an `au-marker` node
+ * - text is the actual text node
+ */
 export class FabricTextNodeSequence implements IFabricNodeSequence {
   public firstChild: I3VNode;
   public lastChild: I3VNode;
@@ -250,7 +250,7 @@ export class FabricTextNodeSequence implements IFabricNodeSequence {
     ThreejsDOM
   }
   public remove(): void {
-    (<any>this.firstChild).remove();
+    (this.firstChild as any).remove();
   }
 }
 // tslint:enable:no-any
@@ -276,51 +276,6 @@ export class ThreeFragmentNodeSequence implements IFabricNodeSequence {
     this.inited = false;
     this.fragment = fragment.cloneNode(true) as DocumentFragment;
     this.rendererRoots = rendererRoots;
-  }
-
-  private init(): void {
-    if (this.inited) {
-      return;
-    }
-    this.inited = true;
-    let fragment = this.fragment;
-    let targetNodes: I3VNode[] = [];
-    let rootVNodes: I3VNode[] = [];
-    nodeTo3VNodes(fragment, fragment.childNodes, null, targetNodes, this.rendererRoots, rootVNodes);
-    this.vNodes = rootVNodes;
-    let i = 0;
-    let ii = targetNodes.length;
-    const targets = this.targets = Array(ii);
-    while (i < ii) {
-      // eagerly convert all markers to IRenderLocations (otherwise the renderer
-      // will do it anyway) and store them in the target list (since the comments
-      // can't be queried)
-      const target = targetNodes[i];
-      if (target.nodeName === 'au-marker') {
-        // note the renderer will still call this method, but it will just return the
-        // location if it sees it's already a location
-        targets[i] = ThreejsDOM.convertToRenderLocation(target);
-      } else {
-        // also store non-markers for consistent ordering
-        targets[i] = target;
-      }
-      ++i;
-    }
-    rootVNodes.forEach(node => node.invokeNativeObject());
-    
-    const childNodeList = fragment.childNodes;
-    i = 0;
-    ii = childNodeList.length;
-    const childNodes = this.children = Array(ii);
-    while (i < ii) {
-      childNodes[i] = childNodeList[i] as Writable<INode>;
-      ++i;
-    }
-
-    const nodeCount = rootVNodes.length;
-    this.firstChild = nodeCount > 0 ? rootVNodes[0] : null;
-    this.lastChild = nodeCount > 0 ? rootVNodes[nodeCount - 1] : null;
-    this.start = this.end = null;
   }
 
   public findTargets(): ReadonlyArray<I3VNode> {
@@ -367,7 +322,7 @@ export class ThreeFragmentNodeSequence implements IFabricNodeSequence {
     // (<any>parent).appendChild(this.fragment);
     if (DOM.isNodeInstance(parent)) {
       for (const child of this.children) {
-        parent.appendChild(child);
+        DOM.appendChild(parent, child);
       }
     }
     // if (this.children.length === 1 && this.children[0].typeName === 'Page') {
@@ -380,8 +335,8 @@ export class ThreeFragmentNodeSequence implements IFabricNodeSequence {
       } else {
         // c doesn not have a parent node means it's a renderer root && direct child of a template
         // then append to means it should append to parent. so wrap it in a vnode and boom
-        let parentNodeName = parent.nodeName.toLowerCase();
-        let parentVNode = new VNode(parentNodeName, false);
+        const parentNodeName = parent.nodeName.toLowerCase();
+        const parentVNode = new VNode(parentNodeName, false);
         parentVNode.nativeObject = parent;
         parentVNode.appendChild(c);
         VNode.appendChild(c, parentVNode);
@@ -429,6 +384,51 @@ export class ThreeFragmentNodeSequence implements IFabricNodeSequence {
     //     }
     //   }
     // }
+  }
+
+  private init(): void {
+    if (this.inited) {
+      return;
+    }
+    this.inited = true;
+    const fragment = this.fragment;
+    const targetNodes: I3VNode[] = [];
+    const rootVNodes: I3VNode[] = [];
+    nodeTo3VNodes(fragment, fragment.childNodes, null, targetNodes, this.rendererRoots, rootVNodes);
+    this.vNodes = rootVNodes;
+    let i = 0;
+    let ii = targetNodes.length;
+    const targets = this.targets = Array(ii);
+    while (i < ii) {
+      // eagerly convert all markers to IRenderLocations (otherwise the renderer
+      // will do it anyway) and store them in the target list (since the comments
+      // can't be queried)
+      const target = targetNodes[i];
+      if (target.nodeName === 'au-marker') {
+        // note the renderer will still call this method, but it will just return the
+        // location if it sees it's already a location
+        targets[i] = ThreejsDOM.convertToRenderLocation(target);
+      } else {
+        // also store non-markers for consistent ordering
+        targets[i] = target;
+      }
+      ++i;
+    }
+    rootVNodes.forEach(node => node.invokeNativeObject());
+
+    const childNodeList = fragment.childNodes;
+    i = 0;
+    ii = childNodeList.length;
+    const childNodes = this.children = Array(ii);
+    while (i < ii) {
+      childNodes[i] = childNodeList[i] as Writable<INode>;
+      ++i;
+    }
+
+    const nodeCount = rootVNodes.length;
+    this.firstChild = nodeCount > 0 ? rootVNodes[0] : null;
+    this.lastChild = nodeCount > 0 ? rootVNodes[nodeCount - 1] : null;
+    this.start = this.end = null;
   }
 }
 export interface IThreeJsNodeSequenceFactory {
@@ -502,7 +502,7 @@ function nodeTo3VNodes(
         if (!insideVNodeTree) {
           if (customRendererTargetRootNames.includes(nodeName.toLowerCase())) {
             // a Root vNode
-            let threeVNode: I3VNode = new VNode(nodeName.toLowerCase(), isTarget);
+            const threeVNode: I3VNode = new VNode(nodeName.toLowerCase(), isTarget);
             for (let i = 0, ii = attributes.length; ii > i; ++i) {
               const { value, name }  = attributes[i];
               threeVNode.setAttribute(name, value);
@@ -515,8 +515,8 @@ function nodeTo3VNodes(
               throw new Error('Invalid render root. Cannot be nested inside another root');
             }
             if (node.parentNode !== nodesOwner) {
-              let parentNodeName = node.nodeName.toLowerCase();
-              let fakeParentVNode = new VNode(parentNodeName, false);
+              const parentNodeName = node.nodeName.toLowerCase();
+              const fakeParentVNode = new VNode(parentNodeName, false);
               fakeParentVNode.appendChild(threeVNode);
               fakeParentVNode.nativeObject = node;
             }
@@ -533,7 +533,7 @@ function nodeTo3VNodes(
             nodeTo3VNodes(nodesOwner, node.childNodes, null, targets, customRendererTargetRootNames, customRendererTargetRoots, false);
           }
         } else {
-          let threeVNode: I3VNode = new VNode(nodeName.toLowerCase(), isTarget);
+          const threeVNode: I3VNode = new VNode(nodeName.toLowerCase(), isTarget);
           for (let i = 0, ii = attributes.length; ii > i; ++i) {
             const { value, name }  = attributes[i];
             threeVNode.setAttribute(name, value);

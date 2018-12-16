@@ -1,10 +1,12 @@
-// import { CSSStyleDeclaration, Node, Element, HTMLElement } from '../basichtml';
-import { ThreejsDOM } from './three-dom';
-import { PLATFORM } from '../kernel';
-import { VNode } from '../dom/node';
-import { I3VNode, ThreeObject } from './three-vnode';
+import { PLATFORM } from '@aurelia/kernel';
+import { DOM } from '@aurelia/runtime';
 import * as THREE from 'three';
-import { DOM } from './dom';
+import { VNode } from './node';
+import { ThreejsDOM } from './three-dom';
+import { ThreeObject } from './three-vnode';
+
+// tslint:disable:no-commented-code
+// import { CSSStyleDeclaration, Node, Element, HTMLElement } from '../basichtml';
 
 (map => {
   const emptyOps = {};
@@ -79,12 +81,12 @@ import { DOM } from './dom';
       .keys(attributes)
       .reduce((attrs, prop) => {
         prop = camelCase(prop);
-        let value = attributes[prop];
-        let nVal = Number(value);
+        const value = attributes[prop];
+        const nVal = Number(value);
         attrs[prop] = isNaN(nVal) ? value : nVal;
         return attrs;
       }, {});
-  }
+  };
   const tryAssignAttr = <T extends ThreeObject>(obj: T, attributes: Record<string, string>): T => {
     Object.keys(attributes).forEach(attr => {
       if (attr in obj) {
@@ -107,7 +109,7 @@ import { DOM } from './dom';
   const getCanvasFromVNode = (node: VNode): HTMLCanvasElement => {
     let canvas: HTMLCanvasElement;
     if (node.hasAttribute('canvas')) {
-      let canvasId =  node.getAttribute('canvas');
+      const canvasId =  node.getAttribute('canvas');
       canvas = document.getElementById(canvasId) as HTMLCanvasElement;
       if (canvas === null) {
         throw new Error('Invalid canvas ID. Canvas not found');
@@ -128,7 +130,7 @@ import { DOM } from './dom';
     //   canvas.style.height = `${node.getAttribute('height')}px`;
     // }
     return canvas;
-  }
+  };
   VNode.invokeNativeObject = (node: VNode<ThreeObject>, ...args: any[]) => {
     const nodeName = node.nodeName;
     switch (nodeName) {
@@ -138,9 +140,9 @@ import { DOM } from './dom';
         renderer.setSize(Number(node.getAttribute('width')), Number(node.getAttribute('height')));
         node.nativeObject = renderer;
         let i = 0;
-        let childVNodes = node.childNodes;
+        const childVNodes = node.childNodes;
         while (i < childVNodes.length) {
-          let childVNode = childVNodes[i];
+          const childVNode = childVNodes[i];
           childVNode.invokeNativeObject();
           VNode.appendChild(childVNode, node);
           i++;
@@ -151,9 +153,9 @@ import { DOM } from './dom';
         const canvas = getCanvasFromVNode(node);
         node.nativeObject = new THREE.CanvasRenderer({ canvas: canvas });
         let i = 0;
-        let childVNodes = node.childNodes;
+        const childVNodes = node.childNodes;
         while (i < childVNodes.length) {
-          let childVNode = childVNodes[i];
+          const childVNode = childVNodes[i];
           childVNode.invokeNativeObject();
           VNode.appendChild(childVNode, node);
           i++;
@@ -164,9 +166,9 @@ import { DOM } from './dom';
         // todo: convert node.attributes into appropriate group props
         node.nativeObject = new THREE.Group();
         let i = 0;
-        let childVNodes = node.childNodes;
+        const childVNodes = node.childNodes;
         while (i < childVNodes.length) {
-          let childVNode = childVNodes[i];
+          const childVNode = childVNodes[i];
           childVNode.invokeNativeObject();
           VNode.appendChild(childVNode, node);
           i++;
@@ -188,13 +190,13 @@ import { DOM } from './dom';
         node.nativeObject = cam;
         break;
       case 't-scene': {
-        let scene = new THREE.Scene();
+        const scene = new THREE.Scene();
         scene.background = node.getAttribute('background');
         node.nativeObject = scene;
         let i = 0;
-        let childVNodes = node.childNodes;
+        const childVNodes = node.childNodes;
         while (i < childVNodes.length) {
-          let childVNode = childVNodes[i];
+          const childVNode = childVNodes[i];
           childVNode.invokeNativeObject();
           VNode.appendChild(childVNode, node);
           i++;
@@ -205,10 +207,10 @@ import { DOM } from './dom';
         let geometry: THREE.Geometry;
         let material: THREE.Material;
         let $i = 0;
-        let $childVNodes = node.childNodes;
+        const $childVNodes = node.childNodes;
         while ($i < $childVNodes.length) {
-          let $childVNode = $childVNodes[$i];
-          let nativeObject = $childVNode.invokeNativeObject();
+          const $childVNode = $childVNodes[$i];
+          const nativeObject = $childVNode.invokeNativeObject();
           if (nativeObject.isGeometry === true) {
             geometry = nativeObject;
           } else if (nativeObject.isMaterial === true) {
@@ -227,12 +229,20 @@ import { DOM } from './dom';
         const mat = new THREE.MeshBasicMaterial({ color: node.getAttribute('color') });
         node.nativeObject = mat;
         break;
-      case 't-light': case 't-bone': case 't-group': case 't-lod': case 't-line': case 't-mesh': case 't-point': case 't-sprite':
-      case 't-scene': case 't-audio': case 't-audio-listener': case 't-arrow-helper': case 't-directional-arrow-helper':
-      case 't-hemishpere-light-helper': case 't-point-light-helper': case 't-spot-light-helper':
+      case 't-light':
+      case 't-bone':
+      case 't-lod':
+      case 't-line':
+      case 't-point':
+      case 't-sprite':
+      case 't-audio':
+      case 't-audio-listener':
+      case 't-arrow-helper':
+      case 't-directional-arrow-helper':
+      case 't-hemishpere-light-helper':
+      case 't-point-light-helper':
+      case 't-spot-light-helper':
       case 't-immediate-render-object':
-        
-        break;
     }
   };
   VNode.appendChild = (node: VNode<ThreeObject>, parentNode: VNode) => {
@@ -240,7 +250,7 @@ import { DOM } from './dom';
     const nodeNativeObject = node.nativeObject;
     const parentNodeName = parentNode.nodeName;
     const parentNativeObject = parentNode.nativeObject;
-    
+
     if (nodeName === 't-webgl' || nodeName === 't-canvas') {
       if (DOM.isNodeInstance(parentNativeObject)) {
         (parentNativeObject as Element).appendChild((nodeNativeObject as THREE.Renderer).domElement);

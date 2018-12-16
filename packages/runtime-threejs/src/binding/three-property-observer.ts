@@ -1,24 +1,16 @@
-import { IIndexable, Primitive } from '../../kernel';
-import { DOM, IElement, IInputElement, INode, INodeObserver } from '../dom';
-import { ILifecycle } from '../lifecycle';
-import {
-  CollectionKind, IBatchedCollectionSubscriber, IBindingTargetObserver, ICollectionObserver,
-  IndexMap, IObserversLookup,  IPropertySubscriber, LifecycleFlags
-} from '../observation';
-import { IEventSubscriber } from './event-manager';
-import { IObserverLocator } from './observer-locator';
-import { SetterObserver } from './property-observation';
-import { targetObserver } from './target-observer';
-import { IFabricNode } from '../three-dom';
-import { I3VNode } from 'runtime/three-vnode';
+import { IIndexable, Primitive } from '@aurelia/kernel';
+import { IBindingTargetObserver, ILifecycle, IPropertySubscriber, LifecycleFlags, targetObserver } from '@aurelia/runtime';
+import { I3VNode } from '../three-vnode';
+
+// tslint:disable:no-commented-code
 
 const handleEventFlags = LifecycleFlags.fromDOMEvent | LifecycleFlags.updateSourceExpression;
 
-export interface FabricPropertyObserver extends
+export interface ThreePropertyObserver extends
   IBindingTargetObserver<I3VNode, string, Primitive | IIndexable> { }
 
 @targetObserver('')
-export class FabricPropertyObserver implements FabricPropertyObserver {
+export class ThreePropertyObserver implements ThreePropertyObserver {
   public currentValue: Primitive | IIndexable;
   public currentFlags: LifecycleFlags;
   public oldValue: Primitive | IIndexable;

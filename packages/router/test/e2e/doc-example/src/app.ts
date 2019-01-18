@@ -2,8 +2,8 @@ import { inject } from '@aurelia/kernel';
 import { customElement } from '@aurelia/runtime';
 import { Router } from '../../../../../router/src/index';
 import { About } from './components/about';
-import { Authors } from './components/authors';
-import { Books } from './components/books';
+import { Authors } from './components/authors/authors';
+import { Books } from './components/books/books';
 
 @inject(Router)
 @customElement({
@@ -57,7 +57,7 @@ export class App {
       //   }
       //   return parts.join('/');
       // }
-    });
+    }).catch(error => { throw error; });
     this.router.addNav('app-menu', [
       {
         title: 'Authors',

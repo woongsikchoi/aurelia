@@ -1,0 +1,57 @@
+{
+  "name": "@aurelia/runtime-nativescript",
+  "version": "0.3.0",
+  "main": "dist/build/index.js",
+  "module": "dist/build/index.js",
+  "jsnext:main": "dist/build/index.js",
+  "browser": "dist/build/index.js",
+  "types": "dist/index.d.ts",
+  "typings": "dist/index.d.ts",
+  "license": "MIT",
+  "homepage": "https://aurelia.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aurelia/aurelia"
+  },
+  "bugs": {
+    "url": "https://github.com/aurelia/aurelia/issues"
+  },
+  "keywords": [
+    "aurelia",
+    "runtime-nativescript"
+  ],
+  "files": [
+    "dist",
+    "src",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "lint": "npm run lint:src && npm run lint:test",
+    "lint:src": "tslint --project tsconfig.json -t stylish",
+    "lint:test": "tslint --project tsconfig-test.json --config ../tslint-test.json -e \"src/**/*.ts\" -t stylish",
+    "build": "tsc -b",
+    "bundle": "ts-node -P ../../scripts/tsconfig.json ../../scripts/bundle.ts umd,esm,system runtime-nativescript",
+    "dev": "tsc -b -w",
+    "publish:local": "npm pack"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@aurelia/kernel": "0.3.0",
+    "@aurelia/runtime": "0.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^10.12.19",
+    "cross-env": "^5.2.0",
+    "tns-core-modules": "^5.1.2",
+    "ts-node": "^8.0.2",
+    "tslib": "^1.9.3",
+    "tslint": "^5.12.1",
+    "tslint-microsoft-contrib": "^6.0.0",
+    "tslint-sonarts": "^1.9.0",
+    "typescript": "^3.2.4"
+  }
+}

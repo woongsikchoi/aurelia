@@ -1,0 +1,3 @@
+export {
+  BasicConfiguration
+} from './configuration';

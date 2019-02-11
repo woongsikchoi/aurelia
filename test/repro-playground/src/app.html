@@ -1,0 +1,7 @@
+<ul>
+  <template repeat.for="p of game.players">
+    <li repeat.for="c of p.characters">
+      <a href="${game.id}/${c.id}">${c.name}</a>
+    </li>
+  </template>
+</ul>

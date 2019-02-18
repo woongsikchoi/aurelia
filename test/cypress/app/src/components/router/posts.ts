@@ -21,5 +21,7 @@ export class Posts {
     const posts = await res.json();
 
     this.posts = posts;
+
+    console.log(this.posts);
   }
 }

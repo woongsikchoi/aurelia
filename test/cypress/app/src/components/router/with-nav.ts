@@ -1,6 +1,5 @@
-import { Api } from '../../services/api';
 import { inject } from '@aurelia/kernel';
-import { Router } from '../../../../../../packages/router/src/index';
+import { Router } from '@aurelia/router';
 import { customElement } from '@aurelia/runtime';
 
 import template from './with-nav.html';

@@ -1,5 +1,6 @@
 import { DI, IContainer, InjectArray, Reporter } from '@aurelia/kernel';
 import { Aurelia, ICustomElementType, IRenderContext } from '@aurelia/runtime';
+import { Guardian, GuardTypes } from './guardian';
 import { HistoryBrowser, IHistoryOptions, INavigationInstruction } from './history-browser';
 import { InstructionResolver, IRouteSeparators } from './instruction-resolver';
 import { AnchorEventInfo, LinkHandler } from './link-handler';
@@ -36,6 +37,7 @@ export class Router {
   public historyBrowser: HistoryBrowser;
   public linkHandler: LinkHandler;
   public instructionResolver: InstructionResolver;
+  public guardian: Guardian;
 
   public navs: Record<string, Nav> = {};
   public activeComponents: string[] = [];
@@ -55,6 +57,7 @@ export class Router {
     this.historyBrowser = new HistoryBrowser();
     this.linkHandler = new LinkHandler();
     this.instructionResolver = new InstructionResolver();
+    this.guardian = new Guardian();
 
     this.routeTransformer = routeTransformer;
   }
@@ -177,6 +180,15 @@ export class Router {
         throw Reporter.error(2002);
       }
       const changedViewports: Viewport[] = [];
+
+      const outcome = this.guardian.passes(GuardTypes.Before, viewportInstructions, instruction);
+      if (!outcome) {
+        return this.cancelNavigation([...changedViewports, ...updatedViewports], instruction);
+      }
+      if (typeof outcome !== 'boolean') {
+        viewportInstructions = outcome;
+      }
+
       for (const viewportInstruction of viewportInstructions) {
         const viewport = viewportInstruction.viewport;
         const componentWithParameters = this.instructionResolver.stringifyViewportInstruction(viewportInstruction, true);
@@ -209,6 +221,7 @@ export class Router {
       if (results.findIndex((value) => value === false) >= 0) {
         return this.cancelNavigation([...changedViewports, ...updatedViewports], instruction);
       }
+
       results = await Promise.all(changedViewports.map(async (value) => {
         const canEnter = await value.canEnter();
         if (typeof canEnter === 'boolean') {

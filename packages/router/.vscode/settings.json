@@ -1,6 +1,17 @@
+// Place your settings in this file to overwrite default and user settings.
 {
-    "cSpell.words": [
-        "Lifecycle",
-        "viewports"
-    ]
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#563f80",
+    "activityBar.foreground": "#e7e7e7",
+    "activityBar.inactiveForeground": "#e7e7e799",
+    "activityBarBadge.background": "#402b20",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "titleBar.activeBackground": "#563f80",
+    "titleBar.inactiveBackground": "#563f8099",
+    "titleBar.activeForeground": "#e7e7e7",
+    "titleBar.inactiveForeground": "#e7e7e799",
+    "statusBar.background": "#563f80",
+    "statusBarItem.hoverBackground": "#6d50a2",
+    "statusBar.foreground": "#e7e7e7"
+  }
 }

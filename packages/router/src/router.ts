@@ -8,6 +8,7 @@ import { INavRoute, Nav } from './nav';
 import { IParsedQuery, parseQuery } from './parser';
 import { RouteTable } from './route-table';
 import { Scope } from './scope';
+import { arrayRemove } from './utils';
 import { IViewportOptions, Viewport } from './viewport';
 import { ViewportInstruction } from './viewport-instruction';
 
@@ -167,8 +168,8 @@ export class Router {
     }
 
     const usedViewports = (clearViewports ? this.allViewports().filter((value) => value.content.component !== null) : []);
-    const defaultViewports = this.allViewports().filter((value) => value.options.default && value.content.component === null);
-
+    const doneDefaultViewports: Viewport[] = [];
+    let defaultViewports = this.allViewports().filter((viewport) => viewport.options.default && viewport.content.component === null && !doneDefaultViewports.find(done => done === viewport));
     const updatedViewports: Viewport[] = [];
 
     // TODO: Take care of cancellations down in subsets/iterations
@@ -179,6 +180,16 @@ export class Router {
       if (!guard--) {
         throw Reporter.error(2002);
       }
+
+      for (const defaultViewport of defaultViewports) {
+        doneDefaultViewports.push(defaultViewport);
+        if (!viewportInstructions.find(value => value.viewport === defaultViewport)) {
+          const defaultInstruction = this.instructionResolver.parseViewportInstruction(defaultViewport.options.default);
+          defaultInstruction.viewport = defaultViewport;
+          viewportInstructions.push(defaultInstruction);
+        }
+      }
+
       const changedViewports: Viewport[] = [];
 
       const outcome = this.guardian.passes(GuardTypes.Before, viewportInstructions, instruction);
@@ -195,30 +206,17 @@ export class Router {
         if (viewport.setNextContent(componentWithParameters, instruction)) {
           changedViewports.push(viewport);
         }
-        const usedIndex = usedViewports.findIndex((value) => value === viewport);
-        if (usedIndex >= 0) {
-          usedViewports.splice(usedIndex, 1);
-        }
-        const defaultIndex = defaultViewports.findIndex((value) => value === viewport);
-        if (defaultIndex >= 0) {
-          defaultViewports.splice(defaultIndex, 1);
-        }
+        arrayRemove(usedViewports, (value) => value === viewport);
       }
+      // usedViewports is empty if we're not clearing viewports
       for (const viewport of usedViewports) {
         if (viewport.setNextContent(this.instructionResolver.clearViewportInstruction, instruction)) {
           changedViewports.push(viewport);
         }
       }
-      // TODO: Support/review viewports not found in first iteration
-      let vp: Viewport;
-      while (vp = defaultViewports.shift()) {
-        if (vp.setNextContent(vp.options.default, instruction)) {
-          changedViewports.push(vp);
-        }
-      }
 
       let results = await Promise.all(changedViewports.map((value) => value.canLeave()));
-      if (results.findIndex((value) => value === false) >= 0) {
+      if (results.some(result => result === false)) {
         return this.cancelNavigation([...changedViewports, ...updatedViewports], instruction);
       }
 
@@ -260,6 +258,7 @@ export class Router {
       }
       viewportInstructions = [...viewportInstructions, ...remaining.viewportInstructions];
       viewportsRemaining = remaining.viewportsRemaining;
+      defaultViewports = this.allViewports().filter((viewport) => viewport.options.default && viewport.content.component === null && !doneDefaultViewports.find(done => done === viewport));
     }
 
     await Promise.all(updatedViewports.map((value) => value.loadContent()));

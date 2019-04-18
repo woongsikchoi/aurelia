@@ -295,9 +295,9 @@ export class HistoryBrowser {
   }
   private async setPath(path: string, replace: boolean = false): Promise<void> {
     // More checks, such as parameters, needed
-    if (this.currentEntry && this.currentEntry.path === path && !this.isRefreshing) {
-      return;
-    }
+    // if (this.currentEntry && this.currentEntry.path === path && !this.isRefreshing) {
+    //   return;
+    // }
 
     const { pathname, search } = this.location;
     const hash = `#${path}`;

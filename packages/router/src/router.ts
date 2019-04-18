@@ -259,6 +259,9 @@ export class Router {
       viewportInstructions = [...viewportInstructions, ...remaining.viewportInstructions];
       viewportsRemaining = remaining.viewportsRemaining;
       defaultViewports = this.allViewports().filter((viewport) => viewport.options.default && viewport.content.component === null && !doneDefaultViewports.find(done => done === viewport));
+      if (!this.allViewports().length) {
+        viewportsRemaining = false;
+      }
     }
 
     await Promise.all(updatedViewports.map((value) => value.loadContent()));
